@@ -1,0 +1,9 @@
+img.i18n_flag {
+    width: 13px;
+    vertical-align: text-top;
+}
+
+#user-tools a.i18n_link {
+    text-decoration: none;
+    border-bottom: none;
+}

@@ -1,0 +1,25 @@
+{% extends "admin/base_site.html" %}
+
+{% load static %}
+{% load i18n %}
+
+<!-- custom filter module -->
+{% load i18n_switcher %}
+
+{% block extrahead %}
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/custom_admin.css' %}"/>
+{% endblock %}
+
+{% block userlinks %}
+    <a class="i18n_link" href="{{ request|switch_i18n:'es' }}">
+        <img class="i18n_flag" src="{% static 'images/flags/arg.png' %}"/>
+    </a> /
+    <a class="i18n_link" href="{{ request|switch_i18n:'en' }}">
+        <img class="i18n_flag" src="{% static 'images/flags/uk.png' %}"/>
+    </a> /
+    {% if user.has_usable_password %}
+        <a href="{% url 'admin:password_change' %}">{% trans 'change_password' %}</a> /
+    {% endif %}
+    <a href="{% url 'admin:logout' %}">{% trans 'log_out' %}</a>
+{% endblock %}

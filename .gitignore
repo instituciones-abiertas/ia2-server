@@ -1,0 +1,15 @@
+# Database
+*.dump
+
+# Editors
+.idea
+.vscode
+
+# Misc
+uploads
+
+# Python
+*.py[co]
+
+# Translations
+*.mo

@@ -1,0 +1,14 @@
+echo "=> Performing database migrations..."
+python manage.py migrate --settings=applicationname.settings.production
+
+echo "=> Collecting static files..."
+python manage.py collectstatic --noinput --settings=applicationname.settings.production
+
+echo "=> Applying fixtures..."
+for i in $(find . -wholename "*/fixtures/*.json"  -printf "%f\n" | sort -t '\0' -n); do \
+    echo "Loading $i" ;\
+    find -name $i -exec python manage.py loaddata {} --settings=applicationname.settings.production  \; ;\
+done
+
+echo "=> Compiling translations..."
+python manage.py compilemessages --settings=applicationname.settings.production
