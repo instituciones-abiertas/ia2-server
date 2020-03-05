@@ -1,0 +1,146 @@
+[
+  {
+    "model": "accounts.user",
+    "fields": {
+      "password": "pbkdf2_sha256$150000$UnGairSKFH9R$IlH1GFZXLxrds+EJv/He7HCB1v7FPFTd1lXoL5puN2Q=",
+      "last_login": null,
+      "username": "Lucia.Atencio",
+      "email": "josx@camba.coop",
+      "email": "Benito70@hotmail.com",
+			"first_name": "Catalina",
+			"last_name": "García",
+      "is_staff": true,
+      "is_superuser": true,
+      "date_joined": "2020-03-05T16:20:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
+      "password": "pbkdf2_sha256$150000$UnGairSKFH9R$IlH1GFZXLxrds+EJv/He7HCB1v7FPFTd1lXoL5puN2Q=",
+      "last_login": null,
+      "username": "Gustavo.Cruz",
+      "first_name": "Francisca",
+			"last_name": "Aguayo",
+			"email": "Daniel_Soto97@yahoo.com",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true,
+      "date_joined": "2019-10-10T16:20:00Z",
+      "groups": [
+        [
+          "ApplicationUsers"
+        ]
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
+      "password": "pbkdf2_sha256$150000$UnGairSKFH9R$IlH1GFZXLxrds+EJv/He7HCB1v7FPFTd1lXoL5puN2Q=",
+      "last_login": null,
+      "username": "María.Leal",
+      "first_name": "Dolores",
+			"last_name": "Téllez",
+			"email": "Florencia_Quintanilla1@hotmail.com",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true,
+      "date_joined": "2019-10-10T16:20:00Z",
+      "groups": [
+        [
+          "ApplicationUsers"
+        ]
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
+      "password": "pbkdf2_sha256$150000$UnGairSKFH9R$IlH1GFZXLxrds+EJv/He7HCB1v7FPFTd1lXoL5puN2Q=",
+      "last_login": null,
+      "username": "Pablo_Alfaro",
+      "first_name": "Mayte",
+			"last_name": "Leiva",
+			"email": "Antonia78@hotmail.com",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true,
+      "date_joined": "2019-10-11T16:20:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
+      "password": "pbkdf2_sha256$150000$UnGairSKFH9R$IlH1GFZXLxrds+EJv/He7HCB1v7FPFTd1lXoL5puN2Q=",
+      "last_login": null,
+      "username": "Salvador_Adorno13",
+      "first_name": "Andrés",
+			"last_name": "Crespo",
+			"email": "Claudio_Salinas92@gmail.com",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true,
+      "date_joined": "2020-03-05T16:20:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
+      "password": "pbkdf2_sha256$150000$UnGairSKFH9R$IlH1GFZXLxrds+EJv/He7HCB1v7FPFTd1lXoL5puN2Q=",
+      "last_login": null,
+      "first_name": "Alfredo",
+			"last_name": "Domínguez",
+			"email": "JosEduardo_Maya@yahoo.com",
+			"username": "Francisca.Guerrero",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true,
+      "date_joined": "2020-03-05T16:20:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
+      "password": "pbkdf2_sha256$150000$UnGairSKFH9R$IlH1GFZXLxrds+EJv/He7HCB1v7FPFTd1lXoL5puN2Q=",
+      "last_login": null,
+      "first_name": "Dolores",
+			"last_name": "Verduzco",
+			"email": "Anita45@gmail.com",
+			"username": "Leticia_Esparza",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true,
+      "date_joined": "2020-03-05T16:20:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
+      "password": "pbkdf2_sha256$150000$UnGairSKFH9R$IlH1GFZXLxrds+EJv/He7HCB1v7FPFTd1lXoL5puN2Q=",
+      "last_login": null,
+      "first_name": "José",
+			"last_name": "Garza",
+			"email": "Enrique.Tllez74@hotmail.com",
+			"username": "Concepción38",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true,
+      "date_joined": "2020-03-05T07:50:42.031Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]
