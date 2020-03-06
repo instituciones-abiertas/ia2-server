@@ -80,6 +80,8 @@ django-load-fixtures:
 		find -name $$i -exec python manage.py loaddata {}   \; ;\
 	done
 
+django-compile-messages:
+	./manage.py compilemessages
 
 # Help
 help-display:
