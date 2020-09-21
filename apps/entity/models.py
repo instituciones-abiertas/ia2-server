@@ -25,11 +25,11 @@ class Act(models.Model):
         return 
 
 class OcurrencyEntity(models.Model):
-    act = models.ForeignKey(Act, on_delete=models.CASCADE,    related_name='listOfEntity')
+    act = models.ForeignKey(Act, on_delete=models.CASCADE,related_name='listOfEntity')
     startIndex = models.PositiveIntegerField()
     endIndex = models.PositiveIntegerField()
     entity = models.ForeignKey(to=Entity, on_delete=models.CASCADE)
     
     def __str__(self):
         return self.entity.name
-
+     
