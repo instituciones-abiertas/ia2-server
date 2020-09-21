@@ -22,23 +22,31 @@ from django.conf.urls.static import static
 from django.views.generic import RedirectView
 from django.conf.urls.i18n import i18n_patterns
 from rest_framework import routers
-# from apps.myModel1 import views as myModel1Views
+
+from apps.entity.views import EntityViewSet
+from apps.entity.views import ActViewSet
+from apps.entity.views import OcurrencyEntityViewSet
 # from apps.myModel2 import views as myModel2Views
 # from apps.myModel3 import views as myModel3Views
 
 # Routers provide an easy way of automatically determining the URL conf.
 ROUTER = routers.DefaultRouter()
-# ROUTER.register('myModel1', myModel1.MyModel1ViewSet)
+ROUTER.register(r'entity', EntityViewSet)
+ROUTER.register(r'act', ActViewSet)
+ROUTER.register(r'ocurrency', OcurrencyEntityViewSet)
 # ROUTER.register('myModel2', myModel2.MyModel2ViewSet)
 # ROUTER.register('myModel3', myModel3.MyModel3ViewSet)
 
 urlpatterns = i18n_patterns(
     url(r'^$', RedirectView.as_view(url='/admin/')),
     path('admin/', admin.site.urls)
-) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-# urlpatterns = urlpatterns + [
-#     url(r'^api/', include(ROUTER.urls)),
-# ]
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
+
+# Router patterns
+urlpatterns = urlpatterns + [
+        url(r'^api/', include(ROUTER.urls)),
+ ]
+
 if settings.DEBUG:
     from django.views.defaults import page_not_found
     urlpatterns += i18n_patterns(
