@@ -16,35 +16,33 @@ class EntityViewSet(viewsets.ModelViewSet):
 class ActViewSet(viewsets.ModelViewSet):
     queryset = Act.objects.all()
     serializer_class = ActSerializer
+    
     def create(self, validated_data):
-       serializer_oe = OcurrencyEntitySerializer()
-       ## Aca se deberia procesar con la util de spacy o la solucion que utilicemos.
-
        ## Una vez procesado,guardar la info
        fake_entity = [      { 
-                               "starIndex": 28,
-                                "endIndex":45,
-                                "entityName":"Juez"
+                               "start": 28,
+                                "end":45,
+                                "tag":"Juez"
                             },
                             {
-                                "starIndex": 20,
-                                "endIndex": 24,
-                                "entityName":"Domicilio"
+                                "start": 20,
+                                "end": 24,
+                                "tag":"Domicilio"
                             },
                             {
-                                "starIndex": 56,
-                                "endIndex":58,
-                                "entityName":"Edad"
+                                "start": 56,
+                                "end":58,
+                                "tag":"Edad"
                             }
                     ]
 
-       #print(fake_entity.values())
-       return Response( fake_entity)
+       dataReturn = { "text" : "Soy un texto de prueba aca tengo un numero y un juez y una edad",
+                    "ents" : fake_entity
+              }
+       return Response(dataReturn)
 
     def update(self, validated_data):
-       serializer_oe = OcurrencyEntitySerializer()
        ## Aca se deberia procesar con la util de spacy o la solucion que utilicemos.
-
        ## Una vez procesado,guardar la info
        fake_entity = [      { 
                                "starIndex": 28,
