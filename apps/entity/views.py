@@ -1,10 +1,11 @@
-from rest_framework import viewsets
+from rest_framework import viewsets,status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 
-from .serializers import EntitySerializer, ActSerializer, OcurrencyEntitySerializer, FakeSerializer
-from .models import Entity, Act, OcurrencyEntity
+from .serializers import EntitySerializer, ActSerializer, OcurrencyEntitySerializer, EntSerializer,LearningModelSerializer
+from .models import Entity, Act, OcurrencyEntity,LearningModel
+from .utils_spacy import get_all_entity_ner
 
 
 class EntityViewSet(viewsets.ModelViewSet):
@@ -15,83 +16,48 @@ class EntityViewSet(viewsets.ModelViewSet):
 class ActViewSet(viewsets.ModelViewSet):
     queryset = Act.objects.all()
     serializer_class = ActSerializer
-    
-    def create(self, validated_data):
 
-       ## Una vez procesado,guardar la info
-       fake_entity = [      
-           { 
-                "start": 28,
-                "end":45,
-                "tag":"Juez"
-            },
-            {
-                "start": 20,
-                "end": 24,
-                "tag":"Domicilio"
-            },
-            {
-                "start": 56,
-                "end":58,
-                "tag":"Edad"
-            }
-        ]
+    def create(self, request):
+        newAct = Act.objects.create(text=request.data.get('text'))
+        ents = get_all_entity_ner(newAct.text)
+        ocurrency_list = []
+        for ent in ents:
+            OcurrencyEntity.objects.create(act=newAct, startIndex=ent.start_char,
+                                           endIndex=ent.end_char, entity=Entity.objects.get(name=ent.label_))
+            entSerializer = EntSerializer(ent)
+            ocurrency_list.append(entSerializer.data)
+        print(ocurrency_list)
+       # Una vez procesado,guardar la info
+        dataReturn = {
+            "text": newAct.text,
+            "ents": ocurrency_list,
+            "id": newAct.id
+        }
+        return Response(dataReturn)
 
-       dataReturn = { "text" : "Soy un texto de prueba aca tengo un numero y un juez y una edad",
-                    "ents" : fake_entity
-              }
-       return Response(dataReturn)
+    def update(self, validated_data, pk):
+        actCheck = Act.objects.get(id=validated_data.data.get('id'))
+        ocurrency_query = OcurrencyEntity.objects.filter(act=actCheck)
+        if ocurrency_query.exists():
+            ocurrency_query.delete()
+        newEnts = validated_data.data.get('ents')
+        for ent in newEnts:
+            OcurrencyEntity.objects.create(act=actCheck, startIndex=ent['start'],
+                                           endIndex=ent['end'], entity=Entity.objects.get(name=ent['tag']))
 
-    def update(self, validated_data):
-       ## Aca se deberia procesar con la util de spacy o la solucion que utilicemos.
-       ## Una vez procesado,guardar la info
-       fake_entity = [
-            {
-                "starIndex": 28,
-                "endIndex":45,
-                "entityName":"Juez"
-            },
-            {
-                "starIndex": 15,
-                "endIndex": 21,
-                "entityName":"Domicilio"
-            },
-            {
-                "starIndex": 56,
-                "endIndex":58,
-                "entityName":"Edad"
-            }
-        ]
-
-
+        return Response()
 
 class OcurrencyEntityViewSet(viewsets.ModelViewSet):
     queryset = OcurrencyEntity.objects.all()
     serializer_class = OcurrencyEntitySerializer
 
 
-class FakeViewSet(APIView):
-    queryset = []
+class LearningModelViewSet(viewsets.ModelViewSet):
+    queryset = LearningModel.objects.all()
+    serializer_class = LearningModelSerializer
 
-    def post(self, request):
-        print(request.data)
-        fake_entity = [
-            {
-                "starIndex": 28,
-                "endIndex":45,
-                "entityName":"Juez"
-            },
-            {
-                "starIndex": 20,
-                "endIndex": 24,
-                "entityName":"Domicilio"
-            },
-            {
-                "starIndex": 56,
-                "endIndex":58,
-                "entityName":"Edad"
-            }
-        ]
-        results = FakeSerializer(fake_entity, many=True).data
-        print(results)
-        return Response(results)
+    @action(methods=['post'], detail=True)
+    def useModel(self,request,pk=None):
+        select_model = LearningModel.objects.get(id=pk)
+        ## Aca va estar la logica que cambie el modelo-a futuro-
+        return Response(data="Se ha elegido la materia {}".format(select_model.name_subject))
