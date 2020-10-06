@@ -32,4 +32,11 @@ class OcurrencyEntity(models.Model):
     
     def __str__(self):
         return self.entity.name
-     
+
+class LearningModel(models.Model):
+    name_subject = models.CharField(max_length=60)
+    last_update = models.DateTimeField(
+            default=timezone.now)
+
+    def __str__(self):
+        return  self.name_subject

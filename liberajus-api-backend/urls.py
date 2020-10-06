@@ -26,6 +26,8 @@ from rest_framework import routers
 from apps.entity.views import EntityViewSet
 from apps.entity.views import ActViewSet
 from apps.entity.views import OcurrencyEntityViewSet
+from apps.entity.views import LearningModelViewSet
+#from apps.entity.views import FakeViewSet
 # from apps.myModel2 import views as myModel2Views
 # from apps.myModel3 import views as myModel3Views
 
@@ -34,6 +36,8 @@ ROUTER = routers.DefaultRouter()
 ROUTER.register(r'entity', EntityViewSet)
 ROUTER.register(r'act', ActViewSet)
 ROUTER.register(r'ocurrency', OcurrencyEntityViewSet)
+ROUTER.register(r'models', LearningModelViewSet)
+#ROUTER.register(r'fake', FakeViewSet,base_name='fakedata')
 # ROUTER.register('myModel2', myModel2.MyModel2ViewSet)
 # ROUTER.register('myModel3', myModel3.MyModel3ViewSet)
 

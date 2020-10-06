@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Act, Entity, OcurrencyEntity
+from .models import Act,Entity,OcurrencyEntity,LearningModel
 
 class ActSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,8 +18,15 @@ class OcurrencyEntitySerializer(serializers.ModelSerializer):
         fields = ('id','startIndex', 'endIndex','entity')
         depth = 1
 
-class FakeSerializer(serializers.Serializer):
-    """Your data serializer, define your fields here."""
-    startIndex = serializers.IntegerField()
-    endIndex = serializers.IntegerField()
-    entity = serializers.CharField(max_length=256)
+class EntSerializer(serializers.Serializer):
+    start = serializers.IntegerField()
+    end = serializers.IntegerField()
+    tag = serializers.SerializerMethodField('get_tag_label')
+
+    def get_tag_label(self, obj):
+            return obj.label_
+
+class LearningModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LearningModel
+        fields = ('name_subject','last_update')
