@@ -57,7 +57,7 @@ class LearningModelViewSet(viewsets.ModelViewSet):
     serializer_class = LearningModelSerializer
 
     @action(methods=['post'], detail=True)
-    def useModel(self,request,pk=None):
+    def useSubject(self,request,pk=None):
         select_model = LearningModel.objects.get(id=pk)
         ## Aca va estar la logica que cambie el modelo-a futuro-
         return Response(data="Se ha elegido la materia {}".format(select_model.name_subject))
