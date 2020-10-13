@@ -47,10 +47,20 @@ class ActViewSet(viewsets.ModelViewSet):
 
         return Response()
 
+    @action(methods=['post'], detail=True)
+    def getAnonimusDocument(self,request,pk=None):
+        actCheck = Act.objects.get(id=pk)
+        print(actCheck.id)
+        dataResponse = {
+            "anonimus_document": "base64text",
+            "text_anonimus": "texto plano anonimizado",
+            "data_visualization": "informacion a visualizar"
+        }
+        return Response(data=dataResponse)
+
 class OcurrencyEntityViewSet(viewsets.ModelViewSet):
     queryset = OcurrencyEntity.objects.all()
     serializer_class = OcurrencyEntitySerializer
-
 
 class LearningModelViewSet(viewsets.ModelViewSet):
     queryset = LearningModel.objects.all()
