@@ -5,6 +5,8 @@ from django.utils import timezone
 class Entity(models.Model):
     name = models.CharField(max_length=60)
     description = models.CharField(max_length=60)
+    should_anonimyzation = models.BooleanField(default=True)
+    should_trained = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -29,6 +31,7 @@ class OcurrencyEntity(models.Model):
     startIndex = models.PositiveIntegerField()
     endIndex = models.PositiveIntegerField()
     entity = models.ForeignKey(to=Entity, on_delete=models.CASCADE)
+    should_anonymized = models.BooleanField(default=True)
     
     def __str__(self):
         return self.entity.name

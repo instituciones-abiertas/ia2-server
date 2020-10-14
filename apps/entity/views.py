@@ -22,9 +22,11 @@ class ActViewSet(viewsets.ModelViewSet):
         ents = get_all_entity_ner(newAct.text)
         ocurrency_list = []
         for ent in ents:
-            OcurrencyEntity.objects.create(act=newAct, startIndex=ent.start_char,
-                                           endIndex=ent.end_char, entity=Entity.objects.get(name=ent.label_))
-            entSerializer = EntSerializer(ent)
+            entityOrigin = Entity.objects.get(name=ent.label_)
+            ocurrencyEnt = OcurrencyEntity.objects.create(act=newAct, startIndex=ent.start_char,
+                                           endIndex=ent.end_char, entity=entityOrigin,
+                                           should_anonymized=entityOrigin.should_anonimyzation)
+            entSerializer = EntSerializer(ocurrencyEnt)
             ocurrency_list.append(entSerializer.data)
         print(ocurrency_list)
        # Una vez procesado,guardar la info
@@ -35,15 +37,16 @@ class ActViewSet(viewsets.ModelViewSet):
         }
         return Response(dataReturn)
 
-    def update(self, validated_data, pk):
-        actCheck = Act.objects.get(id=validated_data.data.get('id'))
+    def update(self, request, pk):
+        actCheck = Act.objects.get(id=request.data.get('id'))
         ocurrency_query = OcurrencyEntity.objects.filter(act=actCheck)
         if ocurrency_query.exists():
             ocurrency_query.delete()
-        newEnts = validated_data.data.get('ents')
+        newEnts = request.data.get('ents')
         for ent in newEnts:
             OcurrencyEntity.objects.create(act=actCheck, startIndex=ent['start'],
-                                           endIndex=ent['end'], entity=Entity.objects.get(name=ent['tag']))
+                                           endIndex=ent['end'], entity=Entity.objects.get(name=ent['tag']),
+                                           should_anonymized=ent['should_anonymized'])
 
         return Response()
 

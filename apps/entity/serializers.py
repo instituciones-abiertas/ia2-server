@@ -10,21 +10,29 @@ class ActSerializer(serializers.ModelSerializer):
 class EntitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entity
-        fields = ('id','name', 'description')
+        fields = ('id','name', 'description','should_anonimyzation')
 
 class OcurrencyEntitySerializer(serializers.ModelSerializer):
     class Meta:
         model = OcurrencyEntity
-        fields = ('id','startIndex', 'endIndex','entity')
+        fields = ('id','startIndex', 'endIndex','entity','should_anonymized')
         depth = 1
 
 class EntSerializer(serializers.Serializer):
-    start = serializers.IntegerField()
-    end = serializers.IntegerField()
+    id = serializers.ReadOnlyField()
+    start = serializers.SerializerMethodField('get_start_label')
+    end = serializers.SerializerMethodField('get_end_label')
     tag = serializers.SerializerMethodField('get_tag_label')
+    should_anonymized = serializers.BooleanField()
+
+    def get_start_label(self,obj):
+        return obj.startIndex
+
+    def get_end_label(self,obj):
+        return obj.endIndex
 
     def get_tag_label(self, obj):
-            return obj.label_
+            return obj.entity.name
 
 class LearningModelSerializer(serializers.ModelSerializer):
     class Meta:
