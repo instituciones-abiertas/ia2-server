@@ -1,3 +1,5 @@
+from oodocument.oodocument import oodocument
+import os
 from rest_framework import viewsets,status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -18,12 +20,26 @@ class ActViewSet(viewsets.ModelViewSet):
     serializer_class = ActSerializer
 
     def create(self, request):
-        newAct = Act.objects.create(text=request.data.get('text'))
-        ents = get_all_entity_ner(newAct.text)
+        file_catch = request.FILES
+        output_path='./uploads/tmp/output.txt'
+        #Creo el acta base
+        new_act = Act.objects.create(file=file_catch['file'])
+        # Transformo el docx,en txt
+        oo = oodocument(new_act.file.path, host='0.0.0.0', port=8001)
+        oo.convert_to(output_path, 'txt')
+        oo.dispose()
+        # Leo el archivo
+        read_file = open(output_path,"r")
+        read_result = read_file.read()
+        # Guardo el texto en la instancia
+        new_act.text=read_result
+        new_act.save()
+        # Analizo el texto
+        ents = get_all_entity_ner(read_result)
         ocurrency_list = []
         for ent in ents:
             entityOrigin = Entity.objects.get(name=ent.label_)
-            ocurrencyEnt = OcurrencyEntity.objects.create(act=newAct, startIndex=ent.start_char,
+            ocurrencyEnt = OcurrencyEntity.objects.create(act=new_act, startIndex=ent.start_char,
                                            endIndex=ent.end_char, entity=entityOrigin,
                                            should_anonymized=entityOrigin.should_anonimyzation)
             entSerializer = EntSerializer(ocurrencyEnt)
@@ -31,10 +47,11 @@ class ActViewSet(viewsets.ModelViewSet):
         print(ocurrency_list)
        # Una vez procesado,guardar la info
         dataReturn = {
-            "text": newAct.text,
+            "text": new_act.text,
             "ents": ocurrency_list,
-            "id": newAct.id
+            "id": new_act.id
         }
+        os.remove(output_path)
         return Response(dataReturn)
 
     def update(self, request, pk):
