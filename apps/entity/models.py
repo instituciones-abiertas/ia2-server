@@ -16,7 +16,8 @@ class Entity(models.Model):
 
 
 class Act(models.Model):
-    text = models.TextField()
+    text = models.TextField(default="En Proceso")
+    file = models.FileField()
     created_date = models.DateTimeField(
             default=timezone.now)
 
