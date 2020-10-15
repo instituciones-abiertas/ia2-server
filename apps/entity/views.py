@@ -1,5 +1,6 @@
 from oodocument.oodocument import oodocument
 import os
+from django.conf import settings
 from rest_framework import viewsets,status
 from rest_framework.response import Response
 from rest_framework.decorators import action
