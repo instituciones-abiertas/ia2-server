@@ -21,11 +21,11 @@ class ActViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         file_catch = request.FILES
-        output_path='./uploads/tmp/output.txt'
+        output_path = settings.MEDIA_ROOT + '/tmp/output.txt'
         #Creo el acta base
         new_act = Act.objects.create(file=file_catch['file'])
         # Transformo el docx,en txt
-        oo = oodocument(new_act.file.path, host='0.0.0.0', port=8001)
+        oo = oodocument(new_act.file.path, host=settings.HOST_URL, port=settings.LIBREOFFICE_PORT)
         oo.convert_to(output_path, 'txt')
         oo.dispose()
         # Leo el archivo
