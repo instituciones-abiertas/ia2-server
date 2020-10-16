@@ -26,7 +26,7 @@ class ActViewSet(viewsets.ModelViewSet):
         #Creo el acta base
         new_act = Act.objects.create(file=file_catch['file'])
         # Transformo el docx,en txt
-        oo = oodocument(new_act.file.path, host=settings.HOST_URL, port=settings.LIBREOFFICE_PORT)
+        oo = oodocument(new_act.file.path, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)
         oo.convert_to(output_path, 'txt')
         oo.dispose()
         # Leo el archivo
