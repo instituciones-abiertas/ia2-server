@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM cambalab/python3-uno
 
 RUN apt-get update && \
    apt-get install -y python-dev python-mysqldb gettext

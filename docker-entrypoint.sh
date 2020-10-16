@@ -12,5 +12,8 @@ python manage.py compilemessages --settings=applicationname.settings.production
 # echo "=> Adding sections..."
 # python manage.py loaddata apps/my_model/fixtures/3_some_property.json  --settings=applicationname.settings.production
 
+echo "=> Starting Libreoffice headless"
+/usr/bin/libreoffice --headless --nologo --nofirststartwizard --accept="socket,host=0.0.0.0,port=8001;urp" &
+
 echo "=> Starting webserver..."
-gunicorn --bind 0.0.0.0:8000 applicationname.wsgi:application
+gunicorn --bind 0.0.0.0:8000 liberajus-api-backend.wsgi:application
