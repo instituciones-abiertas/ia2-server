@@ -1,1 +1,1 @@
-web: gunicorn liberajus-api-backend.wsgi --log-file -
+web: gunicorn liberajus.wsgi --log-file -
