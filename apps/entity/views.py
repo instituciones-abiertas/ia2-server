@@ -5,11 +5,13 @@ from rest_framework import viewsets,status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.views import APIView
-
+from django.conf import settings
 from .serializers import EntitySerializer, ActSerializer, OcurrencyEntitySerializer, EntSerializer,LearningModelSerializer
 from .models import Entity, Act, OcurrencyEntity,LearningModel
 from .utils_spacy import get_all_entity_ner
+from .utils_oodocument import anonimyzed_text,generate_data_for_anonymization,convert_document_to_format,extract_text_from_file
 
+ANONYMIZED_MASK = "???"
 
 class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
@@ -26,17 +28,12 @@ class ActViewSet(viewsets.ModelViewSet):
         #Creo el acta base
         new_act = Act.objects.create(file=file_catch['file'])
         # Transformo el docx,en txt
-        oo = oodocument(new_act.file.path, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)
-        oo.convert_to(output_path, 'txt')
-        oo.dispose()
-        # Leo el archivo
-        read_file = open(output_path,"r")
-        read_result = read_file.read()
+        convert_document_to_format(new_act.file.path,output_path,'txt')
         # Guardo el texto en la instancia
-        new_act.text=read_result
+        new_act.text=extract_text_from_file(output_path)
         new_act.save()
         # Analizo el texto
-        ents = get_all_entity_ner(read_result)
+        ents = get_all_entity_ner(new_act.text)
         ocurrency_list = []
         for ent in ents:
             entityOrigin = Entity.objects.get(name=ent.label_)
@@ -45,7 +42,6 @@ class ActViewSet(viewsets.ModelViewSet):
                                            should_anonymized=entityOrigin.should_anonimyzation)
             entSerializer = EntSerializer(ocurrencyEnt)
             ocurrency_list.append(entSerializer.data)
-        print(ocurrency_list)
        # Una vez procesado,guardar la info
         dataReturn = {
             "text": new_act.text,
@@ -69,12 +65,40 @@ class ActViewSet(viewsets.ModelViewSet):
         return Response()
 
     @action(methods=['post'], detail=True)
-    def getAnonimusDocument(self,request,pk=None):
+    def addAnnotations(self,request,pk=None):
+        act_check = Act.objects.get(id=pk)
+        new_ents = request.data.get('ents')
+        all_query = list()
+        # Recorrido sobre las ents nuevas
+        for ent in new_ents:
+            ocurrency = OcurrencyEntity.objects.create(act=act_check, startIndex=ent['start'],
+                                           endIndex=ent['end'], entity=Entity.objects.get(name=ent['tag']),
+                                           should_anonymized=ent['should_anonymized'])
+            all_query.append(ocurrency)
+        ocurrency_query = OcurrencyEntity.objects.filter(act=act_check)
+        #Construcción de la data a anonimizar en el texto
+        all_query.extend(list(ocurrency_query))
+        #Anonimización
+        output_path= settings.MEDIA_ROOT +'tmp/anonymous.txt'
+        anonimyzed_text(act_check.file.path,output_path,
+                        generate_data_for_anonymization (all_query,act_check.text,
+                        ANONYMIZED_MASK ))
+        # Leo el archivo anonimizado
+        read_result = extract_text_from_file(output_path)
+        os.remove(output_path)
+        #Construyo el response
+        dataReturn = {
+            "anonymous_text": read_result,
+        }
+        return Response(dataReturn)
+
+    @action(methods=['post'], detail=True)
+    def getAnonymousDocument(self,request,pk=None):
         actCheck = Act.objects.get(id=pk)
         print(actCheck.id)
         dataResponse = {
-            "anonimus_document": "base64text",
-            "text_anonimus": "texto plano anonimizado",
+            "anonymous_document": "base64text",
+            "anonymous_text": "texto plano anonimizado",
             "data_visualization": "informacion a visualizar"
         }
         return Response(data=dataResponse)
