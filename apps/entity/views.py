@@ -89,6 +89,7 @@ class ActViewSet(viewsets.ModelViewSet):
         #Construyo el response
         dataReturn = {
             "anonymous_text": read_result,
+            "data_visualization": "PROXIMAMENTE DATA "
         }
         return Response(dataReturn)
 
