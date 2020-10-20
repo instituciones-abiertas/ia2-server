@@ -52,7 +52,7 @@ class ActViewSet(viewsets.ModelViewSet):
         return Response(dataReturn)
 
     def update(self, request, pk):
-        actCheck = Act.objects.get(id=request.data.get('id'))
+        actCheck = Act.objects.get(id=pk)
         ocurrency_query = OcurrencyEntity.objects.filter(act=actCheck)
         if ocurrency_query.exists():
             ocurrency_query.delete()
