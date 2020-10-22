@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-
+import os
 
 class Entity(models.Model):
     name = models.CharField(max_length=60)
@@ -17,7 +17,7 @@ class Entity(models.Model):
 
 class Act(models.Model):
     text = models.TextField(default="En Proceso")
-    file = models.FileField()
+    file = models.FileField(max_length=200)
     created_date = models.DateTimeField(
             default=timezone.now)
 
@@ -26,6 +26,9 @@ class Act(models.Model):
 
     def __unicode__(self):
         return 
+
+    def filename(self):
+        return os.path.basename(self.file.name)
 
 class OcurrencyEntity(models.Model):
     act = models.ForeignKey(Act, on_delete=models.CASCADE,related_name='listOfEntity')
