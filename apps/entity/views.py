@@ -1,15 +1,18 @@
-from oodocument.oodocument import oodocument
 import os
 from django.conf import settings
+
 from rest_framework import viewsets,status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.views import APIView
-from django.conf import settings
+
 from .serializers import EntitySerializer, ActSerializer, OcurrencyEntitySerializer, EntSerializer,LearningModelSerializer
 from .models import Entity, Act, OcurrencyEntity,LearningModel
+
+from oodocument.oodocument import oodocument
 from .utils_spacy import get_all_entity_ner
 from .utils_oodocument import anonimyzed_text,generate_data_for_anonymization,convert_document_to_format,extract_text_from_file
+from .utils_publicador import publish_document
 
 ANONYMIZED_MASK = "???"
 
@@ -114,6 +117,17 @@ class ActViewSet(viewsets.ModelViewSet):
             "data_visualization": "informacion a visualizar"
         }
         return Response(data=dataResponse)
+
+    @action(methods=['post'], detail=True)
+    def publishDocument(self,request,pk=None):
+        act_check = Act.objects.get(id=pk)
+        publish_document(act_check.file.path,settings.LIBERAJUS_CLOUDFOLDER_STORE,settings.LIBERAJUS_CLOUD_STORAGE_PROVIDER)
+        dataResponse = {
+            "status": "Ok",
+            "text":"Se publico en  {}".format(settings.LIBERAJUS_CLOUD_STORAGE_PROVIDER)
+        }
+        return Response(data=dataResponse)
+
 
 class OcurrencyEntityViewSet(viewsets.ModelViewSet):
     queryset = OcurrencyEntity.objects.all()
