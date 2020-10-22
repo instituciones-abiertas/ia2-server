@@ -78,14 +78,25 @@ class ActViewSet(viewsets.ModelViewSet):
         ocurrency_query = OcurrencyEntity.objects.filter(act=act_check)
         #Construcción de la data a anonimizar en el texto
         all_query.extend(list(ocurrency_query))
-        #Anonimización
+        #Definicion de rutas
         output_path= settings.MEDIA_ROOT +'tmp/anonymous.txt'
+        output_docx = settings.MEDIA_ROOT +'anonymous_files/'+ act_check.filename()
+        # Generar el archivo para poder retonar al anonimizador
         anonimyzed_text(act_check.file.path,output_path,
                         generate_data_for_anonymization (all_query,act_check.text,
-                        ANONYMIZED_MASK ))
+                        ANONYMIZED_MASK ),'txt')
+        # Genera el archivo anonimizado para guardar en la base
+        anonimyzed_text(act_check.file.path,output_docx,
+                        generate_data_for_anonymization (all_query,act_check.text,
+                        ANONYMIZED_MASK ),'docx')
         # Leo el archivo anonimizado
         read_result = extract_text_from_file(output_path)
+        # Borrado de archivo auxiliares
         os.remove(output_path)
+        os.remove(act_check.file.path)
+        # Guardado del archivo anonimizado
+        act_check.file = output_docx
+        act_check.save()
         #Construyo el response
         dataReturn = {
             "anonymous_text": read_result,
