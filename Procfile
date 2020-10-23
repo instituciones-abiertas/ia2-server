@@ -1,1 +1,1 @@
-web: gunicorn liberajus.wsgi --log-file -
+web: ./docker-entrypoint.sh
