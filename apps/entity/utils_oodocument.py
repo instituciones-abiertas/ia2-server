@@ -1,7 +1,6 @@
 from django.conf import settings
 from oodocument.oodocument import oodocument
 
-ANONYMYZED_MASK = "???"
 
 def anonimyzed_text(path_document,path_output,data_to_replace,format_output):
     oo = oodocument(path_document, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)

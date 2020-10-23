@@ -1,5 +1,6 @@
 import os
 from django.conf import settings
+from django.http import FileResponse
 
 from rest_framework import viewsets,status
 from rest_framework.response import Response
@@ -27,7 +28,7 @@ class ActViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         file_catch = request.FILES
-        output_path = settings.MEDIA_ROOT + '/tmp/output.txt'
+        output_path = settings.MEDIA_ROOT + 'tmp/output.txt'
         #Creo el acta base
         new_act = Act.objects.create(file=file_catch['file'])
         # Transformo el docx,en txt
@@ -109,14 +110,9 @@ class ActViewSet(viewsets.ModelViewSet):
 
     @action(methods=['post'], detail=True)
     def getAnonymousDocument(self,request,pk=None):
-        actCheck = Act.objects.get(id=pk)
-        print(actCheck.id)
-        dataResponse = {
-            "anonymous_document": "base64text",
-            "anonymous_text": "texto plano anonimizado",
-            "data_visualization": "informacion a visualizar"
-        }
-        return Response(data=dataResponse)
+        act_check = Act.objects.get(id=pk)
+        dataResponse = open(act_check.file.path,'rb')
+        return FileResponse(dataResponse,as_attachment=True)
 
     @action(methods=['post'], detail=True)
     def publishDocument(self,request,pk=None):
