@@ -83,20 +83,18 @@ class ActViewSet(viewsets.ModelViewSet):
         #Construcción de la data a anonimizar en el texto
         all_query.extend(list(ocurrency_query))
         #Definicion de rutas
-        output_path= settings.MEDIA_ROOT +'tmp/anonymous.txt'
+        output_text= settings.MEDIA_ROOT +'tmp/anonymous.txt'
         output_docx = settings.MEDIA_ROOT +'anonymous_files/'+ act_check.filename()
-        # Generar el archivo para poder retonar al anonimizador
-        anonimyzed_text(act_check.file.path,output_path,
-                        generate_data_for_anonymization (all_query,act_check.text,
-                        ANONYMIZED_MASK ),'txt')
-        # Genera el archivo anonimizado para guardar en la base
+        # Generar el archivo en formato .docx anonimizado
         anonimyzed_text(act_check.file.path,output_docx,
                         generate_data_for_anonymization (all_query,act_check.text,
                         ANONYMIZED_MASK ),'docx')
+        # Generar el archivo para poder extraer el texto
+        convert_document_to_format(output_docx,output_text,'txt')
         # Leo el archivo anonimizado
-        read_result = extract_text_from_file(output_path)
+        read_result = extract_text_from_file(output_text)
         # Borrado de archivo auxiliares
-        os.remove(output_path)
+        os.remove(output_text)
         os.remove(act_check.file.path)
         # Guardado del archivo anonimizado
         act_check.file = output_docx
