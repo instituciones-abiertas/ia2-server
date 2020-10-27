@@ -1,4 +1,4 @@
-import os
+import os,uuid
 from django.conf import settings
 from django.http import FileResponse
 
@@ -28,7 +28,7 @@ class ActViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         file_catch = request.FILES
-        output_path = settings.MEDIA_ROOT + 'tmp/output.txt'
+        output_path = settings.MEDIA_ROOT + 'tmp/output.txt' + str(uuid.uuid4())
         #Creo el acta base
         new_act = Act.objects.create(file=file_catch['file'])
         # Transformo el docx,en txt
@@ -83,8 +83,8 @@ class ActViewSet(viewsets.ModelViewSet):
         #Construcción de la data a anonimizar en el texto
         all_query.extend(list(ocurrency_query))
         #Definicion de rutas
-        output_text= settings.MEDIA_ROOT +'tmp/anonymous.txt'
-        output_docx = settings.MEDIA_ROOT +'anonymous_files/'+ act_check.filename()
+        output_text= settings.MEDIA_ROOT +'tmp/anonymous.txt'+ str(uuid.uuid4())
+        output_docx = settings.MEDIA_ROOT +'{}/{}/{}'.format('anonymous_files/', str(act_check.id), act_check.filename())
         # Generar el archivo en formato .docx anonimizado
         anonimyzed_text(act_check.file.path,output_docx,
                         generate_data_for_anonymization (all_query,act_check.text,
