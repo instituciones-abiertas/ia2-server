@@ -38,18 +38,11 @@ class ActViewSet(viewsets.ModelViewSet):
         new_act.save()
         # Analizo el texto
         ents = get_all_entity_ner(new_act.text)
-        ocurrency_list = []
-        for ent in ents:
-            entityOrigin = Entity.objects.get(name=ent.label_)
-            ocurrencyEnt = OcurrencyEntity.objects.create(act=new_act, startIndex=ent.start_char,
-                                           endIndex=ent.end_char, entity=entityOrigin,
-                                           should_anonymized=entityOrigin.should_anonimyzation)
-            entSerializer = EntSerializer(ocurrencyEnt)
-            ocurrency_list.append(entSerializer.data)
+        ocurrency_list = EntSerializer(ents,many=True)
        # Una vez procesado,guardar la info
         dataReturn = {
             "text": new_act.text,
-            "ents": ocurrency_list,
+            "ents": ocurrency_list.data,
             "id": new_act.id
         }
         os.remove(output_path)
@@ -72,16 +65,16 @@ class ActViewSet(viewsets.ModelViewSet):
     def addAnnotations(self,request,pk=None):
         act_check = Act.objects.get(id=pk)
         new_ents = request.data.get('ents')
+        ocurrency_query = OcurrencyEntity.objects.filter(act=act_check)
         all_query = list()
+        if ocurrency_query.exists():
+            ocurrency_query.delete()
         # Recorrido sobre las ents nuevas
         for ent in new_ents:
             ocurrency = OcurrencyEntity.objects.create(act=act_check, startIndex=ent['start'],
                                            endIndex=ent['end'], entity=Entity.objects.get(name=ent['tag']),
                                            should_anonymized=ent['should_anonymized'])
             all_query.append(ocurrency)
-        ocurrency_query = OcurrencyEntity.objects.filter(act=act_check)
-        #Construcción de la data a anonimizar en el texto
-        all_query.extend(list(ocurrency_query))
         #Definicion de rutas
         output_text= settings.MEDIA_ROOT +'tmp/anonymous.txt'+ str(uuid.uuid4())
         output_docx = settings.MEDIA_ROOT +'{}/{}/{}'.format('anonymous_files/', str(act_check.id), act_check.filename())
