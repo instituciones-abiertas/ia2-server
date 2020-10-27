@@ -19,20 +19,19 @@ class OcurrencyEntitySerializer(serializers.ModelSerializer):
         depth = 1
 
 class EntSerializer(serializers.Serializer):
-    id = serializers.ReadOnlyField()
     start = serializers.SerializerMethodField('get_start_label')
     end = serializers.SerializerMethodField('get_end_label')
     tag = serializers.SerializerMethodField('get_tag_label')
-    should_anonymized = serializers.BooleanField()
+    should_anonymized = serializers.BooleanField(default=True)
 
     def get_start_label(self,obj):
-        return obj.startIndex
+        return obj.start_char
 
     def get_end_label(self,obj):
-        return obj.endIndex
+        return obj.end_char
 
     def get_tag_label(self, obj):
-            return obj.entity.name
+            return obj.label_
 
 class LearningModelSerializer(serializers.ModelSerializer):
     class Meta:
