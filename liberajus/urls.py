@@ -41,7 +41,12 @@ ROUTER.register(r'subject', LearningModelViewSet)
 # ROUTER.register('myModel2', myModel2.MyModel2ViewSet)
 # ROUTER.register('myModel3', myModel3.MyModel3ViewSet)
 
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
+
 urlpatterns = i18n_patterns(
+    path('sentry-debug/', trigger_error),
     url(r'^$', RedirectView.as_view(url='/admin/')),
     path('admin/', admin.site.urls)
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
