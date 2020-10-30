@@ -71,10 +71,12 @@ class ActViewSet(viewsets.ModelViewSet):
             ocurrency_query.delete()
         # Recorrido sobre las ents nuevas
         for ent in new_ents:
-            ocurrency = OcurrencyEntity.objects.create(act=act_check, startIndex=ent['start'],
-                                           endIndex=ent['end'], entity=Entity.objects.get(name=ent['tag']),
-                                           should_anonymized=ent['should_anonymized'])
-            all_query.append(ocurrency)
+            #Chequeo por un flujo que me puede llegar entitades del front sin datos
+            if (ent['start'] is not None and ent['end'] is not None):
+                ocurrency = OcurrencyEntity.objects.create(act=act_check, startIndex=ent['start'],
+                                                           endIndex=ent['end'], entity=Entity.objects.get(name=ent['tag']),
+                                                           should_anonymized=ent['should_anonymized'])
+                all_query.append(ocurrency)
         #Definicion de rutas
         output_text= settings.MEDIA_ROOT +'tmp/anonymous.txt'+ str(uuid.uuid4())
         output_docx = settings.MEDIA_ROOT +'{}/{}/{}'.format('anonymous_files/', str(act_check.id), act_check.filename())
