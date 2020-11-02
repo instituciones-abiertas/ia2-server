@@ -22,7 +22,7 @@ class Act(models.Model):
             default=timezone.now)
 
     def __str__(self):
-        return  self.text
+        return  str(self.id)
 
     def __unicode__(self):
         return 

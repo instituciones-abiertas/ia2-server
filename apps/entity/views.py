@@ -97,7 +97,7 @@ class ActViewSet(viewsets.ModelViewSet):
         #Construyo el response
         dataReturn = {
             "anonymous_text": read_result,
-            "data_visualization": "PROXIMAMENTE DATA "
+            "data_visualization": { "anonymous_ents": all_query.__len__() }
         }
         return Response(dataReturn)
 
