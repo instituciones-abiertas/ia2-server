@@ -21,7 +21,9 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
 from django.conf.urls.i18n import i18n_patterns
+
 from rest_framework import routers
+import private_storage.urls
 
 from apps.entity.views import EntityViewSet
 from apps.entity.views import ActViewSet
@@ -45,6 +47,11 @@ urlpatterns = i18n_patterns(
     url(r'^$', RedirectView.as_view(url='/admin/')),
     path('admin/', admin.site.urls)
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+#Private Storage
+urlpatterns += [
+    url(r'^private/', include(private_storage.urls)),
+]
 
 # Router patterns
 urlpatterns = urlpatterns + [

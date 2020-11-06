@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from private_storage.fields import PrivateFileField
 import os
 
 class Entity(models.Model):
@@ -17,7 +18,7 @@ class Entity(models.Model):
 
 class Act(models.Model):
     text = models.TextField(default="En Proceso")
-    file = models.FileField(max_length=200)
+    file = PrivateFileField(max_length=200)
     created_date = models.DateTimeField(
             default=timezone.now)
 

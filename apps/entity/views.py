@@ -28,7 +28,7 @@ class ActViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         file_catch = request.FILES
-        output_path = settings.MEDIA_ROOT + 'tmp/output.txt' + str(uuid.uuid4())
+        output_path = settings.MEDIA_ROOT_TEMP_FILES + 'output.txt' + str(uuid.uuid4()) 
         #Creo el acta base
         new_act = Act.objects.create(file=file_catch['file'])
         # Transformo el docx,en txt
@@ -78,21 +78,21 @@ class ActViewSet(viewsets.ModelViewSet):
                                                            should_anonymized=ent['should_anonymized'])
                 all_query.append(ocurrency)
         #Definicion de rutas
-        output_text= settings.MEDIA_ROOT +'tmp/anonymous.txt'+ str(uuid.uuid4())
-        output_docx = settings.MEDIA_ROOT +'{}/{}/{}'.format('anonymous_files/', str(act_check.id), act_check.filename())
+        output_text= settings.MEDIA_ROOT_TEMP_FILES + 'anonymous.txt'+ str(uuid.uuid4())
+        output_docx = act_check.filename()
         # Generar el archivo en formato .docx anonimizado
-        anonimyzed_text(act_check.file.path,output_docx,
+        anonimyzed_text(act_check.file.path,settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_docx,
                         generate_data_for_anonymization (all_query,act_check.text,
                         ANONYMIZED_MASK ),'docx')
         # Generar el archivo para poder extraer el texto
-        convert_document_to_format(output_docx,output_text,'txt')
+        convert_document_to_format(settings.PRIVATE_STORAGE_ROOT + output_docx,output_text,'txt')
         # Leo el archivo anonimizado
         read_result = extract_text_from_file(output_text)
         # Borrado de archivo auxiliares
         os.remove(output_text)
         os.remove(act_check.file.path)
         # Guardado del archivo anonimizado
-        act_check.file = output_docx
+        act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_docx
         act_check.save()
         #Construyo el response
         dataReturn = {
@@ -104,7 +104,7 @@ class ActViewSet(viewsets.ModelViewSet):
     @action(methods=['post'], detail=True)
     def getAnonymousDocument(self,request,pk=None):
         act_check = Act.objects.get(id=pk)
-        dataResponse = open(act_check.file.path,'rb')
+        dataResponse = open(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + act_check.filename(),'rb')
         return FileResponse(dataResponse,as_attachment=True)
 
     @action(methods=['post'], detail=True)
