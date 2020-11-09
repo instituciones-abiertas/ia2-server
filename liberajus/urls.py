@@ -23,6 +23,9 @@ from django.views.generic import RedirectView
 from django.conf.urls.i18n import i18n_patterns
 
 from rest_framework import routers
+from rest_framework_jwt.views import (
+    obtain_jwt_token, refresh_jwt_token, verify_jwt_token
+)
 import private_storage.urls
 
 from apps.entity.views import EntityViewSet
@@ -57,6 +60,18 @@ urlpatterns += [
 urlpatterns = urlpatterns + [
         url(r'^api/', include(ROUTER.urls)),
  ]
+
+# Auth patterns
+urlpatterns = urlpatterns + [
+    url(
+        r'^api-auth/',
+        include('rest_framework.urls', namespace='rest_framework')
+    ),
+    url(r'api-token-auth/', obtain_jwt_token),
+    url(r'^api-token-refresh/', refresh_jwt_token),
+    url(r'^api-token-verify/', verify_jwt_token),
+    path('accounts/', include('django.contrib.auth.urls')),
+]
 
 if settings.DEBUG:
     from django.views.defaults import page_not_found
