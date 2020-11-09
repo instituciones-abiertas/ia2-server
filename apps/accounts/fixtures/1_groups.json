@@ -2,7 +2,7 @@
   {
     "model": "auth.group",
     "fields": {
-      "name": "ApplicationUsers",
+      "name": "BasicUsers",
       "permissions": []
     }
   }
