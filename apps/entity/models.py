@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from private_storage.fields import PrivateFileField
 import os
+from .validator import get_file_extension
 
 class Entity(models.Model):
     name = models.CharField(max_length=60)
@@ -18,9 +19,8 @@ class Entity(models.Model):
 
 class Act(models.Model):
     text = models.TextField(default="En Proceso")
-    file = PrivateFileField(max_length=200)
-    created_date = models.DateTimeField(
-            default=timezone.now)
+    file = PrivateFileField(max_length=200,validators=[get_file_extension])
+    created_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return  str(self.id)

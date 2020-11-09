@@ -6,6 +6,7 @@ from rest_framework import viewsets,status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.views import APIView
+from rest_framework.exceptions import UnsupportedMediaType
 
 from .serializers import EntitySerializer, ActSerializer, OcurrencyEntitySerializer, EntSerializer,LearningModelSerializer
 from .models import Entity, Act, OcurrencyEntity,LearningModel
@@ -30,7 +31,14 @@ class ActViewSet(viewsets.ModelViewSet):
         file_catch = request.FILES
         output_path = settings.MEDIA_ROOT_TEMP_FILES + 'output.txt' + str(uuid.uuid4()) 
         #Creo el acta base
-        new_act = Act.objects.create(file=file_catch['file'])
+        new_file = file_catch['file']
+        new_act = Act(file=new_file)
+        try:
+            new_act.full_clean()
+        except:
+            raise UnsupportedMediaType(media_type=new_file.content_type,detail=settings.ERROR_TEXT_FILE_TYPE)
+        else:
+            new_act.save()
         # Transformo el docx,en txt
         convert_document_to_format(new_act.file.path,output_path,'txt')
         # Guardo el texto en la instancia
