@@ -14,7 +14,7 @@ class Entity(models.Model):
         return self.name
 
     def __unicode__(self):
-        return 
+        return
 
 
 class Act(models.Model):
@@ -26,7 +26,7 @@ class Act(models.Model):
         return  str(self.id)
 
     def __unicode__(self):
-        return 
+        return
 
     def filename(self):
         return os.path.basename(self.file.name)
@@ -37,7 +37,7 @@ class OcurrencyEntity(models.Model):
     endIndex = models.PositiveIntegerField()
     entity = models.ForeignKey(to=Entity, on_delete=models.CASCADE)
     should_anonymized = models.BooleanField(default=True)
-    
+
     def __str__(self):
         return self.entity.name
 
