@@ -1,4 +1,4 @@
-import spacy 
+import spacy
 import os,plac,random,warnings,time
 from pathlib import Path
 from spacy.util import minibatch, compounding
@@ -8,23 +8,21 @@ model_path = "./custom_models/modelo_poc"
 
 class Spacy:
     nlp = spacy.load(model_path,disable=['tagger', 'parser'])
-    
+
     @classmethod
     def generate_doc(self,text):
         return self.nlp(text)
-
-
 
 def get_all_entity_ner(text):
     doc = Spacy.generate_doc(text)
     return doc.ents
 
 def train_data(training_data,n_iter):
-        
+
     nlp = spacy.load(model_path)
     # load existing spaCy model
     print("Loaded model '%s'" % model)
-    
+
 
     # add labels in ner
     ner = nlp.get_pipe("ner")
