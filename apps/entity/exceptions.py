@@ -6,7 +6,6 @@ class ServiceOddDocumentUnavailable(APIException):
     default_detail = settings.ERROR_OODOCUMENT_NOT_WORKING
     default_code = 'service_odddocument_unavailable'
 
-
 class nameTooLong(APIException):
     status_code = 400
     default_detail = settings.ERROR_NAME_TOO_LONG

@@ -31,7 +31,7 @@ class ActViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         file_catch = request.FILES
-        output_path = settings.MEDIA_ROOT_TEMP_FILES + 'output.txt' + str(uuid.uuid4()) 
+        output_path = settings.MEDIA_ROOT_TEMP_FILES + 'output.txt' + str(uuid.uuid4())
         #Creo el acta base
         new_file = file_catch['file']
         new_act = Act(file=new_file)

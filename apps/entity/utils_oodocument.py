@@ -15,7 +15,7 @@ def anonimyzed_text(path_document,path_output,data_to_replace,format_output):
 def generate_data_for_anonymization(ocurrency_for_anonimyzation,text,mask_text):
     data = {}
     for ent in ocurrency_for_anonimyzation:
-            if(ent.should_anonymized):         
+            if(ent.should_anonymized):
                data[text[ent.startIndex:ent.endIndex]] = mask_text
     return data
 

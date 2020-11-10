@@ -20,9 +20,9 @@ def get_file_extension(fileField):
         filetype = magic.from_file(unique_filename, mime='True')
         f.close()
         os.remove(unique_filename)
-        if   filetype in ALLOW_MYMETYPES : 
-           return fileField 
-        else: 
+        if   filetype in ALLOW_MYMETYPES :
+           return fileField
+        else:
             raise ValidationError(settings.ERROR_TEXT_FILE_TYPE)
 
 def name_length(fileField):
