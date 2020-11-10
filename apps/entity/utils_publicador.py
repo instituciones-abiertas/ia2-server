@@ -1,6 +1,7 @@
 from publicador import Publicador,GoogleDrive,DropboxApi
 import os
 from django.conf import settings
+from .exceptions import DropboxExpireCredentials
 
 path_credentials_drive = './credentials.json'
 dropbox_token = settings.LIBERAJUS_DROPBOX_TOKEN_APP
@@ -13,8 +14,10 @@ def publish_in_drive(file_path,path_in_drive):
 def publish_in_dropbox(file_path,dropbox_path):
     # Revisar donde se debe agregar esa barra para que queda mas prolija
     context = Publicador(file_path, DropboxApi(dropbox_token,"/" + dropbox_path))
-    context.publicar()
-
+    try:
+        context.publicar()
+    except :
+        raise DropboxExpireCredentials()
 
 def publish_in_both(file_path,folder_path):
 
