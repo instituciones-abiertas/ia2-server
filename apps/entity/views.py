@@ -1,6 +1,7 @@
 import os,uuid
 from django.conf import settings
 from django.http import FileResponse
+from django.core.exceptions import ValidationError
 
 from rest_framework import viewsets,status
 from rest_framework.response import Response
@@ -10,6 +11,7 @@ from rest_framework.exceptions import UnsupportedMediaType
 
 from .serializers import EntitySerializer, ActSerializer, OcurrencyEntitySerializer, EntSerializer,LearningModelSerializer
 from .models import Entity, Act, OcurrencyEntity,LearningModel
+from .exceptions import nameTooLong
 
 from oodocument.oodocument import oodocument
 from .utils_spacy import get_all_entity_ner
@@ -35,8 +37,10 @@ class ActViewSet(viewsets.ModelViewSet):
         new_act = Act(file=new_file)
         try:
             new_act.full_clean()
-        except:
+        except (ValidationError):
             raise UnsupportedMediaType(media_type=new_file.content_type,detail=settings.ERROR_TEXT_FILE_TYPE)
+        except (nameTooLong):
+            raise nameTooLong()
         else:
             new_act.save()
         # Transformo el docx,en txt
