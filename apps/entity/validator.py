@@ -1,6 +1,7 @@
 import mimetypes,uuid,os
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from .exceptions import nameTooLong
 import magic
 
 ALLOW_MYMETYPES = {
@@ -22,4 +23,10 @@ def get_file_extension(fileField):
         if   filetype in ALLOW_MYMETYPES : 
            return fileField 
         else: 
-            raise ValidationError(settings.ERROR_TEXT_FILE_TYPE)     
+            raise ValidationError(settings.ERROR_TEXT_FILE_TYPE)
+
+def name_length(fileField):
+    if   len(fileField.name) < 150 :
+           return fileField
+    else:
+            raise nameTooLong()
