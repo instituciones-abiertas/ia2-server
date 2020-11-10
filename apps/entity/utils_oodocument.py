@@ -6,10 +6,10 @@ from .exceptions import ServiceOddDocumentUnavailable
 def anonimyzed_text(path_document,path_output,data_to_replace,format_output):
     try:
         oo = oodocument(path_document, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)
+        oo.replace_with(data_to_replace,path_output, format_output)
     except:
         raise ServiceOddDocumentUnavailable()
     else:
-        oo.replace_with(data_to_replace,path_output, format_output)
         oo.dispose()
 
 def generate_data_for_anonymization(ocurrency_for_anonimyzation,text,mask_text):
