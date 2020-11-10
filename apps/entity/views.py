@@ -17,6 +17,7 @@ from oodocument.oodocument import oodocument
 from .utils_spacy import get_all_entity_ner
 from .utils_oodocument import anonimyzed_text,generate_data_for_anonymization,convert_document_to_format,extract_text_from_file
 from .utils_publicador import publish_document
+from .exceptions import ActFileNotFound
 
 ANONYMIZED_MASK = "???"
 
@@ -30,10 +31,12 @@ class ActViewSet(viewsets.ModelViewSet):
     serializer_class = ActSerializer
 
     def create(self, request):
-        file_catch = request.FILES
+        new_file = request.FILES.get('file', False)
+        if new_file == False:
+            raise ActFileNotFound()
+
         output_path = settings.MEDIA_ROOT_TEMP_FILES + 'output.txt' + str(uuid.uuid4())
         #Creo el acta base
-        new_file = file_catch['file']
         new_act = Act(file=new_file)
         try:
             new_act.full_clean()
