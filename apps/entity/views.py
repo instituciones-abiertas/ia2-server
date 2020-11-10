@@ -93,7 +93,7 @@ class ActViewSet(viewsets.ModelViewSet):
                         generate_data_for_anonymization (all_query,act_check.text,
                         ANONYMIZED_MASK ),'docx')
         # Generar el archivo para poder extraer el texto
-        convert_document_to_format(settings.PRIVATE_STORAGE_ROOT + output_docx,output_text,'txt')
+        convert_document_to_format(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_docx,output_text,'txt')
         # Leo el archivo anonimizado
         read_result = extract_text_from_file(output_text)
         # Borrado de archivo auxiliares
