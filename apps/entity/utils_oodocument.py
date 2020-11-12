@@ -2,6 +2,7 @@ from django.conf import settings
 from oodocument.oodocument import oodocument
 from django.core.exceptions import ImproperlyConfigured
 from .exceptions import ServiceOddDocumentUnavailable
+from string import Template
 
 def anonimyzed_text(path_document,path_output,data_to_replace,format_output):
     try:
@@ -12,11 +13,12 @@ def anonimyzed_text(path_document,path_output,data_to_replace,format_output):
     else:
         oo.dispose()
 
-def generate_data_for_anonymization(ocurrency_for_anonimyzation,text,mask_text):
+def generate_data_for_anonymization(ocurrency_for_anonimyzation, text, replace_tpl):
     data = {}
+    s = Template(replace_tpl)
     for ent in ocurrency_for_anonimyzation:
             if(ent.should_anonymized):
-               data[text[ent.startIndex:ent.endIndex]] = mask_text
+               data[text[ent.startIndex:ent.endIndex]] = s.substitute(name=ent.entity.name)
     return data
 
 def convert_document_to_format(path_document,output_path,output_format):
@@ -27,7 +29,6 @@ def convert_document_to_format(path_document,output_path,output_format):
     else:
         oo.convert_to(output_path, output_format)
         oo.dispose()
-
 
 def extract_text_from_file(file_path):
     read_file = open(file_path,"r")

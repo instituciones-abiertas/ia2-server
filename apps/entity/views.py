@@ -30,7 +30,8 @@ from .utils_publicador import publish_document
 from .utils import check_exist_act, open_file
 from .exceptions import ActFileNotFound
 
-ANONYMIZED_MASK = "???"
+# Para usar Python Template de string
+ANON_REPLACE_TPL = "<$name>"
 
 
 class EntityViewSet(viewsets.ModelViewSet):
@@ -118,7 +119,7 @@ class ActViewSet(viewsets.ModelViewSet):
         anonimyzed_text(
             act_check.file.path,
             settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_docx,
-            generate_data_for_anonymization(all_query, act_check.text, ANONYMIZED_MASK),
+            generate_data_for_anonymization(all_query, act_check.text, ANON_REPLACE_TPL),
             "docx",
         )
         # Generar el archivo para poder extraer el texto
