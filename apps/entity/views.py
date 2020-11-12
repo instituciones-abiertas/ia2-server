@@ -158,6 +158,20 @@ class ActViewSet(viewsets.ModelViewSet):
         }
         return Response(data=dataResponse)
 
+    @action(methods=["post"], detail=True)
+    def publishDocumentInDrive(self, request, pk=None):
+        act_check = check_exist_act(pk)
+        publish_document(
+            act_check.file.path,
+            settings.LIBERAJUS_CLOUDFOLDER_STORE,
+            "drive",
+        )
+        dataResponse = {
+            "status": "Ok",
+            "text": "Se publico en  {}".format("drive"),
+        }
+        return Response(data=dataResponse)
+
 
 class OcurrencyEntityViewSet(viewsets.ModelViewSet):
     queryset = OcurrencyEntity.objects.all()
