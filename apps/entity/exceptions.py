@@ -20,6 +20,18 @@ class ActFileNotFound(APIException):
     default_code = "act_file_not_found"
 
 
+class ActNotExist(APIException):
+    status_code = 404
+    default_detail = settings.ERROR_ACT_NOT_EXIST
+    default_code = "act_not_exist"
+
+
+class StorageFileNotExist(APIException):
+    status_code = 404
+    default_detail = settings.ERROR_STORAGE_FILE_NOT_EXIST
+    default_code = "storage_file_not_exist"
+
+
 class DropboxExpireCredentials(APIException):
     status_code = 401
     default_detail = settings.ERROR_DROPBOX_CREDENTIALS
