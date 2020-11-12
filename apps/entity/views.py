@@ -116,11 +116,11 @@ class ActViewSet(viewsets.ModelViewSet):
         }
         return Response(dataReturn)
 
-    @action(methods=['post'], detail=True)
+    @action(methods=['get'], detail=True)
     def getAnonymousDocument(self,request,pk=None):
         act_check = Act.objects.get(id=pk)
         dataResponse = open(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + act_check.filename(),'rb')
-        return FileResponse(dataResponse,as_attachment=True)
+        return FileResponse(dataResponse, as_attachment=True)
 
     @action(methods=['post'], detail=True)
     def publishDocument(self,request,pk=None):
