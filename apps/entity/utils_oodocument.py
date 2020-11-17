@@ -1,13 +1,16 @@
 from django.conf import settings
-from oodocument.oodocument import oodocument
+from oodocument import oodocument
 from django.core.exceptions import ImproperlyConfigured
 from .exceptions import ServiceOddDocumentUnavailable
 from string import Template
 
-def anonimyzed_text(path_document,path_output,data_to_replace,format_output):
+def anonimyzed_text(path_document, path_output, data_to_replace, format_output, color=None):
     try:
         oo = oodocument(path_document, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)
-        oo.replace_with(data_to_replace,path_output, format_output)
+        if color and isinstance(color, list) and len(color) == 3:
+            r, g, b = color
+            oo.set_font_back_color(r, g, b)
+        oo.replace_with(data_to_replace, path_output, format_output)
     except:
         raise ServiceOddDocumentUnavailable()
     else:
