@@ -19,7 +19,7 @@ from .serializers import (
 from .models import Entity, Act, OcurrencyEntity, LearningModel
 from .exceptions import nameTooLong
 
-from .utils_spacy import get_all_entity_ner
+from .utils_spacy import get_all_entity_ner, get_risk
 from .utils_oodocument import (
     anonimyzed_text,
     generate_data_for_anonymization,
@@ -138,7 +138,12 @@ class ActViewSet(viewsets.ModelViewSet):
         # Construyo el response
         dataReturn = {
             "anonymous_text": read_result,
-            "data_visualization": {"anonymous_ents": calculate_ents_anonimyzed(all_query)},
+            "data_visualization": {
+                "entitiesResult": calculate_ents_anonimyzed(all_query),
+                "total": {"name": "Cantidad de Entidades totales", "value": len(all_query)},
+                "risk": get_risk(len(all_query)),
+                "efectivity_average": 85,
+            },
         }
         return Response(dataReturn)
 

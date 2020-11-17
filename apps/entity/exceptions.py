@@ -33,12 +33,12 @@ class StorageFileNotExist(APIException):
 
 
 class DropboxExpireCredentials(APIException):
-    status_code = 401
+    status_code = 403
     default_detail = settings.ERROR_DROPBOX_CREDENTIALS
     default_code = "dropbox_credentials"
 
 
 class DriveExpireCredentials(APIException):
-    status_code = 401
+    status_code = 403
     default_detail = settings.ERROR_DRIVE_CREDENTIALS
     default_code = "drive_credentials"
