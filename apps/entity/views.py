@@ -27,7 +27,7 @@ from .utils_oodocument import (
     extract_text_from_file,
 )
 from .utils_publicador import publish_document
-from .utils import check_exist_act, open_file
+from .utils import check_exist_act, open_file, calculate_ents_anonimyzed
 from .exceptions import ActFileNotFound
 
 # Para usar Python Template de string
@@ -135,7 +135,7 @@ class ActViewSet(viewsets.ModelViewSet):
         # Construyo el response
         dataReturn = {
             "anonymous_text": read_result,
-            "data_visualization": {"anonymous_ents": all_query.__len__()},
+            "data_visualization": {"anonymous_ents": calculate_ents_anonimyzed(all_query)},
         }
         return Response(dataReturn)
 
