@@ -32,7 +32,8 @@ from .exceptions import ActFileNotFound
 
 # Para usar Python Template de string
 ANON_REPLACE_TPL = "<$name>"
-
+# Color de fondo para texto anonimizado
+ANON_FONT_BACK_COLOR = [255, 255, 0]
 
 class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
@@ -114,23 +115,25 @@ class ActViewSet(viewsets.ModelViewSet):
                 all_query.append(ocurrency)
         # Definicion de rutas
         output_text = settings.MEDIA_ROOT_TEMP_FILES + "anonymous.txt" + str(uuid.uuid4())
-        output_docx = act_check.filename()
-        # Generar el archivo en formato .docx anonimizado
+        output_format = act_check.filename()
+        extension = os.path.splitext(output_format)[1][1:]
+        # Generar el archivo en formato de entrada anonimizado
         anonimyzed_text(
             act_check.file.path,
-            settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_docx,
+            settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format,
             generate_data_for_anonymization(all_query, act_check.text, ANON_REPLACE_TPL),
-            "docx",
+            extension,
+            ANON_FONT_BACK_COLOR
         )
         # Generar el archivo para poder extraer el texto
-        convert_document_to_format(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_docx, output_text, "txt")
+        convert_document_to_format(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format, output_text, "txt")
         # Leo el archivo anonimizado
         read_result = extract_text_from_file(output_text)
         # Borrado de archivo auxiliares
         os.remove(output_text)
         os.remove(act_check.file.path)
         # Guardado del archivo anonimizado
-        act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_docx
+        act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
         act_check.save()
         # Construyo el response
         dataReturn = {
