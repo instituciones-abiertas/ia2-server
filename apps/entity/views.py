@@ -25,6 +25,7 @@ from .utils_oodocument import (
     generate_data_for_anonymization,
     convert_document_to_format,
     extract_text_from_file,
+    anonimyzed_convert_document,
 )
 from .utils_publicador import publish_document
 from .utils import check_exist_act, open_file, calculate_ents_anonimyzed
@@ -34,6 +35,7 @@ from .exceptions import ActFileNotFound
 ANON_REPLACE_TPL = "<$name>"
 # Color de fondo para texto anonimizado
 ANON_FONT_BACK_COLOR = [255, 255, 0]
+
 
 class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
@@ -118,15 +120,17 @@ class ActViewSet(viewsets.ModelViewSet):
         output_format = act_check.filename()
         extension = os.path.splitext(output_format)[1][1:]
         # Generar el archivo en formato de entrada anonimizado
-        anonimyzed_text(
+        anonimyzed_convert_document(
             act_check.file.path,
             settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format,
-            generate_data_for_anonymization(all_query, act_check.text, ANON_REPLACE_TPL),
             extension,
-            ANON_FONT_BACK_COLOR
+            generate_data_for_anonymization(all_query, act_check.text, ANON_REPLACE_TPL),
+            output_text,
+            "txt",
+            ANON_FONT_BACK_COLOR,
         )
         # Generar el archivo para poder extraer el texto
-        convert_document_to_format(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format, output_text, "txt")
+        # convert_document_to_format(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format, output_text, "txt")
         # Leo el archivo anonimizado
         read_result = extract_text_from_file(output_text)
         # Borrado de archivo auxiliares
