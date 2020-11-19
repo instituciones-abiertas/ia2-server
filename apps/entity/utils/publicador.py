@@ -1,7 +1,7 @@
 from publicador import Publicador,GoogleDrive,DropboxApi
 import os
 from django.conf import settings
-from .exceptions import DropboxExpireCredentials
+from ..exceptions import DropboxExpireCredentials
 
 path_credentials_drive = './credentials.json'
 dropbox_token = settings.LIBERAJUS_DROPBOX_TOKEN_APP
