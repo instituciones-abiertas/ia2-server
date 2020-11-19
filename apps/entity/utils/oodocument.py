@@ -1,7 +1,7 @@
 from django.conf import settings
 from oodocument import oodocument
 from django.core.exceptions import ImproperlyConfigured
-from .exceptions import ServiceOddDocumentUnavailable
+from ..exceptions import ServiceOddDocumentUnavailable
 from string import Template
 
 

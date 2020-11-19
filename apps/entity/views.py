@@ -19,16 +19,16 @@ from .serializers import (
 from .models import Entity, Act, OcurrencyEntity, LearningModel
 from .exceptions import nameTooLong
 
-from .utils_spacy import get_all_entity_ner, get_risk
-from .utils_oodocument import (
+from .utils.spacy import get_all_entity_ner, get_risk
+from .utils.oodocument import (
     anonimyzed_text,
     generate_data_for_anonymization,
     convert_document_to_format,
     extract_text_from_file,
     anonimyzed_convert_document,
 )
-from .utils_publicador import publish_document
-from .utils import check_exist_act, open_file, calculate_ents_anonimyzed
+from .utils.publicador import publish_document
+from .utils.general import check_exist_act, open_file, calculate_ents_anonimyzed
 from .exceptions import ActFileNotFound
 
 # Para usar Python Template de string

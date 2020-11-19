@@ -1,5 +1,5 @@
-from .models import Entity, Act, OcurrencyEntity, LearningModel
-from .exceptions import ActNotExist, StorageFileNotExist
+from ..models import Entity, Act, OcurrencyEntity, LearningModel
+from ..exceptions import ActNotExist, StorageFileNotExist
 
 
 def check_exist_act(pk):
