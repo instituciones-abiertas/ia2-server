@@ -14,3 +14,7 @@ profiles
 
 # Translations
 *.mo
+
+# Documents
+*.docx
+*.doc

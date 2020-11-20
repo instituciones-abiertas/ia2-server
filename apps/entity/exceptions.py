@@ -42,3 +42,9 @@ class DriveExpireCredentials(APIException):
     status_code = 403
     default_detail = settings.ERROR_DRIVE_CREDENTIALS
     default_code = "drive_credentials"
+
+
+class DriveNotFoundCredentials(APIException):
+    status_code = 404
+    default_detail = settings.ERROR_DRIVE_CREDENTIALS_NOT_FOUND
+    default_code = "drive_not_found_credentials"
