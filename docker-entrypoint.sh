@@ -2,6 +2,7 @@
 
 echo "=> Performing database migrations..."
 python manage.py migrate --settings=liberajus.settings.production
+python manage.py migrate --database data_db --settings=liberajus.settings.production
 
 echo "=> Collecting static files..."
 python manage.py collectstatic --noinput --settings=liberajus.settings.production
