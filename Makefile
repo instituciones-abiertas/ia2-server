@@ -53,8 +53,8 @@ pip-install: venv-check
 
 
 # Django
-django-test: 
-	./manage.py test 
+django-test:
+	./manage.py test
 
 django-createsuperuser: DJANGO_DEV_USERNAME ?= admin
 django-createsuperuser: DJANGO_DEV_MAIL_DOMAIN ?= @camba.coop
@@ -69,15 +69,20 @@ django-createsuperuser:
 
 django-migrate:
 	./manage.py migrate
+	./manage.py migrate --database data_db
 
 django-drop-db:
-
 	./manage.py sqlflush | ./manage.py dbshell
+	./manage.py sqlflush --database data_db | ./manage.py dbshell --database data_db
 
 django-load-fixtures:
-	for i in $$(find . -wholename "*/fixtures/*.json"  -printf "%f\n" | sort -t '\0' -n); do \
-	    echo "Loading $$i" ;\
+	for i in $$(find . -regextype posix-egrep -regex ".+\.json$$"  -path '*/fixtures/*' -not -path './apps/data/*' -printf '%f\n' | sort -t '\0' -n); do \
+		echo "Loading $$i" ;\
 		find -name $$i -exec python manage.py loaddata {}   \; ;\
+	done
+	for i in $$(find . -regextype posix-egrep -regex ".+\.json$$"  -path '*/data/fixtures/*' -printf '%f\n' | sort -t '\0' -n); do \
+		echo "Loading $$i" ;\
+		find -name $$i -exec python manage.py loaddata --database data_db {}   \; ;\
 	done
 
 django-compile-messages:
