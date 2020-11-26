@@ -2,7 +2,8 @@ from django.db import models
 from django.utils import timezone
 from private_storage.fields import PrivateFileField
 import os
-from .validator import get_file_extension,name_length
+from .validator import get_file_extension, name_length
+
 
 class Entity(models.Model):
     name = models.CharField(max_length=60)
@@ -19,11 +20,11 @@ class Entity(models.Model):
 
 class Act(models.Model):
     text = models.TextField(default="En Proceso")
-    file = PrivateFileField(max_length=200,validators=[get_file_extension,name_length])
+    file = PrivateFileField(max_length=200, validators=[get_file_extension, name_length])
     created_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return  str(self.id)
+        return str(self.id)
 
     def __unicode__(self):
         return
@@ -31,20 +32,22 @@ class Act(models.Model):
     def filename(self):
         return os.path.basename(self.file.name)
 
+
 class OcurrencyEntity(models.Model):
-    act = models.ForeignKey(Act, on_delete=models.CASCADE,related_name='listOfEntity')
+    act = models.ForeignKey(Act, on_delete=models.CASCADE, related_name="listOfEntity")
     startIndex = models.PositiveIntegerField()
     endIndex = models.PositiveIntegerField()
     entity = models.ForeignKey(to=Entity, on_delete=models.CASCADE)
     should_anonymized = models.BooleanField(default=True)
+    text = models.TextField(default="anotacion")
 
     def __str__(self):
         return self.entity.name
 
+
 class LearningModel(models.Model):
     name_subject = models.CharField(max_length=60)
-    last_update = models.DateTimeField(
-            default=timezone.now)
+    last_update = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return  self.name_subject
+        return self.name_subject

@@ -104,15 +104,18 @@ class ActViewSet(viewsets.ModelViewSet):
         if ocurrency_query.exists():
             ocurrency_query.delete()
         # Recorrido sobre las ents nuevas
+        text = act_check.text
         for ent in new_ents:
             # Chequeo por un flujo que me puede llegar entitades del front sin datos
             if ent["start"] is not None and ent["end"] is not None:
+
                 ocurrency = OcurrencyEntity.objects.create(
                     act=act_check,
                     startIndex=ent["start"],
                     endIndex=ent["end"],
                     entity=Entity.objects.get(name=ent["tag"]),
                     should_anonymized=ent["should_anonymized"],
+                    text=text[ent["start"] : ent["end"]],
                 )
                 all_query.append(ocurrency)
         # Definicion de rutas
