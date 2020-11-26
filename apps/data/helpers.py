@@ -23,7 +23,9 @@ def extraer_datos(contexto_violencia, contexto_violencia_de_genero, lugar, fecha
                 fecha=h.fecha,
                 historico=h,
             )
-            hecho.lugares.add(comuna)
+
+            if comuna:
+                hecho.lugares.add(comuna)
     except DatabaseError:
         # Deberiamos loguear
         print("Error al grabar la extracción de datos")

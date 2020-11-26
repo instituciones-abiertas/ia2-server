@@ -14,7 +14,11 @@ def procesa_fecha(fechaStr):
     fecha_sin_palabras = find_replace_multi_ordered(fechaStr, palabras)
     fecha_num = text_es_to_num(fecha_sin_palabras)
     fecha = ddp.get_date_data(fecha_num)
-    return fecha.date_obj
+    if fecha.date_obj:
+        return fecha.date_obj
+    else:
+        print("No pudo construir una fecha válida para", fechaStr)
+        return None
 
 
 if __name__ == "__main__":

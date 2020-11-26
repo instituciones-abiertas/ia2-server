@@ -12,8 +12,10 @@ class Historico(models.Model):
 
 class LugarManager(models.Manager):
     def get_or_create_lugar(self, nombre):
+        lugar = None
         comuna = get_comuna_caba(nombre)
-        lugar, create = self.get_or_create(_nombre=comuna["nombre"])
+        if comuna:
+            lugar, create = self.get_or_create(_nombre=comuna["nombre"])
         return lugar
 
 
@@ -38,7 +40,7 @@ class Lugar(models.Model):
 class Hecho(models.Model):
     _contexto_violencia = models.BooleanField(default=False)
     _contexto_violencia_de_genero = models.BooleanField(default=False)
-    _fecha = models.DateField()
+    _fecha = models.DateField(blank=True, null=True)
     lugares = models.ManyToManyField(Lugar)
     historico = models.OneToOneField(
         Historico,

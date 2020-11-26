@@ -24,6 +24,7 @@ def get_comuna_caba(direccion):
         }
         return datos
     except Exception:
+        print("No pudo encontrar una comuna valida para", direccion)
         return None
 
 
