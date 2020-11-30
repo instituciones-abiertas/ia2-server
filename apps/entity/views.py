@@ -19,7 +19,8 @@ from .serializers import (
 from .models import Entity, Act, OcurrencyEntity, LearningModel
 from .exceptions import nameTooLong, ActFileNotFound
 
-from .utils.spacy import get_all_entity_ner, get_risk
+from .tasks import train_model
+from .utils.spacy import get_all_entity_ner, get_risk, write_model_test_in_file
 from .utils.oodocument import (
     anonimyzed_text,
     generate_data_for_anonymization,
@@ -39,6 +40,17 @@ ANON_FONT_BACK_COLOR = [255, 255, 0]
 class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
+
+    @action(methods=['get'], detail=False)
+    def retrain(self, request):
+        data = 10
+        r = train_model.apply_async()
+
+        print("Responses")
+        print(r)
+        print(r.get())
+
+        return Response({'status': 'ok'})
 
 
 class ActViewSet(viewsets.ModelViewSet):

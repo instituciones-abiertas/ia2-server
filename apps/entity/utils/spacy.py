@@ -4,6 +4,8 @@ import plac
 import random
 import warnings
 import time
+
+from django.conf import settings
 from pathlib import Path
 from spacy.util import minibatch, compounding
 
@@ -70,3 +72,20 @@ def train_data(training_data, n_iter, model_path):
     # save model to output directory
     output_dir = Path(model_path)
     nlp.to_disk(output_dir)
+
+def write_model_test_in_file(filepath):
+    model_path = filepath
+
+    model = None
+    with open(model_path, 'r') as reader:
+        model = reader.readlines()
+
+    line_to_change = int(model[2])
+    model[line_to_change] = f'{line_to_change}.' + f'Call number {line_to_change - 3} changed this line.\n '
+    increased_line_to_change = line_to_change + 1
+    model[2] = f'{str(increased_line_to_change)}\n'
+    print("EDITED MODEL")
+    print(model)
+
+    with open(model_path, 'w') as reader:
+        model = reader.writelines(model)

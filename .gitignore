@@ -15,6 +15,12 @@ profiles
 # Translations
 *.mo
 
+# Environment
+.env
+
 # Documents
 *.docx
 *.doc
+custom_models/test_model/test.txt
+
+credentials.json
