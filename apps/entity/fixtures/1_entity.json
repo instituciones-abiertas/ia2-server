@@ -1,1 +1,212 @@
-[{"model": "entity.entity", "pk": 3, "fields": {"name": "LOC", "description": "Es una localizaci\u00f3n", "should_anonimyzation": true, "should_trained": true}}, {"model": "entity.entity", "pk": 4, "fields": {"name": "PER", "description": "Es una personalidad", "should_anonimyzation": true, "should_trained": true}}, {"model": "entity.entity", "pk": 5, "fields": {"name": "MISC", "description": "Cosas Miscelaneas", "should_anonimyzation": true, "should_trained": true}}, {"model": "entity.entity", "pk": 6, "fields": {"name": "ORG", "description": "Organizaciones,empresas,etc", "should_anonimyzation": true, "should_trained": true}}, {"model": "entity.entity", "pk": 7, "fields": {"name": "TEXTO_ANONIMIZAR", "description": "Es una entidad generica para anonimizar", "should_anonimyzation": true, "should_trained": false}}]
+[
+  {
+    "model": "entity.entity",
+    "pk": 1,
+    "fields": {
+      "name": "FECHA_HECHO",
+      "description": "Fecha cuando sucedio el hecho",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 2,
+    "fields": {
+      "name": "LUGAR_HECHO",
+      "description": "Lugar donde sucedio el evento",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 3,
+    "fields": {
+      "name": "LOC",
+      "description": "Es una localizaci\u00f3n",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 4,
+    "fields": {
+      "name": "PER",
+      "description": "Es una personalidad",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 5,
+    "fields": {
+      "name": "MISC",
+      "description": "Cosas Miscelaneas",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 6,
+    "fields": {
+      "name": "ORG",
+      "description": "Organizaciones,empresas,etc",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 7,
+    "fields": {
+      "name": "TEXTO_ANONIMIZAR",
+      "description": "Es una entidad generica para anonimizar",
+      "should_anonimyzation": true,
+      "should_trained": false
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 8,
+    "fields": {
+      "name": "FECHA",
+      "description": "Es una fecha escrita",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 9,
+    "fields": {
+      "name": "FECHA_NUM\u00c9RICA",
+      "description": "Es una fecha numerica",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 10,
+    "fields": {
+      "name": "DIRECCI\u00d3N",
+      "description": "Es un domicilio particular",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 11,
+    "fields": {
+      "name": "NUM_DNI",
+      "description": "Es la representaci\u00f3n numerica de un dni",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 12,
+    "fields": {
+      "name": "NUM_CUIT_CUIL",
+      "description": "Es la representaci\u00f3n numerica de un cuit-cuil",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 13,
+    "fields": {
+      "name": "EDAD",
+      "description": "Es la representaci\u00f3n numerica de un edad",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 14,
+    "fields": {
+      "name": "NACIONALIDAD",
+      "description": "Es la nacionalidad de una persona",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 15,
+    "fields": {
+      "name": "NUM_TELEF\u00d3NO",
+      "description": "Es un numero telefonico",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 16,
+    "fields": {
+      "name": "OCUPACI\u00d3N/PROFESI\u00d3N",
+      "description": "Es una  ocupaci\u00f3n de una persona",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 17,
+    "fields": {
+      "name": "PATENTE/DOMINIO",
+      "description": "Es una patente de un vehiculo",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 18,
+    "fields": {
+      "name": "CORREO_ELECTR\u00d3NICO",
+      "description": "Es una direccion de mail",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 19,
+    "fields": {
+      "name": "NUM",
+      "description": "La representaci\u00f3n de un numero",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 20,
+    "fields": {
+      "name": "CONTEXTO_VIOLENCIA_DE_G\u00c9NERO",
+      "description": "Existencia de contexto de violencia de genero",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 21,
+    "fields": {
+      "name": "CONTEXTO_VIOLENCIA",
+      "description": "Tipificacion del tipo de violencia existente",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  }
+]

@@ -17,7 +17,7 @@ from .serializers import (
     LearningModelSerializer,
 )
 from .models import Entity, Act, OcurrencyEntity, LearningModel
-from .exceptions import nameTooLong
+from .exceptions import nameTooLong, ActFileNotFound
 
 from .tasks import train_model
 from .utils.spacy import get_all_entity_ner, get_risk, write_model_test_in_file
@@ -29,8 +29,7 @@ from .utils.oodocument import (
     anonimyzed_convert_document,
 )
 from .utils.publicador import publish_document
-from .utils.general import check_exist_act, open_file, calculate_ents_anonimyzed
-from .exceptions import ActFileNotFound
+from .utils.general import check_exist_act, open_file, calculate_ents_anonimyzed, extraer_datos_de_ocurrencias
 
 # Para usar Python Template de string
 ANON_REPLACE_TPL = "<$name>"
@@ -154,6 +153,9 @@ class ActViewSet(viewsets.ModelViewSet):
         # Guardado del archivo anonimizado
         act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
         act_check.save()
+
+        extraer_datos_de_ocurrencias(all_query)
+
         # Construyo el response
         dataReturn = {
             "anonymous_text": read_result,
