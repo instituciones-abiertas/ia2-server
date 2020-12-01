@@ -4,10 +4,10 @@ from .utils.fechas import procesa_fecha
 
 
 class Historico(models.Model):
-    fecha = models.CharField(max_length=200)
-    lugar = models.CharField(max_length=200)
-    contexto_violencia = models.CharField(max_length=200)
-    contexto_violencia_de_genero = models.CharField(max_length=200)
+    fecha = models.CharField(max_length=200, blank=True, null=True)
+    lugar = models.CharField(max_length=200, blank=True, null=True)
+    contexto_violencia = models.CharField(max_length=200, blank=True, null=True)
+    contexto_violencia_de_genero = models.CharField(max_length=200, blank=True, null=True)
 
 
 class LugarManager(models.Manager):

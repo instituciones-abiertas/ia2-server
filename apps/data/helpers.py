@@ -14,7 +14,9 @@ def extraer_datos(contexto_violencia, contexto_violencia_de_genero, lugar, fecha
             )
 
             # Se crea un nuevo lugar del hecho o se trae uno repetido
-            comuna = Lugar.objects.get_or_create_lugar(h.lugar)
+            comuna = None
+            if h.lugar:
+                comuna = Lugar.objects.get_or_create_lugar(h.lugar)
 
             # Se crea un hecho y se lo vincula con el historico y el lugar donde se produjo
             hecho = Hecho.objects.create(
