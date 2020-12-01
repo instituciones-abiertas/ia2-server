@@ -46,9 +46,9 @@ def extraer_datos_de_ocurrencias(ocurrencias):
     # Consideracion: solo se queda con la 1er ocurrencia de estas entiedades
 
     def buscar(entidad):
-        return next((o.text for o in ocurrencias if o.entity == entidad), None)
+        return next((o.text for o in ocurrencias if o.entity.name == entidad), None)
 
-    entidades = ["CONTEXTO_VIOLENCIA", "CONTEXTO_VIOLENCIA_DE_GENERO", "LUGAR_HECHO", "FECHA_HECHO"]
+    entidades = ["CONTEXTO_VIOLENCIA", "CONTEXTO_VIOLENCIA_DE_GÉNERO", "LUGAR_HECHO", "FECHA_HECHO"]
     contexto_violencia, contexto_violencia_de_genero, lugar, fecha = list(map(buscar, entidades))
 
     if contexto_violencia or contexto_violencia_de_genero or lugar or fecha:
