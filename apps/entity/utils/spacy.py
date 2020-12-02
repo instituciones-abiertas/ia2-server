@@ -8,16 +8,98 @@ import time
 from django.conf import settings
 from pathlib import Path
 from spacy.util import minibatch, compounding
+from spacy.matcher import Matcher
+from spacy.pipeline import EntityRuler
+from spacy.tokens import Span
+from re import match
 
 model_path = "./custom_models/modelo_poc"
 DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
 
 
-class Spacy:
-    nlp = spacy.load(model_path, disable=["tagger", "parser"])
+class Nlp:
+    def __init__(self):
+        self.nlp = spacy.load(model_path)
+        self.matcher = Matcher(self.nlp.vocab)
+        self.add_matchers()
+        self.ruler = EntityRuler(self.nlp, overwrite_ents=True)
+        self.text = None
+        self.doc = None
+        
+        self.patterns = [
+            {"label": "LEY", "pattern": [{"LOWER": "ley"}, {"LIKE_NUM": True}]},
+            {"label": "NUM_DNI", "pattern": [{"SHAPE": "d.ddd.ddd"}]},
+            {"label": "NUM_DNI", "pattern": [{"SHAPE": "dd.ddd.ddd"}]},
+            {"label": "NUM_DNI", "pattern": [{"SHAPE": "ddd.ddd.ddd"}]},
+            {"label": "NUM_IP", "pattern": [{"SHAPE": "ddd.ddd.ddd.ddd"}]},
+            {"label": "NUM_TELÉFONO", "pattern": [{"SHAPE": "dd-dddd-dddd"}]},
+            {"label": "NUM_TELÉFONO", "pattern": [{"SHAPE": "dddd-dddd"}]},
+            {"label": "NUM_TELÉFONO", "pattern": [{"SHAPE": "dddd-ddd-dddd"}]},
+            {"label": "FECHA_NUMÉRICA", "pattern": [{"SHAPE": "dd/dd/dd"}]},
+            {"label": "FECHA_NUMÉRICA", "pattern": [{"SHAPE": "dd/dd"}]},
+            {"label": "FECHA", "pattern": [{"LIKE_NUM": True}, {"POS": "ADP"}, {"LOWER": {"IN": ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "noviembre", "diciembre"]}}, {"POS": "ADP", "OP": "?"}, {"LIKE_NUM": True, "OP": "?"}]},
+            {"label": "NACIONALIDAD", "pattern": [{"LEMMA": {"IN": ["argentino", "boliviano", "paraguayo", "colombiano", "chileno", "brasileño", "panameño", "italiano", "español", "mexicano", "ruso", "francés", "inglés", "venezolano", "estadounidense", "alemán", "chino", "indio", "cubano", "nigeriano", "polaco", "sueco", "turco", "japonés", "portugués", "iraní", "paquistaní", "costarricense", "canadiense", "marroquí", "griego", "egipcio", "coreano", "ecuatoriano", "peruano", "guatemalteco", "salvadoreño", "holandés", "dominicano"]}}]},
+            {"label": "NUM_CUIT_CUIL", "pattern":  [{"TEXT": {"REGEX": "(20|23|27|30|33)([0-9]{9}|-[0-9]{8}-[0-9]{1})"}}]},
+        ]
+        
+        self.ruler.add_patterns(self.patterns)
+        self.nlp.add_pipe(self.ruler)
 
-    @classmethod
+    def add_matchers(self):
+        patterns = {
+            "CORREO_ELECTRÓNICO": [{"LIKE_EMAIL": True}],
+            "NUM": [{"LIKE_NUM": True}],
+        }
+
+        # El mactch_id debe ser igual a el NOMBRE de la entidad
+        for match_id, pattern in patterns.items():
+            self.matcher.add(match_id, None, pattern)
+
+    def use_matchers(self):
+        if not self.doc:
+            return None
+
+        matches = self.matcher(self.doc)
+        spans = []
+        for match_id, start, end in matches:
+            label = self.nlp.vocab.strings[match_id]
+            spans.append(Span(self.doc, start, end, label))
+        return spans
+
+    def is_age(self, token, right_token, token_sent):
+        return token.like_num and right_token.text == 'años' and 'edad' in token_sent.text
+
+    def is_caseNumber(self, token, first_left_token, second_left_token, token_sent):
+        return token.like_num and first_left_token.lower_ == 'nº' and second_left_token.lower_ == 'causa' 
+
+    def is_last(self, token_id):
+        return token_id == len(self.doc) -1
+    
+    def is_from_first_tokens(self, token_id):
+        return token_id <= 2
+
+    def use_rules(self, ents):
+        if not self.doc:
+            return None
+        new_ents = []
+        for token in self.doc:
+            if  not self.is_last(token.i) and self.is_age(token, token.nbor(1), token.sent):
+                new_ents.append(Span(self.doc, token.i, token.i + 1, label="EDAD"))
+            if  not self.is_from_first_tokens(token.i) and self.is_caseNumber(token, token.nbor(-1), token.nbor(-2), token.sent):
+                new_ents.append(Span(self.doc, token.i, token.i + 1, label="NUM_CAUSA"))
+        return new_ents
+
+    def filter_spans(self, spans, ents):
+        def between(start, ents):
+            for e in ents:
+                if start >= e.start and start < e.end:
+                    return True
+            return False
+
+        return [s for s in spans if not between(s.start, ents)]
+
     def generate_doc(self, text):
+        self.text = text
         return self.nlp(text)
 
 

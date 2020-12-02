@@ -21,7 +21,7 @@ from .models import Entity, Act, OcurrencyEntity, LearningModel
 from .exceptions import nameTooLong, ActFileNotFound
 
 from .tasks import train_model
-from .utils.spacy import get_all_entity_ner, get_risk, write_model_test_in_file
+from .utils.spacy import Nlp, get_risk, write_model_test_in_file
 from .utils.oodocument import (
     anonimyzed_text,
     generate_data_for_anonymization,
@@ -46,7 +46,6 @@ class EntityViewSet(viewsets.ModelViewSet):
 
     @action(methods=["get"], detail=False)
     def retrain(self, request):
-        data = 10
         r = train_model.apply_async()
 
         print("Responses")
@@ -89,7 +88,8 @@ class ActViewSet(viewsets.ModelViewSet):
         new_act.text = extract_text_from_file(output_path)
         new_act.save()
         # Analizo el texto
-        ents = get_all_entity_ner(new_act.text)
+        nlp = Nlp()
+        ents = nlp.get_all_entity_ner(new_act.text)
         ocurrency_list = EntSerializer(ents, many=True)
         # Una vez procesado,guardar la info
         dataReturn = {

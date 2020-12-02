@@ -143,7 +143,7 @@
     "model": "entity.entity",
     "pk": 15,
     "fields": {
-      "name": "NUM_TELEF\u00d3NO",
+      "name": "NUM_TEL\u00c9FONO",
       "description": "Es un numero telefonico",
       "should_anonimyzation": true,
       "should_trained": true
@@ -205,6 +205,26 @@
     "fields": {
       "name": "CONTEXTO_VIOLENCIA",
       "description": "Tipificacion del tipo de violencia existente",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 22,
+    "fields": {
+      "name": "LEY",
+      "description": "Ley citada en la resolucion.",
+      "should_anonimyzation": false,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 23,
+    "fields": {
+      "name": "NUM_CAUSA",
+      "description": "Numero de identificacion de la causa.",
       "should_anonimyzation": true,
       "should_trained": true
     }
