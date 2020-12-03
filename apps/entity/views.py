@@ -1,5 +1,6 @@
 import os
 import uuid
+import ast
 from django.conf import settings
 from django.http import FileResponse
 from django.core.exceptions import ValidationError
@@ -35,13 +36,15 @@ from .utils.general import check_exist_act, open_file, calculate_ents_anonimyzed
 ANON_REPLACE_TPL = "<$name>"
 # Color de fondo para texto anonimizado
 ANON_FONT_BACK_COLOR = [255, 255, 0]
+# Entidades a no mostrar
+DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
 
 
 class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
 
-    @action(methods=['get'], detail=False)
+    @action(methods=["get"], detail=False)
     def retrain(self, request):
         data = 10
         r = train_model.apply_async()
@@ -50,7 +53,15 @@ class EntityViewSet(viewsets.ModelViewSet):
         print(r)
         print(r.get())
 
-        return Response({'status': 'ok'})
+        return Response({"status": "ok"})
+
+    def list(self, request):
+        queryset = Entity.objects.all()
+        for ent in ast.literal_eval(DISABLE_ENTITIES):
+            queryset = queryset.exclude(name=ent)
+        serializer = EntitySerializer(queryset, many=True)
+
+        return Response(serializer.data)
 
 
 class ActViewSet(viewsets.ModelViewSet):
