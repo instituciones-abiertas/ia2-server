@@ -20,6 +20,7 @@ ARG data_db_port
 # Django and third party services arguments
 ARG secret_key
 ARG dropbox_token
+ARG disable_entities
 
 # Domain specific database environment
 ENV LIBERAJUS_DB_NAME=${main_db_name}
@@ -39,7 +40,7 @@ ENV WAIT_HOSTS=main_db:3306,data_db:3306
 ENV PYTHONUNBUFFERED 1
 ENV SECRET_KEY=${secret_key}
 ENV LIBERAJUS_DROPBOX_TOKEN_APP=${dropbox_token}
-
+ENV LIBERAJUS_DISABLE_ENTITIES=${disable_entities}
 # Exposes Django server port
 EXPOSE 8000
 
