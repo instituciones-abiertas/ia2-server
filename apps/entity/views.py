@@ -87,9 +87,10 @@ class ActViewSet(viewsets.ModelViewSet):
         # Guardo el texto en la instancia
         new_act.text = extract_text_from_file(output_path)
         new_act.save()
-        # Analizo el texto
-        nlp = Nlp()
-        ents = nlp.get_all_entity_ner(new_act.text)
+        # Inicializo objeto nlp con EntityRuler y Matcher
+        nlp = Nlp(True, True)
+        # Analizo el texto con el sistema de reglas activado (matcher y custom rules)
+        ents = nlp.get_all_entities(new_act.text, True)
         ocurrency_list = EntSerializer(ents, many=True)
         # Una vez procesado,guardar la info
         dataReturn = {

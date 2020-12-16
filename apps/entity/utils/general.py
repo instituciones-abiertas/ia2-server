@@ -56,3 +56,13 @@ def extraer_datos_de_ocurrencias(ocurrencias):
             extraer_datos(contexto_violencia, contexto_violencia_de_genero, lugar, fecha)
         except Exception as error:
             capture_exception(error)
+
+def filter_spans(a_list, b_list):
+        # filtra spans de a_list que se overlapeen con algun span de b_list
+        def overlap(span, span_list):
+            for s in span_list:
+                if (span.start >= s.start and span.start < s.end) or (s.start >= span.start and s.end <= span.end) :
+                    return True
+            return False
+
+        return [span for span in a_list if not overlap(span, b_list)]
