@@ -4,6 +4,9 @@ def is_age(token, right_token, token_sent):
 def is_caseNumber(token, first_left_token, second_left_token, token_sent):
     return token.like_num and ((first_left_token.lower_ == 'nº' and second_left_token.lower_ == 'causa') or first_left_token.lower_ == 'caso')
 
+def is_cuijNumber(token):
+    return (token.is_ascii and token.nbor(-3).lower_ == 'cuij') or (token.like_num and token.nbor(-3).lower_ == 'cuij')
+
 def is_last(token_id, doc):
     return token_id == len(doc) -1
 
@@ -12,8 +15,7 @@ def is_from_first_tokens(token_id):
 
 def is_judge(ent):
     first_token = ent[0]
-    # si juez esta en la entidad, entonces borrar la palabra juez
-    return ent.label_ in ['PER', 'LOC'] and (first_token.nbor(-1).lemma_ in ['juez', 'Juez'] or first_token.nbor(-2).lemma_ in ['juez', 'Juez'] or first_token.nbor(-2).lemma_ in ['juez', 'Juez']) or 'Juez' in ent.text
+    return ent.label_ in ['PER', 'LOC'] and (first_token.nbor(-1).lemma_ in ['juez', 'Juez'] or first_token.nbor(-2).lemma_ in ['juez', 'Juez'] or first_token.nbor(-2).lemma_ in ['juez', 'Juez'])
 
 def is_secretary(ent):
     first_token = ent[0]
@@ -34,6 +36,8 @@ def use_rules(doc, ents):
                 new_ents.append(Span(doc, token.i, token.i + 1, label="EDAD"))
             if  not is_from_first_tokens(token.i) and is_caseNumber(token, token.nbor(-1), token.nbor(-2), token.sent):
                 new_ents.append(Span(doc, token.i, token.i + 1, label="NUM_CAUSA"))
+            if  not is_from_first_tokens(token.i) and is_cuijNumber(token):
+                new_ents.append(Span(doc, token.i, token.i + 1, label="NUM_CUIJ"))    
         for ent in ents:
             if  not is_from_first_tokens(ent.start) and is_judge(ent):
                 new_ents.append(Span(doc, ent.start, ent.end, label="JUEZ"))

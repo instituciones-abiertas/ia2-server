@@ -1,4 +1,3 @@
-
 from spacy.tokens import Span
 
 patterns = {
