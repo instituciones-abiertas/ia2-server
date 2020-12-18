@@ -163,7 +163,7 @@
     "model": "entity.entity",
     "pk": 17,
     "fields": {
-      "name": "PATENTE/DOMINIO",
+      "name": "PATENTE_DOMINIO",
       "description": "Es una patente de un vehiculo",
       "should_anonimyzation": true,
       "should_trained": true
@@ -275,6 +275,16 @@
     "fields": {
       "name": "NUM_CUIJ",
       "description": "Número de CUIJ",
+      "should_anonimyzation": false,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 29,
+    "fields": {
+      "name": "ARTÍCULO",
+      "description": "Artículo",
       "should_anonimyzation": false,
       "should_trained": true
     }
