@@ -128,16 +128,22 @@ class ActViewSet(viewsets.ModelViewSet):
             ocurrency_query.delete()
         # Recorrido sobre las ents nuevas
         text = act_check.text
+
+        entities = Entity.objects.all()
+
+
+
         for ent in new_ents:
             # Chequeo por un flujo que me puede llegar entitades del front sin datos
             if ent["start"] is not None and ent["end"] is not None:
-
+                entity_name = ent["tag"]
+                should_be_anonymized = entities.get(name=entity_name).should_anonimyzation
                 ocurrency = OcurrencyEntity.objects.create(
                     act=act_check,
                     startIndex=ent["start"],
                     endIndex=ent["end"],
                     entity=Entity.objects.get(name=ent["tag"]),
-                    should_anonymized=ent["should_anonymized"],
+                    should_anonymized=should_be_anonymized,
                     text=text[ent["start"] : ent["end"]],
                 )
                 all_query.append(ocurrency)
