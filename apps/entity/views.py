@@ -90,7 +90,7 @@ class ActViewSet(viewsets.ModelViewSet):
         # Inicializo objeto nlp con EntityRuler y Matcher
         nlp = Nlp(True, True)
         # Analizo el texto con el sistema de reglas activado (matcher y custom rules)
-        ents = nlp.get_all_entities(new_act.text, True )
+        ents = nlp.get_all_entities(new_act.text, True)
         ocurrency_list = EntSerializer(ents, many=True)
         # Una vez procesado,guardar la info
         dataReturn = {
@@ -130,8 +130,6 @@ class ActViewSet(viewsets.ModelViewSet):
         text = act_check.text
 
         entities = Entity.objects.all()
-
-
 
         for ent in new_ents:
             # Chequeo por un flujo que me puede llegar entitades del front sin datos
