@@ -56,7 +56,6 @@ class EntityViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         queryset = Entity.objects.all()
-        print('ddd', DISABLE_ENTITIES)
         for ent in ast.literal_eval(DISABLE_ENTITIES):
             queryset = queryset.exclude(name=ent)
         serializer = EntitySerializer(queryset, many=True)
@@ -91,7 +90,7 @@ class ActViewSet(viewsets.ModelViewSet):
         # Inicializo objeto nlp con EntityRuler y Matcher
         nlp = Nlp(True, True)
         # Analizo el texto con el sistema de reglas activado (matcher y custom rules)
-        ents = nlp.get_all_entities(new_act.text, True)
+        ents = nlp.get_all_entities(new_act.text, True )
         ocurrency_list = EntSerializer(ents, many=True)
         # Una vez procesado,guardar la info
         dataReturn = {
