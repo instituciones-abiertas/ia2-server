@@ -143,7 +143,7 @@
     "model": "entity.entity",
     "pk": 15,
     "fields": {
-      "name": "NUM_TELEF\u00d3NO",
+      "name": "NUM_TEL\u00c9FONO",
       "description": "Es un numero telefonico",
       "should_anonimyzation": true,
       "should_trained": true
@@ -163,7 +163,7 @@
     "model": "entity.entity",
     "pk": 17,
     "fields": {
-      "name": "PATENTE/DOMINIO",
+      "name": "PATENTE_DOMINIO",
       "description": "Es una patente de un vehiculo",
       "should_anonimyzation": true,
       "should_trained": true
@@ -206,6 +206,86 @@
       "name": "CONTEXTO_VIOLENCIA",
       "description": "Tipificacion del tipo de violencia existente",
       "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 22,
+    "fields": {
+      "name": "LEY",
+      "description": "Ley citada en la resolucion.",
+      "should_anonimyzation": false,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 23,
+    "fields": {
+      "name": "NUM_CAUSA",
+      "description": "Numero de identificacion de la causa.",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 24,
+    "fields": {
+      "name": "JUEZ",
+      "description": "Nombre de juez o jueza nombrado en la causa.",
+      "should_anonimyzation": false,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 25,
+    "fields": {
+      "name": "SECRETARIX",
+      "description": "Nombre de secretario o secretaria nombrado en la causa.",
+      "should_anonimyzation": false,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 26,
+    "fields": {
+      "name": "FISCAL",
+      "description": "Nombre de fiscal nombrado en la causa.",
+      "should_anonimyzation": false,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 27,
+    "fields": {
+      "name": "NUM_IP",
+      "description": "Número de D.N.I",
+      "should_anonimyzation": false,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 28,
+    "fields": {
+      "name": "NUM_CUIJ",
+      "description": "Número de CUIJ",
+      "should_anonimyzation": false,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 29,
+    "fields": {
+      "name": "ARTÍCULO",
+      "description": "Artículo",
+      "should_anonimyzation": false,
       "should_trained": true
     }
   }

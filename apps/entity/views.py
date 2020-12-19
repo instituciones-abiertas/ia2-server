@@ -21,7 +21,7 @@ from .models import Entity, Act, OcurrencyEntity, LearningModel
 from .exceptions import nameTooLong, ActFileNotFound
 
 from .tasks import train_model
-from .utils.spacy import get_all_entity_ner, get_risk, write_model_test_in_file
+from .utils.spacy import Nlp, get_risk, write_model_test_in_file
 from .utils.oodocument import (
     anonimyzed_text,
     generate_data_for_anonymization,
@@ -46,7 +46,6 @@ class EntityViewSet(viewsets.ModelViewSet):
 
     @action(methods=["get"], detail=False)
     def retrain(self, request):
-        data = 10
         r = train_model.apply_async()
 
         print("Responses")
@@ -88,8 +87,10 @@ class ActViewSet(viewsets.ModelViewSet):
         # Guardo el texto en la instancia
         new_act.text = extract_text_from_file(output_path)
         new_act.save()
-        # Analizo el texto
-        ents = get_all_entity_ner(new_act.text)
+        # Inicializo objeto nlp con EntityRuler y Matcher
+        nlp = Nlp(True, True)
+        # Analizo el texto con el sistema de reglas activado (matcher y custom rules)
+        ents = nlp.get_all_entities(new_act.text, True)
         ocurrency_list = EntSerializer(ents, many=True)
         # Una vez procesado,guardar la info
         dataReturn = {
@@ -127,16 +128,20 @@ class ActViewSet(viewsets.ModelViewSet):
             ocurrency_query.delete()
         # Recorrido sobre las ents nuevas
         text = act_check.text
+
+        entities = Entity.objects.all()
+
         for ent in new_ents:
             # Chequeo por un flujo que me puede llegar entitades del front sin datos
             if ent["start"] is not None and ent["end"] is not None:
-
+                entity_name = ent["tag"]
+                should_be_anonymized = entities.get(name=entity_name).should_anonimyzation
                 ocurrency = OcurrencyEntity.objects.create(
                     act=act_check,
                     startIndex=ent["start"],
                     endIndex=ent["end"],
                     entity=Entity.objects.get(name=ent["tag"]),
-                    should_anonymized=ent["should_anonymized"],
+                    should_anonymized=should_be_anonymized,
                     text=text[ent["start"] : ent["end"]],
                 )
                 all_query.append(ocurrency)

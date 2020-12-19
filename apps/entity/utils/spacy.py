@@ -8,23 +8,51 @@ import time
 from django.conf import settings
 from pathlib import Path
 from spacy.util import minibatch, compounding
+from spacy.matcher import Matcher
+from spacy.pipeline import EntityRuler
+from spacy.tokens import Span
+from re import match
+from .matcher import add_matchers
+from .ruler import add_patterns
+from .rules_sistem import add_rules_sistem
 
 model_path = "./custom_models/modelo_poc"
 DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
 
+class Nlp:
+    def __init__(self, withEntityRuler, withMatcher):
+        self.nlp = spacy.load(model_path)
+        
+        if withMatcher:
+            # Se inicializa el matcher
+            self.matcher = Matcher(self.nlp.vocab)
+            # Se agregan los patrones
+            add_matchers(self.matcher)
+        
+        if withEntityRuler:
+            # Se inicializa el ruler
+            self.ruler = EntityRuler(self.nlp, overwrite_ents=True)
+            # Se agregan los patrones
+            add_patterns(self.ruler)
+            # Se agrega el pipe EntityRuler al pipeline
+            self.nlp.add_pipe(self.ruler)
 
-class Spacy:
-    nlp = spacy.load(model_path, disable=["tagger", "parser"])
+        self.text = None
+        self.doc = None
 
-    @classmethod
+
     def generate_doc(self, text):
+        self.text = text
         return self.nlp(text)
 
-
-def get_all_entity_ner(text):
-    doc = Spacy.generate_doc(text)
-    return filter_entity(doc.ents, DISABLE_ENTITIES)
-
+    def get_all_entities(self, text, with_rules):
+        # Procesamos texto
+        self.doc = self.generate_doc(text)
+        # Creamos lista basada en entidades reconocidas por el modelo estadistico y el entityRuler
+        list_ents = list(self.doc.ents)
+        if with_rules:
+            list_ents = add_rules_sistem(self.nlp, self.doc, list_ents, self.matcher)
+        return filter_entity(list_ents, DISABLE_ENTITIES)
 
 def get_risk(number):
     # Implementacion fake para pantalla
@@ -94,5 +122,4 @@ def write_model_test_in_file(filepath):
 
 
 def filter_entity(ent_list, ents_filter):
-    ents = [ent for ent in ent_list if ent.label_ not in ents_filter]
-    return ents
+    return [ent for ent in ent_list if ent.label_ not in ents_filter]
