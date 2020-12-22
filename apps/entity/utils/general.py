@@ -48,21 +48,31 @@ def extraer_datos_de_ocurrencias(ocurrencias):
     def buscar(entidad):
         return next((o.text for o in ocurrencias if o.entity.name == entidad), None)
 
-    entidades = ["CONTEXTO_VIOLENCIA", "CONTEXTO_VIOLENCIA_DE_GÉNERO", "LUGAR_HECHO", "FECHA_HECHO"]
-    contexto_violencia, contexto_violencia_de_genero, lugar, fecha = list(map(buscar, entidades))
+    entidades = [
+        "CONTEXTO_VIOLENCIA",
+        "CONTEXTO_VIOLENCIA_DE_GÉNERO",
+        "LUGAR_HECHO",
+        "FECHA_HECHO",
+        "EDAD_ACUSADX",
+        "EDAD_VICTIMA",
+    ]
+    contexto_violencia, contexto_violencia_de_genero, lugar, fecha, edad_acusadx, edad_victima = list(
+        map(buscar, entidades)
+    )
 
-    if contexto_violencia or contexto_violencia_de_genero or lugar or fecha:
+    if contexto_violencia or contexto_violencia_de_genero or lugar or fecha or edad_acusadx or edad_victima:
         try:
-            extraer_datos(contexto_violencia, contexto_violencia_de_genero, lugar, fecha)
+            extraer_datos(contexto_violencia, contexto_violencia_de_genero, lugar, fecha, edad_acusadx, edad_victima)
         except Exception as error:
             capture_exception(error)
 
-def filter_spans(a_list, b_list):
-        # filtra spans de a_list que se overlapeen con algun span de b_list
-        def overlap(span, span_list):
-            for s in span_list:
-                if (span.start >= s.start and span.start < s.end) or (s.start >= span.start and s.end <= span.end) :
-                    return True
-            return False
 
-        return [span for span in a_list if not overlap(span, b_list)]
+def filter_spans(a_list, b_list):
+    # filtra spans de a_list que se overlapeen con algun span de b_list
+    def overlap(span, span_list):
+        for s in span_list:
+            if (span.start >= s.start and span.start < s.end) or (s.start >= span.start and s.end <= span.end):
+                return True
+        return False
+
+    return [span for span in a_list if not overlap(span, b_list)]

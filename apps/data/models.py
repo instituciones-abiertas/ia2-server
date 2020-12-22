@@ -1,6 +1,7 @@
 from django.db import models
 from .utils.lugares import get_comuna_caba
 from .utils.fechas import procesa_fecha
+from .utils.edades import get_franja
 
 
 class Historico(models.Model):
@@ -8,6 +9,8 @@ class Historico(models.Model):
     lugar = models.CharField(max_length=200, blank=True, null=True)
     contexto_violencia = models.CharField(max_length=200, blank=True, null=True)
     contexto_violencia_de_genero = models.CharField(max_length=200, blank=True, null=True)
+    edad_acusadx = models.CharField(max_length=200, blank=True, null=True)
+    edad_victima = models.CharField(max_length=200, blank=True, null=True)
 
 
 class LugarManager(models.Manager):
@@ -41,6 +44,8 @@ class Hecho(models.Model):
     _contexto_violencia = models.BooleanField(default=False)
     _contexto_violencia_de_genero = models.BooleanField(default=False)
     _fecha = models.DateField(blank=True, null=True)
+    _edad_acusadx = models.IntegerField(blank=True, null=True)
+    _edad_victima = models.IntegerField(blank=True, null=True)
     lugares = models.ManyToManyField(Lugar)
     historico = models.OneToOneField(
         Historico,
@@ -78,3 +83,21 @@ class Hecho(models.Model):
         if value:
             b = True
         self._contexto_violencia = b
+
+    @property
+    def edad_acusadx(self):
+        return self._edad_acusadx
+
+    @edad_acusadx.setter
+    def edad_acusadx(self, value):
+        franja_acusadx = get_franja(value)
+        self._edad_acusadx = franja_acusadx
+
+    @property
+    def edad_victima(self):
+        return self._edad_victima
+
+    @edad_victima.setter
+    def edad_victima(self, value):
+        franja_victima = get_franja(value)
+        self._edad_victima = franja_victima

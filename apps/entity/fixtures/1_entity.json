@@ -288,5 +288,25 @@
       "should_anonimyzation": false,
       "should_trained": true
     }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 30,
+    "fields": {
+      "name": "EDAD_ACUSADX",
+      "description": "La edad del acusadx",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 31,
+    "fields": {
+      "name": "EDAD_VICTIMA",
+      "description": "la edad de la victima",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
   }
 ]
