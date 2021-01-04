@@ -136,12 +136,15 @@ class ActViewSet(viewsets.ModelViewSet):
             if ent["start"] is not None and ent["end"] is not None:
                 entity_name = ent["tag"]
                 should_be_anonymized = entities.get(name=entity_name).should_anonimyzation
+                # Falta definir el nombre exacto del campo en el frontend
+                human_marked_ocurrency = ent["human_marked_ocurrency"]
                 ocurrency = OcurrencyEntity.objects.create(
                     act=act_check,
                     startIndex=ent["start"],
                     endIndex=ent["end"],
                     entity=Entity.objects.get(name=ent["tag"]),
                     should_anonymized=should_be_anonymized,
+                    human_marked_ocurrency=human_marked_ocurrency,
                     text=text[ent["start"] : ent["end"]],
                 )
                 all_query.append(ocurrency)

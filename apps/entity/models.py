@@ -40,6 +40,7 @@ class OcurrencyEntity(models.Model):
     entity = models.ForeignKey(to=Entity, on_delete=models.CASCADE)
     should_anonymized = models.BooleanField(default=True)
     text = models.TextField(null=True, blank=True)
+    human_marked_ocurrency = models.BooleanField(default=False)
 
     def __str__(self):
         return self.entity.name
