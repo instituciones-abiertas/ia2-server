@@ -30,7 +30,13 @@ from .utils.oodocument import (
     anonimyzed_convert_document,
 )
 from .utils.publicador import publish_document
-from .utils.general import check_exist_act, open_file, calculate_ents_anonimyzed, extraer_datos_de_ocurrencias
+from .utils.general import (
+    check_exist_act,
+    open_file,
+    calculate_ents_anonimyzed,
+    extraer_datos_de_ocurrencias,
+    calculate_sucess_percent_for_entity,
+)
 
 # Para usar Python Template de string
 ANON_REPLACE_TPL = "<$name>"
@@ -180,6 +186,7 @@ class ActViewSet(viewsets.ModelViewSet):
             "anonymous_text": read_result,
             "data_visualization": {
                 "entitiesResult": calculate_ents_anonimyzed(all_query),
+                "entitiesPercentHuman": calculate_sucess_percent_for_entity(all_query),
                 "total": {"name": "Cantidad de Entidades totales", "value": len(all_query)},
                 "risk": get_risk(len(all_query)),
                 "efectivity_average": 85,
