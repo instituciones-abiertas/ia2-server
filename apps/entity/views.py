@@ -36,6 +36,8 @@ from .utils.general import (
     calculate_ents_anonimyzed,
     extraer_datos_de_ocurrencias,
     calculate_sucess_percent_for_entity,
+    number_of_entities,
+    calculate_global_average,
 )
 
 # Para usar Python Template de string
@@ -185,11 +187,10 @@ class ActViewSet(viewsets.ModelViewSet):
         dataReturn = {
             "anonymous_text": read_result,
             "data_visualization": {
-                "entitiesResult": calculate_ents_anonimyzed(all_query),
-                "entitiesPercentHuman": calculate_sucess_percent_for_entity(all_query),
-                "total": {"name": "Cantidad de Entidades totales", "value": len(all_query)},
-                "risk": get_risk(len(all_query)),
-                "efectivity_average": 85,
+                "entitiesResult": calculate_ents_anonimyzed(all_query, act_check),
+                "entitiesPercentModel": calculate_sucess_percent_for_entity(all_query, act_check),
+                "total": number_of_entities(all_query),
+                "efectivity_average": calculate_global_average(all_query),
             },
         }
         return Response(dataReturn)
