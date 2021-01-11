@@ -1,10 +1,15 @@
+import logging
 from django.conf import settings
 from oodocument import oodocument
 from django.core.exceptions import ImproperlyConfigured
 from ..exceptions import ServiceOddDocumentUnavailable
 from string import Template
+from .general import open_file
 
+# Uso de logger server de django, agrega
+logger = logging.getLogger("django.server")
 
+# Funcion deprecada,solo anonimiza,se reemplazo por anonimyzed_convert_document
 def anonimyzed_text(path_document, path_output, data_to_replace, format_output, color=None):
     try:
         oo = oodocument(path_document, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)
@@ -12,7 +17,8 @@ def anonimyzed_text(path_document, path_output, data_to_replace, format_output, 
             r, g, b = color
             oo.set_font_back_color(r, g, b)
         oo.replace_with(data_to_replace, path_output, format_output)
-    except:
+    except Exception as e:
+        logger.exception(e)
         raise ServiceOddDocumentUnavailable()
     else:
         oo.dispose()
@@ -31,14 +37,15 @@ def convert_document_to_format(path_document, output_path, output_format):
     try:
         oo = oodocument(path_document, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)
         oo.convert_to(output_path, output_format)
-    except Exception:
+    except Exception as e:
+        logger.exception(e)
         raise ServiceOddDocumentUnavailable()
     else:
         oo.dispose()
 
 
 def extract_text_from_file(file_path):
-    read_file = open(file_path, "r")
+    read_file = open_file(file_path, "r")
     read_result = read_file.read()
     return read_result
 
@@ -59,7 +66,8 @@ def anonimyzed_convert_document(
             oo.set_font_back_color(r, g, b)
         oo.replace_with(data_to_replace, path_output, format_output)
         oo.convert_to(path_convert_document, format_convert_document)
-    except Exception:
+    except Exception as e:
+        logger.exception(settings.ERROR_STORAGE_FILE_NOT_EXIST)
         raise ServiceOddDocumentUnavailable()
     finally:
         oo.dispose()

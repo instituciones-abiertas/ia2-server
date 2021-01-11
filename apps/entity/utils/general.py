@@ -1,6 +1,11 @@
 from ..models import Entity, Act, OcurrencyEntity, LearningModel
 from ..exceptions import ActNotExist, StorageFileNotExist
 from apps.data.helpers import extraer_datos
+import logging
+from django.conf import settings
+
+# Uso de logger server de django, agrega
+logger = logging.getLogger("django.server")
 
 # Esta dependencia esta solamente en produccion
 try:
@@ -15,13 +20,15 @@ def check_exist_act(pk):
     try:
         return Act.objects.get(id=pk)
     except Act.DoesNotExist:
+        logger.exception(settings.ERROR_ACT_NOT_EXIST)
         raise ActNotExist()
 
 
-def open_file(path):
+def open_file(path, type):
     try:
-        output = open(path, "rb")
+        output = open(path, type)
     except OSError:
+        logger.exception(settings.ERROR_STORAGE_FILE_NOT_EXIST)
         raise StorageFileNotExist()
     else:
         return output

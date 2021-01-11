@@ -1,10 +1,13 @@
 from publicador import Publicador, GoogleDrive, DropboxApi
 import os
+import logging
 from django.conf import settings
-from ..exceptions import DropboxExpireCredentials, DriveNotFoundCredentials
+from ..exceptions import DropboxExpireCredentials, DriveNotFoundCredentials, StorageCloudFolderNotExist
 
 path_credentials_drive = settings.LIBERAJUS_CREDENTIALS_DRIVE_PATH
 dropbox_token = settings.LIBERAJUS_DROPBOX_TOKEN_APP
+# Uso de logger server de django, agrega
+logger = logging.getLogger("django.server")
 
 
 def publish_in_drive(file_path, path_in_drive):
@@ -12,8 +15,12 @@ def publish_in_drive(file_path, path_in_drive):
     context = Publicador(file_path, GoogleDrive(path_credentials_drive, path_in_drive))
     try:
         context.publicar()
-    except FileNotFoundError:
+    except Exception as e:
+        logger.exception(settings.ERROR_DRIVE_CREDENTIALS_NOT_FOUND)
         raise DriveNotFoundCredentials()
+    except BaseException as be:
+        logger.exception(e)
+        raise StorageCloudFolderNotExist()
 
 
 def publish_in_dropbox(file_path, dropbox_path):
@@ -21,7 +28,8 @@ def publish_in_dropbox(file_path, dropbox_path):
     context = Publicador(file_path, DropboxApi(dropbox_token, "/" + dropbox_path))
     try:
         context.publicar()
-    except Exception:
+    except Exception as e:
+        logger.exception(settings.ERROR_DROPBOX_CREDENTIALS)
         raise DropboxExpireCredentials()
 
 
