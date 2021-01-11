@@ -56,10 +56,10 @@ class EntityViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         queryset = Entity.objects.all()
-        for ent in ast.literal_eval(DISABLE_ENTITIES):
-            queryset = queryset.exclude(name=ent)
+        if DISABLE_ENTITIES:
+            for ent in ast.literal_eval(DISABLE_ENTITIES):
+                queryset = queryset.exclude(name=ent)
         serializer = EntitySerializer(queryset, many=True)
-
         return Response(serializer.data)
 
 

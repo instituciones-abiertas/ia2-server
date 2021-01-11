@@ -19,16 +19,17 @@ from .rules_sistem import add_rules_sistem
 model_path = "./custom_models/modelo_poc"
 DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
 
+
 class Nlp:
     def __init__(self, withEntityRuler, withMatcher):
         self.nlp = spacy.load(model_path)
-        
+
         if withMatcher:
             # Se inicializa el matcher
             self.matcher = Matcher(self.nlp.vocab)
             # Se agregan los patrones
             add_matchers(self.matcher)
-        
+
         if withEntityRuler:
             # Se inicializa el ruler
             self.ruler = EntityRuler(self.nlp, overwrite_ents=True)
@@ -39,7 +40,6 @@ class Nlp:
 
         self.text = None
         self.doc = None
-
 
     def generate_doc(self, text):
         self.text = text
@@ -53,6 +53,7 @@ class Nlp:
         if with_rules:
             list_ents = add_rules_sistem(self.nlp, self.doc, list_ents, self.matcher)
         return filter_entity(list_ents, DISABLE_ENTITIES)
+
 
 def get_risk(number):
     # Implementacion fake para pantalla
@@ -122,4 +123,7 @@ def write_model_test_in_file(filepath):
 
 
 def filter_entity(ent_list, ents_filter):
-    return [ent for ent in ent_list if ent.label_ not in ents_filter]
+    res = []
+    if ents_filter:
+        res = [ent for ent in ent_list if ent.label_ not in ents_filter]
+    return res
