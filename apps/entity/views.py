@@ -1,6 +1,7 @@
 import os
 import uuid
 import ast
+import logging
 from django.conf import settings
 from django.http import FileResponse
 from django.core.exceptions import ValidationError
@@ -23,7 +24,6 @@ from .exceptions import nameTooLong, ActFileNotFound
 from .tasks import train_model
 from .utils.spacy import Nlp, get_risk, write_model_test_in_file
 from .utils.oodocument import (
-    anonimyzed_text,
     generate_data_for_anonymization,
     convert_document_to_format,
     extract_text_from_file,
@@ -38,6 +38,9 @@ ANON_REPLACE_TPL = "<$name>"
 ANON_FONT_BACK_COLOR = [255, 255, 0]
 # Entidades a no mostrar
 DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
+
+# Uso de logger server de django, agrega
+logger = logging.getLogger("django.server")
 
 
 class EntityViewSet(viewsets.ModelViewSet):
@@ -70,15 +73,19 @@ class ActViewSet(viewsets.ModelViewSet):
     def create(self, request):
         new_file = request.FILES.get("file", False)
         if new_file is False:
+            # Caso excepcional ya que no se lanza una excepcion de sistema primero
+            logger.error("No se adjunto el archivo")
             raise ActFileNotFound()
         output_path = settings.MEDIA_ROOT_TEMP_FILES + "output.txt" + str(uuid.uuid4())
         # Creo el acta base
         new_act = Act(file=new_file)
         try:
             new_act.full_clean()
-        except (ValidationError):
+        except (ValidationError) as e:
+            logger.exception(settings.ERROR_TEXT_FILE_TYPE)
             raise UnsupportedMediaType(media_type=new_file.content_type, detail=settings.ERROR_TEXT_FILE_TYPE)
-        except (nameTooLong):
+        except (nameTooLong) as e:
+            logger.exception(e)
             raise nameTooLong()
         else:
             new_act.save()
@@ -187,7 +194,7 @@ class ActViewSet(viewsets.ModelViewSet):
     @action(methods=["get"], detail=True)
     def getAnonymousDocument(self, request, pk=None):
         act_check = check_exist_act(pk)
-        dataResponse = open_file(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + act_check.filename())
+        dataResponse = open_file(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + act_check.filename(), "rb")
         return FileResponse(dataResponse, as_attachment=True)
 
     @action(methods=["post"], detail=True)

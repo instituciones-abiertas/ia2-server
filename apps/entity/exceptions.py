@@ -48,3 +48,9 @@ class DriveNotFoundCredentials(APIException):
     status_code = 404
     default_detail = settings.ERROR_DRIVE_CREDENTIALS_NOT_FOUND
     default_code = "drive_not_found_credentials"
+
+
+class StorageCloudFolderNotExist(APIException):
+    status_code = 404
+    default_detail = settings.ERROR_STORAGE_CLOUD_FOLDER_NOT_EXIST
+    default_code = "storage_cloud_folder_not_exist"
