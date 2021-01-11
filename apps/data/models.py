@@ -59,8 +59,9 @@ class Hecho(models.Model):
 
     @fecha.setter
     def fecha(self, value):
-        fecha = procesa_fecha(value)
-        self._fecha = fecha
+        if value:
+            value = procesa_fecha(value)
+        self._fecha = value
 
     @property
     def contexto_violencia_de_genero(self):
