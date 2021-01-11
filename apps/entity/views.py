@@ -30,7 +30,8 @@ from .utils.oodocument import (
     anonimyzed_convert_document,
 )
 from .utils.publicador import publish_document
-from .utils.general import check_exist_act, open_file, calculate_ents_anonimyzed, extraer_datos_de_ocurrencias
+from .utils.general import check_exist_act, open_file, extraer_datos_de_ocurrencias
+from .utils.data_visualization import generate_data_visualization
 
 # Para usar Python Template de string
 ANON_REPLACE_TPL = "<$name>"
@@ -143,12 +144,15 @@ class ActViewSet(viewsets.ModelViewSet):
             if ent["start"] is not None and ent["end"] is not None:
                 entity_name = ent["tag"]
                 should_be_anonymized = entities.get(name=entity_name).should_anonimyzation
+                # Falta definir el nombre exacto del campo en el frontend
+                human_marked_ocurrency = ent["human_marked_ocurrency"]
                 ocurrency = OcurrencyEntity.objects.create(
                     act=act_check,
                     startIndex=ent["start"],
                     endIndex=ent["end"],
                     entity=Entity.objects.get(name=ent["tag"]),
                     should_anonymized=should_be_anonymized,
+                    human_marked_ocurrency=human_marked_ocurrency,
                     text=text[ent["start"] : ent["end"]],
                 )
                 all_query.append(ocurrency)
@@ -182,12 +186,7 @@ class ActViewSet(viewsets.ModelViewSet):
         # Construyo el response
         dataReturn = {
             "anonymous_text": read_result,
-            "data_visualization": {
-                "entitiesResult": calculate_ents_anonimyzed(all_query),
-                "total": {"name": "Cantidad de Entidades totales", "value": len(all_query)},
-                "risk": get_risk(len(all_query)),
-                "efectivity_average": 85,
-            },
+            "data_visualization": generate_data_visualization(all_query, act_check),
         }
         return Response(dataReturn)
 

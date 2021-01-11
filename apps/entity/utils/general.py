@@ -34,21 +34,6 @@ def open_file(path, type):
         return output
 
 
-def calculate_ents_anonimyzed(arrayEnts):
-    result_list = []
-    type_of_ents = list(Entity.objects.all())
-
-    for ent in type_of_ents:
-        result_list.append(
-            {
-                "name": "Datos " + ent.name,
-                "value": len(list(filter(lambda x: x.entity_id == ent.id, arrayEnts))),
-            }
-        )
-
-    return result_list
-
-
 def extraer_datos_de_ocurrencias(ocurrencias):
     # Consideracion: solo se queda con la 1er ocurrencia de estas entiedades
 
