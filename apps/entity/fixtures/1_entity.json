@@ -293,8 +293,8 @@
     "model": "entity.entity",
     "pk": 30,
     "fields": {
-      "name": "EDAD_ACUSADX",
-      "description": "La edad del acusadx",
+      "name": "PASAPORTE",
+      "description": "Nuevo número de Pasaporte Argentino",
       "should_anonimyzation": true,
       "should_trained": true
     }
@@ -303,8 +303,108 @@
     "model": "entity.entity",
     "pk": 31,
     "fields": {
+     "name": "LINK",
+      "description": "Enlace web",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 32,
+    "fields": {
+      "name": "NUM_ACTUACIÓN",
+      "description": "Número de actuación",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 33,
+    "fields": {
+      "name": "NUM_EXPEDIENTE",
+      "description": "Número de expediente",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 34,
+    "fields": {
+      "name": "NOMBRE_ARCHIVO",
+      "description": "Nombre de archivo",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 35,
+    "fields": {
+      "name": "USUARIX",
+      "description": "Nombre de usuario de red social o web",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 36,
+    "fields": {
+      "name": "CBU",
+      "description": "Clave bancaria uniforme",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 37,
+    "fields": {
+      "name": "ESTUDIOS",
+      "description": "Trayectproa de estudios de las personas",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 38,
+    "fields": {
+      "name": "BANCO",
+      "description": "Bancos de la República Argentina",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 39,
+    "fields": {
+      "name": "MARCA_AUTOMÓVIL",
+      "description": "Clave bancaria uniforme",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 40,
+    "fields": {
       "name": "EDAD_VICTIMA",
       "description": "la edad de la victima",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 41,
+    "fields": {
+      "name": "EDAD_ACUSADX",
+      "description": "la edad del acusadx",
       "should_anonimyzation": true,
       "should_trained": true
     }
