@@ -23,6 +23,8 @@ DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
 class Nlp:
     def __init__(self, withEntityRuler, withMatcher):
         self.nlp = spacy.load(model_path)
+        self.matcher = None
+        self.ruler = None
 
         if withMatcher:
             # Se inicializa el matcher
