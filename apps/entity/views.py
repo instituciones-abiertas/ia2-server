@@ -20,6 +20,7 @@ from .serializers import (
 )
 from .models import Entity, Act, OcurrencyEntity, LearningModel
 from .exceptions import nameTooLong, ActFileNotFound
+from .validator import is_docx_file
 
 from .tasks import train_model
 from .utils.spacy import Nlp, get_risk, write_model_test_in_file
@@ -28,10 +29,12 @@ from .utils.oodocument import (
     convert_document_to_format,
     extract_text_from_file,
     anonimyzed_convert_document,
+    extract_header,
 )
 from .utils.publicador import publish_document
 from .utils.general import check_exist_act, open_file, extraer_datos_de_ocurrencias
 from .utils.data_visualization import generate_data_visualization
+
 
 # Para usar Python Template de string
 ANON_REPLACE_TPL = "<$name>"
@@ -82,7 +85,7 @@ class ActViewSet(viewsets.ModelViewSet):
         new_act = Act(file=new_file)
         try:
             new_act.full_clean()
-        except (ValidationError) as e:
+        except ValidationError:
             logger.exception(settings.ERROR_TEXT_FILE_TYPE)
             raise UnsupportedMediaType(media_type=new_file.content_type, detail=settings.ERROR_TEXT_FILE_TYPE)
         except (nameTooLong) as e:
@@ -90,10 +93,21 @@ class ActViewSet(viewsets.ModelViewSet):
             raise nameTooLong()
         else:
             new_act.save()
-        # Transformo el docx,en txt
+        # Transformo el archivo de entrada a txt para procesarlo
         convert_document_to_format(new_act.file.path, output_path, "txt")
-        # Guardo el texto en la instancia
+        # Variable de entorno para activar
         new_act.text = extract_text_from_file(output_path)
+        # Chequeo la variable definida, si es True y si ademas es una extension valida de docx
+        if (
+            settings.HEADER_EXTRACT_ENABLE
+            and ast.literal_eval(settings.HEADER_EXTRACT_ENABLE)
+            and is_docx_file(new_act.file.path)
+        ):
+            header_text = extract_header(new_act.file.path)
+            # Agregado encabezado al texto
+            new_act.text = header_text + "\n" + new_act.text
+
+        # Guardo el texto en la instancia
         new_act.save()
         # Inicializo objeto nlp con EntityRuler y Matcher
         nlp = Nlp(True, True)

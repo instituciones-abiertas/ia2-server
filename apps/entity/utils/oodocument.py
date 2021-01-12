@@ -1,10 +1,14 @@
 import logging
 from django.conf import settings
 from oodocument import oodocument
+import os
+import uuid
 from django.core.exceptions import ImproperlyConfigured
 from ..exceptions import ServiceOddDocumentUnavailable
 from string import Template
 from .general import open_file
+from docx import Document
+
 
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
@@ -71,3 +75,29 @@ def anonimyzed_convert_document(
         raise ServiceOddDocumentUnavailable()
     finally:
         oo.dispose()
+
+
+# Utilizamos la libreria https://pypi.org/project/python-docx/
+def extract_header(path_document):
+    new_text = ""
+    document = Document(path_document)
+    section = document.sections[0]
+    header = section.first_page_header
+    for paragraph in header.paragraphs:
+        # Agrega solo las lineas con contenido
+        if paragraph:
+            # Agrega un salto de linea despues de cada nuevo linea del encabezado
+            new_text = new_text + "\n" + paragraph.text
+    return new_text
+
+
+# Función para convertir a formato docx y extraer el header (no utilizada aun)
+def convert_and_extract_header(path_document):
+    # Definicion de ruta
+    output_path = settings.MEDIA_ROOT_TEMP_FILES + str(uuid.uuid4()) + "header.docx"
+    # Conversion a docx
+    convert_document_to_format(path_document, output_path, "docx")
+    header_text = extract_header(output_path)
+    # Borrado archivo temporal
+    # os.remove(output_path)
+    return header_text
