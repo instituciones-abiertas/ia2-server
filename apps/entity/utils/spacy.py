@@ -16,7 +16,7 @@ from .matcher import add_matchers
 from .ruler import add_patterns
 from .rules_sistem import add_rules_sistem
 
-model_path = "./custom_models/modelo_poc"
+model_path = "./custom_models/best-08-01-60percent"
 DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
 
 
