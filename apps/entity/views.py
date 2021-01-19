@@ -23,7 +23,7 @@ from .exceptions import nameTooLong, ActFileNotFound
 from .validator import is_docx_file
 
 from .tasks import train_model
-from .utils.spacy import Nlp, get_risk, write_model_test_in_file
+from .utils.spacy import Nlp, write_model_test_in_file
 from .utils.oodocument import (
     generate_data_for_anonymization,
     convert_document_to_format,
@@ -109,10 +109,10 @@ class ActViewSet(viewsets.ModelViewSet):
 
         # Guardo el texto en la instancia
         new_act.save()
-        # Inicializo objeto nlp con EntityRuler y Matcher
-        nlp = Nlp(True, True)
-        # Analizo el texto con el sistema de reglas activado (matcher y custom rules)
-        ents = nlp.get_all_entities(new_act.text, True)
+
+        nlp = Nlp()
+        ents = nlp.get_all_entities(new_act.text)
+
         ocurrency_list = EntSerializer(ents, many=True)
         # Una vez procesado,guardar la info
         dataReturn = {
