@@ -4,6 +4,7 @@ import plac
 import random
 import warnings
 import time
+import logging
 
 from django.conf import settings
 from pathlib import Path
@@ -13,8 +14,15 @@ from spacy.pipeline import EntityRuler
 from spacy.tokens import Span
 from re import match
 
-model_path = "./custom_models/modelo_poc"
+logger = logging.getLogger("django.server")
+if settings.LIBERAJUS_MODEL_FILE is None or not settings.LIBERAJUS_MODEL_FILE:
+    logger.error("No hay un modelo valido para utilizar")
+    logger.error("Pone el nombre del paquete en la variable de ambiente LIBERAJUS_MODEL_FILE")
+    quit()
+model_name = os.path.basename(settings.LIBERAJUS_MODEL_FILE).split("-")[0]
+
 DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
+
 
 class Nlp:
     def __init__(self):
