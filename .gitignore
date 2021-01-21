@@ -21,6 +21,9 @@ profiles
 # Documents
 *.docx
 *.doc
-custom_models/test_model/test.txt
+
+# Models
+custom_models/*
+!custom_models/.gitkeep
 
 credentials.json
