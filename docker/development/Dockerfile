@@ -56,6 +56,9 @@ WORKDIR /app
 COPY requirements/base.txt /app
 COPY requirements/local.txt /app
 COPY requirements/testing.txt /app
+
+COPY . /app
+
 # Installs development dependencies
 RUN pip install -U pip
 RUN pip install -r local.txt
@@ -63,8 +66,6 @@ RUN pip install -r local.txt
 # Configures Uno library
 RUN cp /usr/lib/python3/dist-packages/uno.py /usr/local/lib/python3.7/site-packages/uno.py
 RUN cp /usr/lib/python3/dist-packages/unohelper.py /usr/local/lib/python3.7/site-packages/unohelper.py
-
-COPY . /app
 
 ADD . /app
 
