@@ -21,6 +21,7 @@ ARG data_db_port
 ARG secret_key
 ARG dropbox_token
 ARG disable_entities
+ARG model_file
 ARG header_extract_enable
 
 # Domain specific database environment
@@ -42,6 +43,7 @@ ENV PYTHONUNBUFFERED 1
 ENV SECRET_KEY=${secret_key}
 ENV LIBERAJUS_DROPBOX_TOKEN_APP=${dropbox_token}
 ENV LIBERAJUS_DISABLE_ENTITIES=${disable_entities}
+ENV LIBERAJUS_MODEL_FILE=${model_file}
 ENV HEADER_EXTRACT_ENABLE=${header_extract_enable}
 # Exposes Django server port
 EXPOSE 8000
@@ -54,6 +56,9 @@ WORKDIR /app
 COPY requirements/base.txt /app
 COPY requirements/local.txt /app
 COPY requirements/testing.txt /app
+
+COPY . /app
+
 # Installs development dependencies
 RUN pip install -U pip
 RUN pip install -r local.txt
@@ -61,8 +66,6 @@ RUN pip install -r local.txt
 # Configures Uno library
 RUN cp /usr/lib/python3/dist-packages/uno.py /usr/local/lib/python3.7/site-packages/uno.py
 RUN cp /usr/lib/python3/dist-packages/unohelper.py /usr/local/lib/python3.7/site-packages/unohelper.py
-
-COPY . /app
 
 ADD . /app
 
