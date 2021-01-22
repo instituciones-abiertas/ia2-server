@@ -264,8 +264,8 @@
     "pk": 27,
     "fields": {
       "name": "NUM_IP",
-      "description": "Número de D.N.I",
-      "should_anonimyzation": false,
+      "description": "Número de I.P",
+      "should_anonimyzation": true,
       "should_trained": true
     }
   },
@@ -275,7 +275,7 @@
     "fields": {
       "name": "NUM_CUIJ",
       "description": "Número de CUIJ",
-      "should_anonimyzation": false,
+      "should_anonimyzation": true,
       "should_trained": true
     }
   },
@@ -303,7 +303,7 @@
     "model": "entity.entity",
     "pk": 31,
     "fields": {
-     "name": "LINK",
+      "name": "LINK",
       "description": "Enlace web",
       "should_anonimyzation": true,
       "should_trained": true
@@ -364,7 +364,7 @@
     "pk": 37,
     "fields": {
       "name": "ESTUDIOS",
-      "description": "Trayectproa de estudios de las personas",
+      "description": "Trayectos de estudios de las personas",
       "should_anonimyzation": true,
       "should_trained": true
     }
@@ -384,7 +384,7 @@
     "pk": 39,
     "fields": {
       "name": "MARCA_AUTOMÓVIL",
-      "description": "Clave bancaria uniforme",
+      "description": "Es la marca de un vehículo",
       "should_anonimyzation": true,
       "should_trained": true
     }
