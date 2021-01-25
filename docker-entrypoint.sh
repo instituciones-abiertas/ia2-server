@@ -10,8 +10,10 @@ python manage.py collectstatic --noinput --settings=liberajus.settings.productio
 echo "=> Compiling translations..."
 python manage.py compilemessages --settings=liberajus.settings.production
 
-# echo "=> Adding sections..."
-# python manage.py loaddata apps/my_model/fixtures/3_some_property.json  --settings=applicationname.settings.production
+echo "=> Adding entity fixtures..."
+python manage.py loaddata apps/entity/fixtures/1_entity.json --settings=liberajus.settings.production
+echo "=> Adding initial learning model fixtures..."
+python manage.py loaddata apps/entity/fixtures/2_initial_learning_models.json --settings=liberajus.settings.production
 
 echo "=> Starting Libreoffice headless"
 /usr/bin/libreoffice --headless --nologo --nofirststartwizard --accept="socket,host=0.0.0.0,port=8001;urp" &
