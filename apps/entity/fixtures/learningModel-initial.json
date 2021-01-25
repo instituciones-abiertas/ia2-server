@@ -1,1 +1,18 @@
-[{"model": "entity.learningmodel", "pk": 1, "fields": {"name_subject": "Penal", "last_update": "2020-10-06T14:45:03.328Z"}}, {"model": "entity.learningmodel", "pk": 2, "fields": {"name_subject": "Civil", "last_update": "2020-10-06T15:08:01.932Z"}}]
+[
+  {
+    "model": "entity.learningmodel",
+    "pk": 1,
+    "fields": {
+      "name_subject": "Penal",
+      "last_update": "2020-10-06T14:45:03.328Z"
+    }
+  },
+  {
+    "model": "entity.learningmodel",
+    "pk": 2,
+    "fields": {
+      "name_subject": "Civil",
+      "last_update": "2020-10-06T15:08:01.932Z"
+    }
+  }
+]
