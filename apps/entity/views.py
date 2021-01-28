@@ -30,6 +30,7 @@ from .utils.oodocument import (
     extract_text_from_file,
     anonimyzed_convert_document,
     extract_header,
+    convert_offset_header_to_cursor,
 )
 from .utils.publicador import publish_document
 from .utils.general import check_exist_act, open_file, extraer_datos_de_ocurrencias
@@ -42,6 +43,7 @@ ANON_REPLACE_TPL = "<$name>"
 ANON_FONT_BACK_COLOR = [255, 255, 0]
 # Entidades a no mostrar
 DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
+
 
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
@@ -104,7 +106,8 @@ class ActViewSet(viewsets.ModelViewSet):
             and is_docx_file(new_act.file.path)
         ):
             header_text = extract_header(new_act.file.path)
-            # Agregado encabezado al texto
+            # Agregado encabezado al texto y calculo de tamaño
+            new_act.offset_header = len(header_text)
             new_act.text = header_text + "\n" + new_act.text
 
         # Guardo el texto en la instancia
@@ -179,10 +182,11 @@ class ActViewSet(viewsets.ModelViewSet):
             act_check.file.path,
             settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format,
             extension,
-            generate_data_for_anonymization(all_query, act_check.text, ANON_REPLACE_TPL),
+            generate_data_for_anonymization(all_query, act_check.text, ANON_REPLACE_TPL, act_check.offset_header),
             output_text,
             "txt",
             ANON_FONT_BACK_COLOR,
+            convert_offset_header_to_cursor(act_check.offset_header),
         )
         # Generar el archivo para poder extraer el texto
         # convert_document_to_format(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format, output_text, "txt")

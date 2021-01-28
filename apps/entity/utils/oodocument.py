@@ -13,6 +13,7 @@ from docx import Document
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
 
+
 # Funcion deprecada,solo anonimiza,se reemplazo por anonimyzed_convert_document
 def anonimyzed_text(path_document, path_output, data_to_replace, format_output, color=None):
     try:
@@ -28,12 +29,18 @@ def anonimyzed_text(path_document, path_output, data_to_replace, format_output, 
         oo.dispose()
 
 
-def generate_data_for_anonymization(ocurrency_for_anonimyzation, text, replace_tpl):
-    data = {}
+def get_context(text, start_index, end_index):
+    return text[start_index:end_index]
+
+
+def generate_data_for_anonymization(ocurrency_for_anonimyzation, text, replace_tpl, offset):
+    data = []
     s = Template(replace_tpl)
     for ent in ocurrency_for_anonimyzation:
-        if ent.should_anonymized:
-            data[text[ent.startIndex : ent.endIndex]] = s.substitute(name=ent.entity.name)
+        # Se agrega que exceda al offset,en caso de corresponder
+        if ent.should_anonymized and ent.startIndex > offset:
+            # Se resta un caracter ya que en el reemplazo se usa la posición del cursor
+            data.append((ent.startIndex - 1, ent.endIndex, s.substitute(name=ent.entity.name), ent.text))
     return data
 
 
@@ -62,15 +69,16 @@ def anonimyzed_convert_document(
     path_convert_document,
     format_convert_document,
     color=None,
+    offset=0,
 ):
     try:
         oo = oodocument(path_document, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)
         if color and isinstance(color, list) and len(color) == 3:
             r, g, b = color
             oo.set_font_back_color(r, g, b)
-        oo.replace_with(data_to_replace, path_output, format_output)
+        oo.replace_with_index(data_to_replace, path_output, format_output, offset, 20)
         oo.convert_to(path_convert_document, format_convert_document)
-    except Exception as e:
+    except Exception:
         logger.exception(settings.ERROR_STORAGE_FILE_NOT_EXIST)
         raise ServiceOddDocumentUnavailable()
     finally:
@@ -101,3 +109,11 @@ def convert_and_extract_header(path_document):
     # Borrado archivo temporal
     # os.remove(output_path)
     return header_text
+
+
+# Funcion auxiliar para invertir formato de offset y agregar un desplazamiento del cursor
+def convert_offset_header_to_cursor(original_offset):
+    if original_offset != 0:
+        return -original_offset - 1
+    else:
+        return 0

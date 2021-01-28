@@ -22,6 +22,7 @@ class Act(models.Model):
     text = models.TextField(default="En Proceso")
     file = PrivateFileField(max_length=200, validators=[get_file_extension, name_length])
     created_date = models.DateTimeField(default=timezone.now)
+    offset_header = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.id)
