@@ -35,13 +35,16 @@ def get_context(text, start_index, end_index):
 
 def generate_data_for_anonymization(ocurrency_for_anonimyzation, text, replace_tpl, offset):
     data = []
+    header_data = []
     s = Template(replace_tpl)
     for ent in ocurrency_for_anonimyzation:
         # Se agrega que exceda al offset,en caso de corresponder
         if ent.should_anonymized and ent.startIndex > offset:
             # Se resta un caracter ya que en el reemplazo se usa la posición del cursor
             data.append((ent.startIndex - 1, ent.endIndex, s.substitute(name=ent.entity.name), ent.text))
-    return data
+        elif ent.should_anonymized and ent.startIndex < offset:
+            header_data.append((ent.startIndex - 1, ent.endIndex, s.substitute(name=ent.entity.name)))
+    return (header_data, data)
 
 
 def convert_document_to_format(path_document, output_path, output_format):
@@ -76,7 +79,11 @@ def anonimyzed_convert_document(
         if color and isinstance(color, list) and len(color) == 3:
             r, g, b = color
             oo.set_font_back_color(r, g, b)
-        oo.replace_with_index(data_to_replace, path_output, format_output, offset, 20)
+        for data_replace_header, data_replace_body in data_to_replace:
+            print(data_replace_body)
+            oo.replace_with_index(data_replace_body, path_output, format_output, offset, 20)
+            print(data_replace_header)
+            oo.replace_with_(data_replace_header, path_output, format_output, offset)
         oo.convert_to(path_convert_document, format_convert_document)
     except Exception:
         logger.exception(settings.ERROR_STORAGE_FILE_NOT_EXIST)
