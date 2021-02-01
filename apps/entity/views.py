@@ -68,6 +68,7 @@ class EntityViewSet(viewsets.ModelViewSet):
         if DISABLE_ENTITIES:
             for ent in ast.literal_eval(DISABLE_ENTITIES):
                 queryset = queryset.exclude(name=ent)
+        queryset = queryset.order_by("name")
         serializer = EntitySerializer(queryset, many=True)
         return Response(serializer.data)
 
