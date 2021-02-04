@@ -1,6 +1,6 @@
 ## Descripción
 
-**Incluya un resumen del cambio y una referencia al issue que se solucionó. Incluya también la motivación y el contexto ue considere relevantes. Enumere cualquier dependencia necesaria para este cambio.**
+**Incluya un resumen del cambio y una referencia al issue que se solucionó. Incluya también la motivación y el contexto que considere relevantes. Enumere cualquier dependencia necesaria para este cambio.**
 
 <!-- Plantilla de ejemplo:
 
@@ -40,19 +40,19 @@ Closes: #420
 
 **Instrucciones:**
 
-<!-- Proporcione instrucciones, a continuación un ejemplo 
+<!-- Proporcione instrucciones, a continuación un ejemplo:
 
-**1.** Setear los siguientes parámetros en `train_config.json`: ...  
-**2.** Ejecutar el comando `command param1 param2 param3`  
-**3.** Verificar que los archivos existan en...   
+**1.** Setear los siguientes parámetros en `.env`: ...  
+**2.** Levantar el servidor utilizando el comando...  
+**3.** Realizar un pedido http al servicio `nombre de servicio` con los siguientes parámetros: ...   
 
-**Expected result:** la operación se muestra completada en el log `debug.log`.
+**Resultado esperado:** El resultado del pedido http responde con: ...
 
 -->
 
 ## Lista de Verificación
 
-> Las siguientes opciones en ** negrita ** son necesarias para la aprobación del PR. Marque las casillas solo si es necesario, nos ayuda a minimizar el proceso de revisión.
+> Las siguientes opciones en **negrita** son necesarias para la aprobación del PR. Marque las casillas solo si es necesario, nos ayuda a minimizar el proceso de revisión.
 
 <!-- Editar a continuación -->
 
