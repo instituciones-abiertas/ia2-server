@@ -12,12 +12,12 @@ def generate_data_visualization(ocurrenciesArray, act):
 
 # Obtener un set de las entidades que aparecen en un acta
 def get_entities_to_act(act_check):
-    list_ent = []
+    list_ent = set()
     ocurrency_query = OcurrencyEntity.objects.filter(act=act_check)
     for ocurrency in list(ocurrency_query):
-        list_ent.append(ocurrency.entity)
-
-    return set(list_ent)
+        list_ent.add(ocurrency.entity)
+    # Se convierte el set en lista para ordenar alfabeticamente
+    return sorted(list(list_ent), key=lambda x: x.name)
 
 
 # Calcular cantidad de ocurrencias por entidades han sido detectadas y anonimizada
