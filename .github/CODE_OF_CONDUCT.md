@@ -13,8 +13,8 @@ Ejemplos de comportamiento que contribuyen a crear un ambiente positivo para nue
 * Demostrar empatía y amabilidad ante otras personas
 * Respeto a diferentes opiniones, puntos de vista y experiencias
 * Dar y aceptar adecuadamente retroalimentación constructiva
-* Aceptar la responsabilidad y disculparse ante quienes se vean afectados por nuestros errores, aprendiendo de la experiencia
-* Centrarse en lo que sea mejor no sólo para nosotrxs como individuos, sino para la comunidad en general
+* Aceptar la responsabilidad y disculparse ante quienes se vean afectadxs por nuestros errores, aprendiendo de la experiencia
+* Centrarse en lo que sea mejor no sólo para nosotrxs como personas individuales, sino para la comunidad en general
 
 Ejemplos de comportamiento inaceptable:
 
@@ -32,7 +32,7 @@ Lxs administradorxs de la comunidad tendrán el derecho y la responsabilidad de 
 
 ## Alcance
 
-Este código de conducta aplica tanto a espacios del proyecto como a espacios públicos donde un individuo esté en representación del proyecto o comunidad. Ejemplos de esto incluyen el uso de la cuenta oficial de correo electrónico, publicaciones a través de las redes sociales oficiales, o presentaciones con personas designadas en eventos en línea o no.
+Este código de conducta aplica tanto a espacios del proyecto como a espacios públicos donde una persona esté en representación del proyecto o comunidad. Ejemplos de esto incluyen el uso de la cuenta oficial de correo electrónico, publicaciones a través de las redes sociales oficiales, o presentaciones con personas designadas en eventos en línea o no.
 
 ## Aplicación
 
@@ -64,7 +64,7 @@ Lxs administradorxs de la comunidad seguirán estas Guías de Impacto en la Comu
 
 ### 4. Expulsión permanente
 
-**Impacto en la Comunidad**: Demostrar un patrón sistemático de incumplimientos de los estándares de la comunidad, incluyendo conductas inapropiadas prolongadas en el tiempo, acoso de individuos, o agresiones o menosprecio a grupos de individuos.
+**Impacto en la Comunidad**: Demostrar un patrón sistemático de incumplimientos de los estándares de la comunidad, incluyendo conductas inapropiadas prolongadas en el tiempo, acoso de personas, o agresiones o menosprecio a grupos de personas.
 
 **Consecuencia**: Una expulsión permanente de cualquier tipo de interacción pública con la comunidad del proyecto.
 
