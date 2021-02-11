@@ -22,7 +22,6 @@ ARG secret_key
 ARG dropbox_token
 ARG disable_entities
 ARG model_file
-ARG header_extract_enable
 
 # Domain specific database environment
 ENV LIBERAJUS_DB_NAME=${main_db_name}
@@ -44,7 +43,7 @@ ENV SECRET_KEY=${secret_key}
 ENV LIBERAJUS_DROPBOX_TOKEN_APP=${dropbox_token}
 ENV LIBERAJUS_DISABLE_ENTITIES=${disable_entities}
 ENV LIBERAJUS_MODEL_FILE=${model_file}
-ENV HEADER_EXTRACT_ENABLE=${header_extract_enable}
+
 # Exposes Django server port
 EXPOSE 8000
 
