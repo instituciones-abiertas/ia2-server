@@ -13,6 +13,8 @@ from docx import Document
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
 
+HEADER_STYLE_NAME = "First Page"
+
 
 # Funcion deprecada,solo anonimiza,se reemplazo por anonimyzed_convert_document
 def anonimyzed_text(path_document, path_output, data_to_replace, format_output, color=None):
@@ -35,13 +37,16 @@ def get_context(text, start_index, end_index):
 
 def generate_data_for_anonymization(ocurrency_for_anonimyzation, text, replace_tpl, offset):
     data = []
+    header_data = []
     s = Template(replace_tpl)
     for ent in ocurrency_for_anonimyzation:
         # Se agrega que exceda al offset,en caso de corresponder
         if ent.should_anonymized and ent.startIndex > offset:
             # Se resta un caracter ya que en el reemplazo se usa la posición del cursor
             data.append((ent.startIndex - 1, ent.endIndex, s.substitute(name=ent.entity.name), ent.text))
-    return data
+        elif ent.should_anonymized and ent.startIndex < offset:
+            header_data.append((ent.startIndex - 1, ent.endIndex, s.substitute(name=ent.entity.name), ent.text))
+    return [header_data, data]
 
 
 def convert_document_to_format(path_document, output_path, output_format):
@@ -76,7 +81,10 @@ def anonimyzed_convert_document(
         if color and isinstance(color, list) and len(color) == 3:
             r, g, b = color
             oo.set_font_back_color(r, g, b)
-        oo.replace_with_index(data_to_replace, path_output, format_output, offset, 20)
+        data_replace_header = data_to_replace[0]
+        data_replace_body = data_to_replace[1]
+        oo.replace_with_index(data_replace_body, path_output, format_output, offset, 20)
+        oo.replace_with_index_in_header(data_replace_header, path_output, format_output, 0, 20, HEADER_STYLE_NAME)
         oo.convert_to(path_convert_document, format_convert_document)
     except Exception:
         logger.exception(settings.ERROR_STORAGE_FILE_NOT_EXIST)
