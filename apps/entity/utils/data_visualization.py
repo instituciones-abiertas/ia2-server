@@ -68,22 +68,24 @@ def calculated_percent_entity(ent, ocurrenciesArray):
 def total_of_entities(ocurrenciesArray, type_of_ents_array):
     all_entities = len(ocurrenciesArray)
     human_mark_entities = len(list(filter(lambda x: x.human_marked_ocurrency, ocurrenciesArray)))
+    model_total_ent = all_entities - human_mark_entities
     return {
-        "model_total_ent": all_entities - human_mark_entities,
+        "model_total_ent": model_total_ent,
         "human_total_ent": human_mark_entities,
-        "percent_total": calculated_global_average(ocurrenciesArray, type_of_ents_array),
+        "percent_total": calculated_global_all_entities_average(model_total_ent, human_mark_entities),
     }
 
 
-# Calcular porcentaje de acierto general realizando una suma de todos los promedios
-# def calculated_sum_total_percent(total_percent, total_ents):
-# return {"name": "Porcentaje de acierto general ", "value": " Es {} %".format(round(total_percent / total_ents, 2))}
-
-
-# Calculo de porcentaje con la sumatoria de acierto
+# Calculo de porcentaje con la sumatoria de acierto por entidad
 def calculated_global_average(ocurrenciesArray, type_of_ents_array):
     total_percent = 0
     for ent in type_of_ents_array:
         total_percent = total_percent + calculated_percent_entity(ent, ocurrenciesArray)
 
     return round(total_percent / len(type_of_ents_array), 2)
+
+
+# Calculo de porcenteja sobre el total de las entidades detectadas por el modelo , sobre el total (modelo + humano)
+def calculated_global_all_entities_average(model_ents, human_ents):
+    percent = model_ents / (model_ents + human_ents)
+    return round(percent * 100, 2)
