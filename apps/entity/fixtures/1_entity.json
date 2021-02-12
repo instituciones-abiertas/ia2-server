@@ -384,7 +384,7 @@
     "pk": 39,
     "fields": {
       "name": "MARCA_AUTOMÓVIL",
-      "description": "Es la marca de un vehículo",
+      "description": "La marca de un vehículo",
       "should_anonimyzation": true,
       "should_trained": true
     }
@@ -394,7 +394,7 @@
     "pk": 40,
     "fields": {
       "name": "EDAD_VICTIMA",
-      "description": "la edad de la victima",
+      "description": "Edad de la victima",
       "should_anonimyzation": true,
       "should_trained": true
     }
@@ -404,7 +404,17 @@
     "pk": 41,
     "fields": {
       "name": "EDAD_ACUSADX",
-      "description": "la edad del acusadx",
+      "description": "Edad del acusadx",
+      "should_anonimyzation": true,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 42,
+    "fields": {
+      "name": "DEFENSOR",
+      "description": "Nombre de la persona encargada de la defensoría",
       "should_anonimyzation": true,
       "should_trained": true
     }
