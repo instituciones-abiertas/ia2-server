@@ -1,5 +1,12 @@
 # IA² | Backend
 
+<p align="center">
+  <a target="_blank" rel="noopener noreferrer">
+    <img width="220px" src="liberajus/static/images/ia2-logo.png" alt="IA²" />
+  </a>
+</p>
+<h4 align="center">Servidor del proyecto IA²</h4>
+
 ## Stack Tecnológico
 
 + [Django 2.2.5](https://docs.djangoproject.com/en/3.1/releases/2.2/)
@@ -14,9 +21,9 @@ Realizar una copia del archivo `.env.example` y renombrarlo a `.env`. Luego, ser
 
 ### Variables de ambiente
 
-#### Variables de `publicador`
+#### Publicador
 
-> Utilizamos [`publicador`]([Publicador](https://github.com/Cambalab/publicador)) para subir archivos a diferentes servicios de cloud storage.
+> Utilizamos la librería [`publicador`](https://github.com/Cambalab/publicador) para subir archivos a diferentes servicios de cloud storage.
 
 + `LIBERAJUS_CLOUD_STORAGE_PROVIDER`: declara la estrategia de storage. Las opciones disponibles son : `dropbox`, `drive`, `both`.
 + `LIBERAJUS_CLOUDFOLDER_STORE`: declara el directorio donde se guardarán los archivos en el serrvicio de cloud storage.
