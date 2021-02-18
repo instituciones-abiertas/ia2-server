@@ -29,7 +29,7 @@ tqdm==4.49.0
 urllib3==1.25.10
 wasabi==0.8.0
 zipp==3.1.0
-oodocument==0.0.6
+oodocument==0.0.7
 publicador==0.0.2
 python-magic==0.4.18
 dateparser==1.0.0
