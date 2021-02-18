@@ -1,0 +1,96 @@
+version: "3.7"
+
+services:
+  main_db:
+    image: mariadb:10.4.11-bionic
+    environment:
+      MYSQL_USER: "${LIBERAJUS_DB_USER}"
+      MYSQL_PASSWORD: "${LIBERAJUS_DB_PASS}"
+      MYSQL_ROOT_PASSWORD: "${LIBERAJUS_DB_ROOT_PASS}"
+      MYSQL_DATABASE: "${LIBERAJUS_DB_NAME}"
+    ports:
+      - "${LIBERAJUS_DB_PORT}:3306"
+    volumes:
+      - main-db-volume:/var/lib/mysql/data
+    command:
+      [
+        "mysqld",
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+      ]
+
+  data_db:
+    image: mariadb:10.4.11-bionic
+    environment:
+      MYSQL_USER: "${LIBERAJUS_DB_DATA_USER}"
+      MYSQL_PASSWORD: "${LIBERAJUS_DB_DATA_PASS}"
+      MYSQL_ROOT_PASSWORD: "${LIBERAJUS_DB_DATA_ROOT_PASS}"
+      MYSQL_DATABASE: "${LIBERAJUS_DB_DATA_NAME}"
+    ports:
+      - "${LIBERAJUS_DB_DATA_PORT}:3306"
+    volumes:
+      - data-db-volume:/var/lib/mysql/data
+    command:
+      [
+        "mysqld",
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+      ]
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+
+  web:
+    restart: always
+    image: liberajus/django-app
+    build:
+      context: .
+      dockerfile: "docker/development/Dockerfile"
+      args:
+        main_db_user: "${LIBERAJUS_DB_USER}"
+        main_db_password: "${LIBERAJUS_DB_PASS}"
+        main_db_root_password: "${LIBERAJUS_DB_ROOT_PASS}"
+        main_db_name: "${LIBERAJUS_DB_NAME}"
+        main_db_host: "main_db"
+        main_db_port: "${LIBERAJUS_DB_PORT}"
+        data_db_user: "${LIBERAJUS_DB_DATA_USER}"
+        data_db_password: "${LIBERAJUS_DB_DATA_PASS}"
+        data_db_root_password: "${LIBERAJUS_DB_DATA_ROOT_PASS}"
+        data_db_name: "${LIBERAJUS_DB_DATA_NAME}"
+        data_db_host: "data_db"
+        data_db_port: "${LIBERAJUS_DB_DATA_PORT}"
+        model_file: ${LIBERAJUS_MODEL_FILE}
+        test_model_file: ${LIBERAJUS_TEST_MODEL_FILE}
+        secret_key: "${LIBERAJUS_SECRET_KEY}"
+        dropbox_token: "${LIBERAJUS_DROPBOX_TOKEN_APP}"
+        disable_entities: "${LIBERAJUS_DISABLE_ENTITIES}"
+    entrypoint: "docker/development/django-entrypoint.sh"
+    environment:
+      DJANGO_SETTINGS_MODULE: "${DJANGO_SETTINGS_MODULE}"
+      DEBUG: 1
+      DOCKER_COMPOSE: 1
+      HEADER_EXTRACT_ENABLE: "${HEADER_EXTRACT_ENABLE}"
+      # Temporarily removes broker and redis waiting
+      # WAIT_HOSTS: redis:6379, broker:${RABBITMQ_PORT}
+      WAIT_HOSTS: main_db:3306, data_db:3306
+      REDIS_HOST: redis
+      BROKER_HOST: broker
+      BROKER_USER: "${RABBITMQ_USERNAME}"
+      BROKER_PASSWORD: "${RABBITMQ_PASSWORD}"
+      BROKER_PORT: "${RABBITMQ_PORT}"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - main_db
+      - data_db
+    volumes:
+      - .:/app
+    links:
+      - main_db
+      - data_db
+
+volumes:
+  main-db-volume:
+  data-db-volume:

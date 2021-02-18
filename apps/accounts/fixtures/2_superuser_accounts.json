@@ -1,0 +1,19 @@
+[
+  {
+    "model": "accounts.user",
+    "fields": {
+      "password": "pbkdf2_sha256$150000$oHH2xil6lP0B$bNrHGYdXc5W5qHaKbMnpyqnKdrMlecRdZ5/mPu2kIZE=",
+      "last_login": null,
+      "username": "juzgado10",
+      "email": "demo@juzgado10.gov",
+      "first_name": "Juzgado Penal",
+      "last_name": "Contravencional y Faltas N° 10",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true,
+      "date_joined": "2019-10-10T16:20:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]
