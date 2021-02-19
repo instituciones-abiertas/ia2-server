@@ -84,7 +84,8 @@ def anonimyzed_convert_document(
         data_replace_header = data_to_replace[0]
         data_replace_body = data_to_replace[1]
         oo.replace_with_index(data_replace_body, path_output, format_output, offset, 20)
-        oo.replace_with_index_in_header(data_replace_header, path_output, format_output, 0, 20, HEADER_STYLE_NAME)
+        if settings.HEADER_EXTRACT_ENABLE:
+            oo.replace_with_index_in_header(data_replace_header, path_output, format_output, 0, 20, HEADER_STYLE_NAME)
         oo.convert_to(path_convert_document, format_convert_document)
     except Exception:
         logger.exception(settings.ERROR_STORAGE_FILE_NOT_EXIST)
