@@ -28,6 +28,10 @@ clear: django-migrate
 test: ## Run tests.
 test: django-test
 
+shell: ## Runs a python shell
+shell:
+	docker-compose exec web python manage.py shell
+
 # ---------------
 # Utility targets
 # ---------------
