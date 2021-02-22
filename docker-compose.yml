@@ -68,12 +68,11 @@ services:
         disable_entities: "${LIBERAJUS_DISABLE_ENTITIES}"
     entrypoint: "docker/development/django-entrypoint.sh"
     environment:
+      OODOCUMENT_NEIGHBOR_CHARS_SCAN: "${OODOCUMENT_NEIGHBOR_CHARS_SCAN}"
       DJANGO_SETTINGS_MODULE: "${DJANGO_SETTINGS_MODULE}"
       DEBUG: 1
       DOCKER_COMPOSE: 1
       HEADER_EXTRACT_ENABLE: "${HEADER_EXTRACT_ENABLE}"
-      # Temporarily removes broker and redis waiting
-      # WAIT_HOSTS: redis:6379, broker:${RABBITMQ_PORT}
       WAIT_HOSTS: main_db:3306, data_db:3306
       REDIS_HOST: redis
       BROKER_HOST: broker
