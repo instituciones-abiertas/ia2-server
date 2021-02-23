@@ -185,7 +185,7 @@
     "fields": {
       "name": "NUM",
       "description": "La representaci\u00f3n de un numero",
-      "should_anonimyzation": true,
+      "should_anonimyzation": false,
       "should_trained": true
     }
   },
@@ -195,7 +195,7 @@
     "fields": {
       "name": "CONTEXTO_VIOLENCIA_DE_G\u00c9NERO",
       "description": "Existencia de contexto de violencia de genero",
-      "should_anonimyzation": true,
+      "should_anonimyzation": false,
       "should_trained": true
     }
   },
@@ -205,7 +205,7 @@
     "fields": {
       "name": "CONTEXTO_VIOLENCIA",
       "description": "Tipificacion del tipo de violencia existente",
-      "should_anonimyzation": true,
+      "should_anonimyzation": false,
       "should_trained": true
     }
   },
@@ -385,7 +385,7 @@
     "fields": {
       "name": "MARCA_AUTOMÓVIL",
       "description": "La marca de un vehículo",
-      "should_anonimyzation": true,
+      "should_anonimyzation": false,
       "should_trained": true
     }
   },
