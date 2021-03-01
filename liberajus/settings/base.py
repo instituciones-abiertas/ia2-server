@@ -225,7 +225,10 @@ CELERY_ONCE = {
 LIBREOFFICE_HOST = "0.0.0.0"
 LIBREOFFICE_PORT = 8001
 HEADER_EXTRACT_ENABLE = os.environ.get("HEADER_EXTRACT_ENABLE")
-NEIGHBOR_CHARS_SCAN = int(os.environ.get("OODOCUMENT_NEIGHBOR_CHARS_SCAN", "20"))
+if os.environ.get("OODOCUMENT_NEIGHBOR_CHARS_SCAN"):
+    NEIGHBOR_CHARS_SCAN = int(os.environ.get("OODOCUMENT_NEIGHBOR_CHARS_SCAN"))
+else:
+    NEIGHBOR_CHARS_SCAN = 20  # Valor default si no viene seteada la variable
 
 # Publicador Configuration
 
