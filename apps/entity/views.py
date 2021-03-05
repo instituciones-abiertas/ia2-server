@@ -116,9 +116,29 @@ class ActViewSet(viewsets.ModelViewSet):
 
         nlp = Nlp()
         ents = nlp.get_all_entities(new_act.text)
+        # Traigo todas las entidades para hacer busquedas mas rapida
+        entities = Entity.objects.all()
+        # Guardo las ocurrencias para no tener que hacer una llamada  a la base despues
+        all_ocurrency = []
 
-        ocurrency_list = EntSerializer(ents, many=True)
-        # Una vez procesado,guardar la info
+        for ent in ents:
+            entity_name = ent.label_
+            entity = entities.get(name=entity_name)
+            should_be_anonymized = entity.should_anonimyzation
+            # Falta definir el nombre exacto del campo en el frontend
+            ocurrency = OcurrencyEntity.objects.create(
+                act=new_act,
+                startIndex=ent.start_char,
+                endIndex=ent.end_char,
+                entity=entity,
+                should_anonymized=should_be_anonymized,
+                human_marked_ocurrency=False,
+                text=ent.text,
+            )
+            all_ocurrency.append(ocurrency)
+        # Serialización para enviar al frontend
+        ocurrency_list = EntSerializer(all_ocurrency, many=True)
+
         dataReturn = {
             "text": new_act.text,
             "ents": ocurrency_list.data,
@@ -147,37 +167,42 @@ class ActViewSet(viewsets.ModelViewSet):
     @action(methods=["post"], detail=True)
     def addAnnotations(self, request, pk=None):
         act_check = check_exist_act(pk)
-        new_ents = request.data.get("ents")
-        ocurrency_query = OcurrencyEntity.objects.filter(act=act_check)
-        all_query = list()
-        if ocurrency_query.exists():
-            ocurrency_query.delete()
-        # Recorrido sobre las ents nuevas
+        # Ocurrencias marcadas por humanx
+        new_ents = request.data.get("newOcurrencies")
+        # Ocurrencias para marcar eliminadas
+        delete_ents = request.data.get("deleteOcurrencies")
         text = act_check.text
-
+        # Traigo todas las entidades para hacer busquedas mas rapida
         entities = Entity.objects.all()
 
+        # Recorrido sobre las ents nuevas
         for ent in new_ents:
             # Chequeo por un flujo que me puede llegar entitades del front sin datos
             if ent["start"] is not None and ent["end"] is not None:
-                entity_name = ent["tag"]
-                should_be_anonymized = entities.get(name=entity_name).should_anonimyzation
-                # Falta definir el nombre exacto del campo en el frontend
-                human_marked_ocurrency = ent["human_marked_ocurrency"]
+                entity = entities.get(name=ent["tag"])
+                should_be_anonymized = entity.should_anonimyzation
                 ocurrency = OcurrencyEntity.objects.create(
                     act=act_check,
                     startIndex=ent["start"],
                     endIndex=ent["end"],
                     entity=Entity.objects.get(name=ent["tag"]),
                     should_anonymized=should_be_anonymized,
-                    human_marked_ocurrency=human_marked_ocurrency,
+                    human_marked_ocurrency=True,
                     text=text[ent["start"] : ent["end"]],
                 )
-                all_query.append(ocurrency)
+        # Actualización de ocurrencias a borrar
+        for ent in delete_ents:
+            # Caso que sea eliminada la ocurrencia por accion humana
+            ocurrency = OcurrencyEntity.objects.get(id=ent["id"])
+            ocurrency.human_deleted_ocurrency = True  # cambio del campo
+            ocurrency.save()
+
         # Definicion de rutas
         output_text = settings.MEDIA_ROOT_TEMP_FILES + "anonymous.txt" + str(uuid.uuid4())
         output_format = act_check.filename()
         extension = os.path.splitext(output_format)[1][1:]
+        # Todas las ocurrencias actualizadas para el texto
+        all_query = list(OcurrencyEntity.objects.filter(act=act_check))
         # Generar el archivo en formato de entrada anonimizado
         anonimyzed_convert_document(
             act_check.file.path,
