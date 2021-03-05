@@ -27,6 +27,7 @@ class OcurrencyEntitySerializer(serializers.ModelSerializer):
 
 
 class EntSerializer(serializers.Serializer):
+    id = serializers.SerializerMethodField("get_id")
     start = serializers.SerializerMethodField("get_start_label")
     end = serializers.SerializerMethodField("get_end_label")
     tag = serializers.SerializerMethodField("get_tag_label")
@@ -34,13 +35,16 @@ class EntSerializer(serializers.Serializer):
     human_marked_ocurrency = serializers.BooleanField(default=False)
 
     def get_start_label(self, obj):
-        return obj.start_char
+        return obj.startIndex
 
     def get_end_label(self, obj):
-        return obj.end_char
+        return obj.endIndex
 
     def get_tag_label(self, obj):
-        return obj.label_
+        return obj.entity.name
+
+    def get_id(self, obj):
+        return obj.id
 
 
 class LearningModelSerializer(serializers.ModelSerializer):

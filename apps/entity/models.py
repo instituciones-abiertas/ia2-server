@@ -42,6 +42,7 @@ class OcurrencyEntity(models.Model):
     should_anonymized = models.BooleanField(default=True)
     text = models.TextField(null=True, blank=True)
     human_marked_ocurrency = models.BooleanField(default=False)
+    human_deleted_ocurrency = models.BooleanField(default=False)
 
     def __str__(self):
         return self.entity.name
