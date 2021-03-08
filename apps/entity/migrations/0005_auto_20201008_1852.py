@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entity', '0004_learningmodel_name_subject'),
+        ("entity", "0004_learningmodel_name_subject"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='entity',
-            name='is_for_anonimization',
+            model_name="entity",
+            name="is_for_anonimization",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='entity',
-            name='is_trained',
+            model_name="entity",
+            name="is_trained",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='ocurrencyentity',
-            name='shouldAnonymized',
+            model_name="ocurrencyentity",
+            name="shouldAnonymized",
             field=models.BooleanField(default=True),
         ),
     ]

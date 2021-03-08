@@ -6,23 +6,23 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entity', '0005_auto_20201008_1852'),
+        ("entity", "0005_auto_20201008_1852"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='entity',
-            old_name='is_for_anonimization',
-            new_name='should_anonimyzation',
+            model_name="entity",
+            old_name="is_for_anonimization",
+            new_name="should_anonimyzation",
         ),
         migrations.RenameField(
-            model_name='entity',
-            old_name='is_trained',
-            new_name='should_trained',
+            model_name="entity",
+            old_name="is_trained",
+            new_name="should_trained",
         ),
         migrations.RenameField(
-            model_name='ocurrencyentity',
-            old_name='shouldAnonymized',
-            new_name='should_anonymized',
+            model_name="ocurrencyentity",
+            old_name="shouldAnonymized",
+            new_name="should_anonymized",
         ),
     ]

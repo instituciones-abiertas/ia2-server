@@ -83,21 +83,10 @@ def anonimyzed_convert_document(
             oo.set_font_back_color(r, g, b)
         data_replace_header = data_to_replace[0]
         data_replace_body = data_to_replace[1]
-        oo.replace_with_index(
-            data_replace_body,
-            path_output,
-            format_output,
-            offset,
-            settings.NEIGHBOR_CHARS_SCAN
-        )
+        oo.replace_with_index(data_replace_body, path_output, format_output, offset, settings.NEIGHBOR_CHARS_SCAN)
         if settings.HEADER_EXTRACT_ENABLE:
             oo.replace_with_index_in_header(
-                data_replace_header,
-                path_output,
-                format_output,
-                0,
-                settings.NEIGHBOR_CHARS_SCAN,
-                HEADER_STYLE_NAME
+                data_replace_header, path_output, format_output, 0, settings.NEIGHBOR_CHARS_SCAN, HEADER_STYLE_NAME
             )
         oo.convert_to(path_convert_document, format_convert_document)
     except Exception:

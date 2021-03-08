@@ -1,5 +1,6 @@
 stages:
   - fetch
+  - linter
   - test
   - build
   - deploy
@@ -11,6 +12,16 @@ fetch_code:
     - git fetch --all
     - git checkout $CI_COMMIT_REF_NAME
     - git reset --hard origin/$CI_COMMIT_REF_NAME
+
+linter_code:
+  image: cambalab/python3-uno
+  stage: linter
+  before_script:
+    - pip3 install black
+    - pip3 install flake8 mccabe pycodestyle pyflakes
+  script:
+    - python3 -m flake8 --config=.flake8 --statistics --count .
+    - black --config ./pyproject.toml --check .
 
 run_tests:
   image: cambalab/python3-uno

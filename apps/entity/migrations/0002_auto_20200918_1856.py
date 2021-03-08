@@ -8,28 +8,33 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entity', '0001_initial'),
+        ("entity", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='act',
-            name='created_date',
+            model_name="act",
+            name="created_date",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='act',
-            name='text',
+            model_name="act",
+            name="text",
             field=models.TextField(),
         ),
         migrations.CreateModel(
-            name='OcurrencyEntity',
+            name="OcurrencyEntity",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('startIndex', models.PositiveIntegerField()),
-                ('endIndex', models.PositiveIntegerField()),
-                ('act', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='listOfEntity', to='entity.Act')),
-                ('entity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='entity.Entity')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("startIndex", models.PositiveIntegerField()),
+                ("endIndex", models.PositiveIntegerField()),
+                (
+                    "act",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="listOfEntity", to="entity.Act"
+                    ),
+                ),
+                ("entity", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="entity.Entity")),
             ],
         ),
     ]

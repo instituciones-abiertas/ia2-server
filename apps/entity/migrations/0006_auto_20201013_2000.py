@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entity', '0005_act_file'),
+        ("entity", "0005_act_file"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='act',
-            name='file',
-            field=models.FileField(upload_to=''),
+            model_name="act",
+            name="file",
+            field=models.FileField(upload_to=""),
         ),
         migrations.AlterField(
-            model_name='act',
-            name='text',
-            field=models.TextField(default='En Proceso'),
+            model_name="act",
+            name="text",
+            field=models.TextField(default="En Proceso"),
         ),
     ]

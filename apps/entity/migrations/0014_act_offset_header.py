@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entity', '0013_ocurrencyentity_human_marked_ocurrency'),
+        ("entity", "0013_ocurrencyentity_human_marked_ocurrency"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='act',
-            name='offset_header',
+            model_name="act",
+            name="offset_header",
             field=models.IntegerField(default=0),
         ),
     ]
