@@ -7,15 +7,15 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entity', '0002_auto_20200918_1856'),
+        ("entity", "0002_auto_20200918_1856"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='LearningModel',
+            name="LearningModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('last_update', models.DateTimeField(default=django.utils.timezone.now)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("last_update", models.DateTimeField(default=django.utils.timezone.now)),
             ],
         ),
     ]

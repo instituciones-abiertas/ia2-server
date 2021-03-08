@@ -6,14 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entity', '0003_learningmodel'),
+        ("entity", "0003_learningmodel"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='learningmodel',
-            name='name_subject',
-            field=models.CharField(default='civil', max_length=60),
+            model_name="learningmodel",
+            name="name_subject",
+            field=models.CharField(default="civil", max_length=60),
             preserve_default=False,
         ),
     ]

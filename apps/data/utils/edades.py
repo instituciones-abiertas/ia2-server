@@ -1,6 +1,6 @@
 def get_franja(numero):
     # Chequea  si no esta  etiqueto
-    if numero != None:
+    if numero is not None:
         try:
             numero_escrito = int(numero)
             decena = numero_escrito // 10
@@ -11,7 +11,7 @@ def get_franja(numero):
                 return (decena) * 10
             else:
                 return 10
-        except Exception as e:
+        except Exception:
             # En caso que se etiquete algo que no sea un numero
             print("No se etiqueto una edad, se etiqueto :", numero)
         else:

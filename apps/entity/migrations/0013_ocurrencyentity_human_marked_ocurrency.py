@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entity', '0012_auto_20201126_1739'),
+        ("entity", "0012_auto_20201126_1739"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ocurrencyentity',
-            name='human_marked_ocurrency',
+            model_name="ocurrencyentity",
+            name="human_marked_ocurrency",
             field=models.BooleanField(default=False),
         ),
     ]

@@ -15,11 +15,11 @@ def publish_in_drive(file_path, path_in_drive):
     context = Publicador(file_path, GoogleDrive(path_credentials_drive, path_in_drive))
     try:
         context.publicar()
-    except Exception as e:
+    except Exception:
         logger.exception(settings.ERROR_DRIVE_CREDENTIALS_NOT_FOUND)
         raise DriveNotFoundCredentials()
     except BaseException as be:
-        logger.exception(e)
+        logger.exception(be)
         raise StorageCloudFolderNotExist()
 
 
@@ -28,7 +28,7 @@ def publish_in_dropbox(file_path, dropbox_path):
     context = Publicador(file_path, DropboxApi(dropbox_token, "/" + dropbox_path))
     try:
         context.publicar()
-    except Exception as e:
+    except Exception:
         logger.exception(settings.ERROR_DROPBOX_CREDENTIALS)
         raise DropboxExpireCredentials()
 

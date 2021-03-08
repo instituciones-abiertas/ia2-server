@@ -7,23 +7,22 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Act',
+            name="Act",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', models.CharField(max_length=9999)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("text", models.CharField(max_length=9999)),
             ],
         ),
         migrations.CreateModel(
-            name='Entity',
+            name="Entity",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=60)),
-                ('description', models.CharField(max_length=60)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=60)),
+                ("description", models.CharField(max_length=60)),
             ],
         ),
     ]
