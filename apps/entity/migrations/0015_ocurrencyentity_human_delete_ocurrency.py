@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entity', '0014_act_offset_header'),
+        ("entity", "0014_act_offset_header"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ocurrencyentity',
-            name='human_delete_ocurrency',
+            model_name="ocurrencyentity",
+            name="human_delete_ocurrency",
             field=models.BooleanField(default=False),
         ),
     ]
