@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from private_storage.fields import PrivateFileField
+from datetime import timedelta
 import os
 from .validator import get_file_extension, name_length
 
@@ -32,6 +33,17 @@ class Act(models.Model):
 
     def filename(self):
         return os.path.basename(self.file.name)
+
+
+class ActStats(models.Model):
+    act = models.OneToOneField(
+        Act,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+    load_time = models.DurationField(default=timedelta())
+    detection_time = models.DurationField(default=timedelta())
+    anonymization_time = models.DurationField(default=timedelta())
 
 
 class OcurrencyEntity(models.Model):
