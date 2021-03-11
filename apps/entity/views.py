@@ -4,12 +4,10 @@ import ast
 import logging
 from django.conf import settings
 from django.http import FileResponse
-from django.core.exceptions import ValidationError
 
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.exceptions import UnsupportedMediaType
 
 from .serializers import (
     EntitySerializer,
@@ -19,11 +17,9 @@ from .serializers import (
     LearningModelSerializer,
 )
 from .models import Entity, Act, OcurrencyEntity, LearningModel
-from .exceptions import nameTooLong, ActFileNotFound
-from .validator import is_docx_file
 
 from .tasks import train_model
-from .utils.spacy import Nlp, write_model_test_in_file
+from .utils.spacy import write_model_test_in_file
 from .utils.oodocument import (
     generate_data_for_anonymization,
     convert_document_to_format,
@@ -32,10 +28,11 @@ from .utils.oodocument import (
     extract_header,
     convert_offset_header_to_cursor,
 )
+
 from .utils.publicador import publish_document
 from .utils.general import check_exist_act, open_file, extraer_datos_de_ocurrencias
 from .utils.data_visualization import generate_data_visualization
-
+from .utils.vistas import timeit_save_stats, create_act, detect_entities
 
 # Para usar Python Template de string
 ANON_REPLACE_TPL = "<$name>"
@@ -79,72 +76,18 @@ class ActViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         new_file = request.FILES.get("file", False)
-        if new_file is False:
-            # Caso excepcional ya que no se lanza una excepcion de sistema primero
-            logger.error("No se adjunto el archivo")
-            raise ActFileNotFound()
-        output_path = settings.MEDIA_ROOT_TEMP_FILES + "output.txt" + str(uuid.uuid4())
-        # Creo el acta base
-        new_act = Act(file=new_file)
-        try:
-            new_act.full_clean()
-        except ValidationError:
-            logger.exception(settings.ERROR_TEXT_FILE_TYPE)
-            raise UnsupportedMediaType(media_type=new_file.content_type, detail=settings.ERROR_TEXT_FILE_TYPE)
-        except (nameTooLong) as e:
-            logger.exception(e)
-            raise nameTooLong()
-        else:
-            new_act.save()
-        # Transformo el archivo de entrada a txt para procesarlo
-        convert_document_to_format(new_act.file.path, output_path, "txt")
-        # Variable de entorno para activar
-        new_act.text = extract_text_from_file(output_path)
-        # Chequeo la variable definida, si es True y si ademas es una extension valida de docx
-        if (
-            settings.HEADER_EXTRACT_ENABLE
-            and ast.literal_eval(settings.HEADER_EXTRACT_ENABLE)
-            and is_docx_file(new_act.file.path)
-        ):
-            header_text = extract_header(new_act.file.path)
-            # Agregado encabezado al texto y calculo de tamaño
-            new_act.offset_header = len(header_text)
-            new_act.text = header_text + "\n" + new_act.text
+        act = create_act(new_file)
 
-        # Guardo el texto en la instancia
-        new_act.save()
-
-        nlp = Nlp()
-        ents = nlp.get_all_entities(new_act.text)
-        # Traigo todas las entidades para hacer busquedas mas rapida
-        entities = Entity.objects.all()
-        # Guardo las ocurrencias para no tener que hacer una llamada  a la base despues
-        all_ocurrency = []
-
-        for ent in ents:
-            entity_name = ent.label_
-            entity = entities.get(name=entity_name)
-            should_be_anonymized = entity.should_anonimyzation
-            # Falta definir el nombre exacto del campo en el frontend
-            ocurrency = OcurrencyEntity.objects.create(
-                act=new_act,
-                startIndex=ent.start_char,
-                endIndex=ent.end_char,
-                entity=entity,
-                should_anonymized=should_be_anonymized,
-                human_marked_ocurrency=False,
-                text=ent.text,
-            )
-            all_ocurrency.append(ocurrency)
-        # Serialización para enviar al frontend
-        ocurrency_list = EntSerializer(all_ocurrency, many=True)
+        timeit_detect_ents = timeit_save_stats(act, "detection_time")(detect_entities)
+        ocurrencies = timeit_detect_ents(act)
+        ents = EntSerializer(ocurrencies, many=True)
 
         dataReturn = {
-            "text": new_act.text,
-            "ents": ocurrency_list.data,
-            "id": new_act.id,
+            "text": act.text,
+            "ents": ents.data,
+            "id": act.id,
         }
-        os.remove(output_path)
+
         return Response(dataReturn)
 
     def update(self, request, pk):
@@ -204,7 +147,8 @@ class ActViewSet(viewsets.ModelViewSet):
         # Todas las ocurrencias actualizadas para el texto
         all_query = list(OcurrencyEntity.objects.filter(act=act_check))
         # Generar el archivo en formato de entrada anonimizado
-        anonimyzed_convert_document(
+        timeit_anonimyzation = timeit_save_stats(act_check, "anonymization_time")(anonimyzed_convert_document)
+        timeit_anonimyzation(
             act_check.file.path,
             settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format,
             extension,
