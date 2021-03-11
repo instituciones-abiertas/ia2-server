@@ -233,7 +233,7 @@
     "model": "entity.entity",
     "pk": 24,
     "fields": {
-      "name": "JUEZ",
+      "name": "JUEZX",
       "description": "Nombre de juez o jueza nombrado en la causa.",
       "should_anonimyzation": false,
       "should_trained": true
@@ -413,7 +413,7 @@
     "model": "entity.entity",
     "pk": 42,
     "fields": {
-      "name": "DEFENSOR",
+      "name": "DEFENSORX",
       "description": "Nombre de la persona encargada de la defensoría",
       "should_anonimyzation": true,
       "should_trained": true
