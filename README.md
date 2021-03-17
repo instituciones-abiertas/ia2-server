@@ -172,6 +172,10 @@ Werkzeug==0.15.6
 
 Los servicios del backend pueden ser encontrados en [éste archivo](link-a-json) de [Insomnia](https://insomnia.rest/download/).
 
+## Licencia
+
+[**GNU General Public License version 3**](LICENSE)
+
 ## Contribuciones
 
 Por favor, asegúrese de leer los [lineamientos de contribución](CONTRIBUTING.md) antes de realizar Pull Requests.
