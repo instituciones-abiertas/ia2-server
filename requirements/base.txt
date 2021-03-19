@@ -7,6 +7,7 @@ django-mysql==3.2.0
 djangorestframework==3.10.3
 django-private-storage==2.2.2
 drf-flex-fields==0.8.0
+jsonschema==3.2.0
 mysqlclient==1.4.4
 six==1.12.0
 sqlparse==0.3.0
