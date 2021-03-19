@@ -418,5 +418,25 @@
       "should_anonimyzation": true,
       "should_trained": true
     }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 43,
+    "fields": {
+      "name": "FECHA_RESOLUCION",
+      "description": "Fecha especifica de la sentencia",
+      "should_anonimyzation": false,
+      "should_trained": true
+    }
+  },
+  {
+    "model": "entity.entity",
+    "pk": 44,
+    "fields": {
+      "name": "PERIODO",
+      "description": "Periodo de tiempo",
+      "should_anonimyzation": false,
+      "should_trained": true
+    }
   }
 ]
