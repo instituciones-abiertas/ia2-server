@@ -2,12 +2,12 @@
   {
     "model": "accounts.user",
     "fields": {
-      "password": "pbkdf2_sha256$150000$oHH2xil6lP0B$bNrHGYdXc5W5qHaKbMnpyqnKdrMlecRdZ5/mPu2kIZE=",
+      "password": "pbkdf2_sha256$150000$a24pTDeZDPtD$Y3iSmauX+OKXtfNT8EoPjPzNTDNERvJDWIziOT7J8fU=",
       "last_login": null,
-      "username": "juzgado10",
-      "email": "demo@juzgado10.gov",
-      "first_name": "Juzgado Penal",
-      "last_name": "Contravencional y Faltas N° 10",
+      "username": "demo",
+      "email": "demo@ia2.coop",
+      "first_name": "Demo",
+      "last_name": "IA²",
       "is_active": true,
       "is_staff": true,
       "is_superuser": true,
