@@ -25,10 +25,10 @@ Realizar una copia del archivo `.env.example` y renombrarlo a `.env`. Luego, ser
 
 > Utilizamos la librería [`publicador`](https://github.com/Cambalab/publicador) para subir archivos a diferentes servicios de cloud storage.
 
-+ `LIBERAJUS_CLOUD_STORAGE_PROVIDER`: declara la estrategia de storage. Las opciones disponibles son : `dropbox`, `drive`, `both`.
-+ `LIBERAJUS_CLOUDFOLDER_STORE`: declara el directorio donde se guardarán los archivos en el serrvicio de cloud storage.
-+ `LIBERAJUS_DROPBOX_TOKEN_APP`: declara el token de dropbox para la autenticación.
-+ `LIBERAJUS_CREDENTIALS_DRIVE_PATH`: declara la ruta hacia el archivo de credenciales de Google Drive. Más información sobre el archivo de credenciales [aquí](https://developers.google.com/drive/api/v3/quickstart/go).
++ `PUBLICADOR_CLOUD_STORAGE_PROVIDER`: declara la estrategia de storage. Las opciones disponibles son : `dropbox`, `drive`, `both`.
++ `PUBLICADOR_CLOUDFOLDER_STORE`: declara el directorio donde se guardarán los archivos en el serrvicio de cloud storage.
++ `PUBLICADOR_DROPBOX_TOKEN_APP`: declara el token de dropbox para la autenticación.
++ `PUBLICADOR_CREDENTIALS_DRIVE_PATH`: declara la ruta hacia el archivo de credenciales de Google Drive. Más información sobre el archivo de credenciales [aquí](https://developers.google.com/drive/api/v3/quickstart/go).
 
 #### LibreOffice
 
@@ -46,8 +46,8 @@ Realizar una copia del archivo `.env.example` y renombrarlo a `.env`. Luego, ser
 
 #### Spacy Model
 
-+ `LIBERAJUS_MODEL_FILE`: ruta o url del modelo de Spacy a utilizar. Los modelos son archivos `.tar.gz` construídos con la [línea de comandos de IA²](link-aquí). Las rutas pueden declararse de forma relativa o absoluta hacia el archivo `.tar.gz`. Ejemplos: `../../models/my-model.tar.gz`, `https://my-model-repository.coop/model_1.0.tar.gz`. El directorio `custom_models` se puede utilizar para almacenar los modelos sin ser añadidos al tracking de `.git` *(recomendado si utiliza Docker para el ambiente de desarrollo, ver la siguiente sección)*.
-+ `LIBERAJUS_TEST_MODEL_FILE`: simil a `LIBERAJUS_MODEL_FILE`, pero el modelo en ésta variable se utiliza únicamente durante las pruebas.
++ `IA2_MODEL_FILE`: ruta o url del modelo de Spacy a utilizar. Los modelos son archivos `.tar.gz` construídos con la [línea de comandos de IA²](link-aquí). Las rutas pueden declararse de forma relativa o absoluta hacia el archivo `.tar.gz`. Ejemplos: `../../models/my-model.tar.gz`, `https://my-model-repository.coop/model_1.0.tar.gz`. El directorio `custom_models` se puede utilizar para almacenar los modelos sin ser añadidos al tracking de `.git` *(recomendado si utiliza Docker para el ambiente de desarrollo, ver la siguiente sección)*.
++ `IA2_TEST_MODEL_FILE`: simil a `IA2_MODEL_FILE`, pero el modelo en ésta variable se utiliza únicamente durante las pruebas.
 
 ### Precommit
 

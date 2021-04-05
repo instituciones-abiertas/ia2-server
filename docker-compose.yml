@@ -4,12 +4,12 @@ services:
   main_db:
     image: mariadb:10.4.11-bionic
     environment:
-      MYSQL_USER: "${LIBERAJUS_DB_USER}"
-      MYSQL_PASSWORD: "${LIBERAJUS_DB_PASS}"
-      MYSQL_ROOT_PASSWORD: "${LIBERAJUS_DB_ROOT_PASS}"
-      MYSQL_DATABASE: "${LIBERAJUS_DB_NAME}"
+      MYSQL_USER: "${IA2_MAIN_DB_USER}"
+      MYSQL_PASSWORD: "${IA2_MAIN_DB_PASS}"
+      MYSQL_ROOT_PASSWORD: "${IA2_MAIN_DB_ROOT_PASS}"
+      MYSQL_DATABASE: "${IA2_MAIN_DB_NAME}"
     ports:
-      - "${LIBERAJUS_DB_PORT}:3306"
+      - "${IA2_MAIN_DB_PORT}:3306"
     volumes:
       - main-db-volume:/var/lib/mysql/data
     command:
@@ -22,12 +22,12 @@ services:
   data_db:
     image: mariadb:10.4.11-bionic
     environment:
-      MYSQL_USER: "${LIBERAJUS_DB_DATA_USER}"
-      MYSQL_PASSWORD: "${LIBERAJUS_DB_DATA_PASS}"
-      MYSQL_ROOT_PASSWORD: "${LIBERAJUS_DB_DATA_ROOT_PASS}"
-      MYSQL_DATABASE: "${LIBERAJUS_DB_DATA_NAME}"
+      MYSQL_USER: "${IA2_DB_DATA_USER}"
+      MYSQL_PASSWORD: "${IA2_DB_DATA_PASS}"
+      MYSQL_ROOT_PASSWORD: "${IA2_DB_DATA_ROOT_PASS}"
+      MYSQL_DATABASE: "${IA2_DB_DATA_NAME}"
     ports:
-      - "${LIBERAJUS_DB_DATA_PORT}:3306"
+      - "${IA2_DB_DATA_PORT}:3306"
     volumes:
       - data-db-volume:/var/lib/mysql/data
     command:
@@ -49,30 +49,30 @@ services:
       context: .
       dockerfile: "docker/development/Dockerfile"
       args:
-        main_db_user: "${LIBERAJUS_DB_USER}"
-        main_db_password: "${LIBERAJUS_DB_PASS}"
-        main_db_root_password: "${LIBERAJUS_DB_ROOT_PASS}"
-        main_db_name: "${LIBERAJUS_DB_NAME}"
+        main_db_user: "${IA2_MAIN_DB_USER}"
+        main_db_password: "${IA2_MAIN_DB_PASS}"
+        main_db_root_password: "${IA2_MAIN_DB_ROOT_PASS}"
+        main_db_name: "${IA2_MAIN_DB_NAME}"
         main_db_host: "main_db"
-        main_db_port: "${LIBERAJUS_DB_PORT}"
-        data_db_user: "${LIBERAJUS_DB_DATA_USER}"
-        data_db_password: "${LIBERAJUS_DB_DATA_PASS}"
-        data_db_root_password: "${LIBERAJUS_DB_DATA_ROOT_PASS}"
-        data_db_name: "${LIBERAJUS_DB_DATA_NAME}"
+        main_db_port: "${IA2_MAIN_DB_PORT}"
+        data_db_user: "${IA2_DB_DATA_USER}"
+        data_db_password: "${IA2_DB_DATA_PASS}"
+        data_db_root_password: "${IA2_DB_DATA_ROOT_PASS}"
+        data_db_name: "${IA2_DB_DATA_NAME}"
         data_db_host: "data_db"
-        data_db_port: "${LIBERAJUS_DB_DATA_PORT}"
-        model_file: ${LIBERAJUS_MODEL_FILE}
-        test_model_file: ${LIBERAJUS_TEST_MODEL_FILE}
-        secret_key: "${LIBERAJUS_SECRET_KEY}"
-        dropbox_token: "${LIBERAJUS_DROPBOX_TOKEN_APP}"
-        disable_entities: "${LIBERAJUS_DISABLE_ENTITIES}"
+        data_db_port: "${IA2_DB_DATA_PORT}"
+        model_file: ${IA2_MODEL_FILE}
+        test_model_file: ${IA2_TEST_MODEL_FILE}
+        secret_key: "${IA2_SECRET_KEY}"
+        dropbox_token: "${PUBLICADOR_DROPBOX_TOKEN_APP}"
+        disable_entities: "${IA2_DISABLED_ENTITIES}"
     entrypoint: "docker/development/django-entrypoint.sh"
     environment:
       OODOCUMENT_NEIGHBOR_CHARS_SCAN: "${OODOCUMENT_NEIGHBOR_CHARS_SCAN}"
       DJANGO_SETTINGS_MODULE: "${DJANGO_SETTINGS_MODULE}"
       DEBUG: 1
       DOCKER_COMPOSE: 1
-      HEADER_EXTRACT_ENABLE: "${HEADER_EXTRACT_ENABLE}"
+      IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION: "${IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION}"
       WAIT_HOSTS: main_db:3306, data_db:3306
       REDIS_HOST: redis
       BROKER_HOST: broker

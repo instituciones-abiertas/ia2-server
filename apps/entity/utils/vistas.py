@@ -57,8 +57,8 @@ def convert_to_txt(act):
 
     # Chequeo la variable definida, si es True y si ademas es una extension valida de docx
     if (
-        settings.HEADER_EXTRACT_ENABLE
-        and ast.literal_eval(settings.HEADER_EXTRACT_ENABLE)
+        settings.IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION
+        and ast.literal_eval(settings.IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION)
         and is_docx_file(act.file.path)
     ):
         header_text = extract_header(act.file.path)
