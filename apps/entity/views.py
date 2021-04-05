@@ -8,6 +8,7 @@ from django.http import FileResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 
 from .serializers import (
     EntitySerializer,
@@ -49,6 +50,7 @@ logger = logging.getLogger("django.server")
 class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
+    permission_classes = [IsAuthenticated]
 
     @action(methods=["get"], detail=False)
     def retrain(self, request):
@@ -73,6 +75,7 @@ class EntityViewSet(viewsets.ModelViewSet):
 class ActViewSet(viewsets.ModelViewSet):
     queryset = Act.objects.all()
     serializer_class = ActSerializer
+    permission_classes = [IsAuthenticated]
 
     def create(self, request):
         new_file = request.FILES.get("file", False)
@@ -216,11 +219,13 @@ class ActViewSet(viewsets.ModelViewSet):
 class OcurrencyEntityViewSet(viewsets.ModelViewSet):
     queryset = OcurrencyEntity.objects.all()
     serializer_class = OcurrencyEntitySerializer
+    permission_classes = [IsAuthenticated]
 
 
 class LearningModelViewSet(viewsets.ModelViewSet):
     queryset = LearningModel.objects.all()
     serializer_class = LearningModelSerializer
+    permission_classes = [IsAuthenticated]
 
     @action(methods=["post"], detail=True)
     def useSubject(self, request, pk=None):
