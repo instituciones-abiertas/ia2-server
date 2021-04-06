@@ -44,7 +44,7 @@ services:
 
   web:
     restart: always
-    image: liberajus/django-app
+    image: ia2/django-app
     build:
       context: .
       dockerfile: "docker/development/Dockerfile"
