@@ -2,7 +2,7 @@
 
 <p align="center">
   <a target="_blank" rel="noopener noreferrer">
-    <img width="220px" src="liberajus/static/images/ia2-logo.png" alt="IA²" />
+    <img width="220px" src="ia2/static/images/ia2-logo.png" alt="IA²" />
   </a>
 </p>
 <h4 align="center">Servidor del proyecto IA²</h4>
@@ -120,8 +120,8 @@ docker-compose exec web python manage.py createsuperuser
 
 Es posible inciar el servidor de manera tal de poder utilizar herramientas de debugging como Wekzeug y/o PyInstrument.
 
-- [`Werkzeug:`](https://werkzeug.palletsprojects.com/en/0.15.x/tutorial/) Para desabilitar e PIN para debugging en ambientes locales, es necesario setear la siguiente variable de entorno en `.env`: `WERKZEUG_DEBUG_PIN=off`
-- [`PyInstrument:`](https://github.com/joerick/pyinstrument/) Es posible habilitar PyInstrument utilizando `ENABLE_PYINSTRUMENT=on` en `.env`. Los archivos html de PyInstrument se acceden desde `profiles/`.
++ [`Werkzeug:`](https://werkzeug.palletsprojects.com/en/0.15.x/tutorial/) Para desabilitar e PIN para debugging en ambientes locales, es necesario setear la siguiente variable de entorno en `.env`: `WERKZEUG_DEBUG_PIN=off`
++ [`PyInstrument:`](https://github.com/joerick/pyinstrument/) Es posible habilitar PyInstrument utilizando `ENABLE_PYINSTRUMENT=on` en `.env`. Los archivos html de PyInstrument se acceden desde `profiles/`.
 
 Ejemplo utilizando Docker:
 
