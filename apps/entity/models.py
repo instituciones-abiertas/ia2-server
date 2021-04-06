@@ -47,6 +47,24 @@ class ActStats(models.Model):
     anonymization_time = models.DurationField(default=timedelta())
     extraction_time = models.DurationField(default=timedelta())
 
+    def __str__(self):
+        return f"Estadisticas Acta Id {self.act.id}"
+
+    def act_id(self):
+        return str(self.act.id)
+
+    def load_time_seconds(self):
+        return self.load_time.total_seconds()
+
+    def detection_time_seconds(self):
+        return self.detection_time.total_seconds()
+
+    def anonymization_time_seconds(self):
+        return self.anonymization_time.total_seconds()
+
+    def extraction_time_seconds(self):
+        return self.extraction_time.total_seconds()
+
 
 class OcurrencyEntity(models.Model):
     act = models.ForeignKey(Act, on_delete=models.CASCADE, related_name="listOfEntity")
