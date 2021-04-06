@@ -1,7 +1,7 @@
 """
-WSGI config for applicationname project.
+WSGI config for ia2 project.
 
-It exposes the WSGI callable as a module-level variable named ``application``.
+It exposes the WSGI callable as a module-level variable named ``ia2``.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "liberajus.settings.production")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ia2.settings.production")
 
 application = get_wsgi_application()
