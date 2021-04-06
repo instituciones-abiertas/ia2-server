@@ -5,11 +5,11 @@ DEBUG = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "test_liberajus_backend",
+        "NAME": "test_ia2_backend",
     },
     "data_db": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "test_liberajus_data_backend",
+        "NAME": "test_ia2_data_backend",
     },
 }
 
@@ -36,7 +36,7 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 LIBREOFFICE_HOST = "0.0.0.0"
 LIBREOFFICE_PORT = 8001
 
-PUBLICADOR_CLOUDFOLDER_STORE = "liberajusprueba"
+PUBLICADOR_CLOUDFOLDER_STORE = "ia2_test_directory"
 PUBLICADOR_CLOUD_STORAGE_PROVIDER = "dropbox"
 PUBLICADOR_DROPBOX_TOKEN_APP = os.environ.get("PUBLICADOR_DROPBOX_TOKEN_APP")
 PUBLICADOR_CREDENTIALS_DRIVE_PATH = os.environ.get("PUBLICADOR_CREDENTIALS_DRIVE_PATH")
