@@ -60,7 +60,7 @@ pip-install: venv-check
 # Django commands
 
 django-test:
-	docker-compose exec web python ./manage.py test --settings=liberajus.settings.test
+	docker-compose exec web python ./manage.py test --settings=ia2.settings.test
 
 django-createsuperuser: DJANGO_DEV_USERNAME ?= admin
 django-createsuperuser: DJANGO_DEV_MAIL_DOMAIN ?= @camba.coop
