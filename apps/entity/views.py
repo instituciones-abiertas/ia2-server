@@ -170,9 +170,10 @@ class ActViewSet(viewsets.ModelViewSet):
         os.remove(act_check.file.path)
         # Guardado del archivo anonimizado
         act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
-        act_check.save()
 
-        extraer_datos_de_ocurrencias(all_query)
+        timeit_extract = timeit_save_stats(act_check, "extraction_time")(extraer_datos_de_ocurrencias)
+        timeit_extract(all_query)
+        act_check.save()
 
         # Construyo el response
         dataReturn = {
