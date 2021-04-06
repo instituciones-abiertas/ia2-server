@@ -2,6 +2,7 @@ version: "3.7"
 
 services:
   main_db:
+    container_name: 'ia2_main_db'
     image: mariadb:10.4.11-bionic
     environment:
       MYSQL_USER: "${IA2_MAIN_DB_USER}"
@@ -20,6 +21,7 @@ services:
       ]
 
   data_db:
+    container_name: 'ia2_data_db'
     image: mariadb:10.4.11-bionic
     environment:
       MYSQL_USER: "${IA2_DB_DATA_USER}"
@@ -38,11 +40,13 @@ services:
       ]
 
   adminer:
+    container_name: 'ia2_adminer'
     image: adminer
     ports:
       - "8080:8080"
 
   web:
+    container_name: 'ia2_django_app'
     restart: always
     image: ia2/django-app
     build:
