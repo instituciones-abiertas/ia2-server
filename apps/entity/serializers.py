@@ -16,7 +16,7 @@ class ActSerializer(serializers.ModelSerializer):
 class EntitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entity
-        fields = ("id", "name", "description", "should_anonimyzation")
+        fields = ("id", "name", "description", "should_anonimyzation", "enable_multiple_selection")
 
 
 class OcurrencyEntitySerializer(serializers.ModelSerializer):

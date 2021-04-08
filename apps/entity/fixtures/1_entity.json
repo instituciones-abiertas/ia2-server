@@ -6,7 +6,8 @@
       "name": "FECHA_HECHO",
       "description": "Fecha cuando sucedio el hecho",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -16,7 +17,8 @@
       "name": "LUGAR_HECHO",
       "description": "Lugar donde sucedio el evento",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -26,7 +28,8 @@
       "name": "LOC",
       "description": "Es una localizaci\u00f3n",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": true
     }
   },
   {
@@ -36,7 +39,8 @@
       "name": "PER",
       "description": "Es una personalidad",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": true
     }
   },
   {
@@ -46,7 +50,8 @@
       "name": "MISC",
       "description": "Cosas Miscelaneas",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -56,7 +61,8 @@
       "name": "ORG",
       "description": "Organizaciones,empresas,etc",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -66,7 +72,8 @@
       "name": "TEXTO_ANONIMIZAR",
       "description": "Es una entidad generica para anonimizar",
       "should_anonimyzation": true,
-      "should_trained": false
+      "should_trained": false,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -76,7 +83,8 @@
       "name": "FECHA",
       "description": "Es una fecha escrita",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -86,7 +94,8 @@
       "name": "FECHA_NUM\u00c9RICA",
       "description": "Es una fecha numerica",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -96,7 +105,8 @@
       "name": "DIRECCI\u00d3N",
       "description": "Es un domicilio particular",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -106,7 +116,8 @@
       "name": "NUM_DNI",
       "description": "Es la representaci\u00f3n numerica de un dni",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -116,7 +127,8 @@
       "name": "NUM_CUIT_CUIL",
       "description": "Es la representaci\u00f3n numerica de un cuit-cuil",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -126,7 +138,8 @@
       "name": "EDAD",
       "description": "Es la representaci\u00f3n numerica de un edad",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -136,7 +149,8 @@
       "name": "NACIONALIDAD",
       "description": "Es la nacionalidad de una persona",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -146,7 +160,8 @@
       "name": "NUM_TEL\u00c9FONO",
       "description": "Es un numero telefonico",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -156,7 +171,8 @@
       "name": "OCUPACI\u00d3N/PROFESI\u00d3N",
       "description": "Es una  ocupaci\u00f3n de una persona",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -166,7 +182,8 @@
       "name": "PATENTE_DOMINIO",
       "description": "Es una patente de un vehiculo",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -176,7 +193,8 @@
       "name": "CORREO_ELECTR\u00d3NICO",
       "description": "Es una direccion de mail",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -186,7 +204,8 @@
       "name": "NUM",
       "description": "La representaci\u00f3n de un numero",
       "should_anonimyzation": false,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -196,7 +215,8 @@
       "name": "CONTEXTO_VIOLENCIA_DE_G\u00c9NERO",
       "description": "Existencia de contexto de violencia de genero",
       "should_anonimyzation": false,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -206,7 +226,8 @@
       "name": "CONTEXTO_VIOLENCIA",
       "description": "Tipificacion del tipo de violencia existente",
       "should_anonimyzation": false,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -216,7 +237,8 @@
       "name": "LEY",
       "description": "Ley citada en la resolucion.",
       "should_anonimyzation": false,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -226,7 +248,8 @@
       "name": "NUM_CAUSA",
       "description": "Numero de identificacion de la causa.",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -236,7 +259,8 @@
       "name": "JUEZX",
       "description": "Nombre de juez o jueza nombrado en la causa.",
       "should_anonimyzation": false,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -246,7 +270,8 @@
       "name": "SECRETARIX",
       "description": "Nombre de secretario o secretaria nombrado en la causa.",
       "should_anonimyzation": false,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -256,7 +281,8 @@
       "name": "FISCAL",
       "description": "Nombre de fiscal nombrado en la causa.",
       "should_anonimyzation": false,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -266,7 +292,8 @@
       "name": "NUM_IP",
       "description": "Número de I.P",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -276,7 +303,8 @@
       "name": "NUM_CUIJ",
       "description": "Número de CUIJ",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -286,7 +314,8 @@
       "name": "ARTÍCULO",
       "description": "Artículo",
       "should_anonimyzation": false,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -296,7 +325,8 @@
       "name": "PASAPORTE",
       "description": "Nuevo número de Pasaporte Argentino",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -306,7 +336,8 @@
       "name": "LINK",
       "description": "Enlace web",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -316,7 +347,8 @@
       "name": "NUM_ACTUACIÓN",
       "description": "Número de actuación",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -326,7 +358,8 @@
       "name": "NUM_EXPEDIENTE",
       "description": "Número de expediente",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -336,7 +369,8 @@
       "name": "NOMBRE_ARCHIVO",
       "description": "Nombre de archivo",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -346,7 +380,8 @@
       "name": "USUARIX",
       "description": "Nombre de usuario de red social o web",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -356,7 +391,8 @@
       "name": "CBU",
       "description": "Clave bancaria uniforme",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -366,7 +402,8 @@
       "name": "ESTUDIOS",
       "description": "Trayectos de estudios de las personas",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -376,7 +413,8 @@
       "name": "BANCO",
       "description": "Bancos de la República Argentina",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -386,7 +424,8 @@
       "name": "MARCA_AUTOMÓVIL",
       "description": "La marca de un vehículo",
       "should_anonimyzation": false,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -396,7 +435,8 @@
       "name": "EDAD_VICTIMA",
       "description": "Edad de la victima",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -406,7 +446,8 @@
       "name": "EDAD_ACUSADX",
       "description": "Edad del acusadx",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -416,7 +457,8 @@
       "name": "DEFENSORX",
       "description": "Nombre de la persona encargada de la defensoría",
       "should_anonimyzation": true,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -426,7 +468,8 @@
       "name": "FECHA_RESOLUCION",
       "description": "Fecha especifica de la sentencia",
       "should_anonimyzation": false,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   },
   {
@@ -436,7 +479,8 @@
       "name": "PERIODO",
       "description": "Periodo de tiempo",
       "should_anonimyzation": false,
-      "should_trained": true
+      "should_trained": true,
+      "enable_multiple_selection": false
     }
   }
 ]
