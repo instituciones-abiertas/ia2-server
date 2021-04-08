@@ -4,8 +4,8 @@ import logging
 from django.conf import settings
 from ..exceptions import DropboxExpireCredentials, DriveNotFoundCredentials, StorageCloudFolderNotExist
 
-path_credentials_drive = settings.LIBERAJUS_CREDENTIALS_DRIVE_PATH
-dropbox_token = settings.LIBERAJUS_DROPBOX_TOKEN_APP
+path_credentials_drive = settings.PUBLICADOR_CREDENTIALS_DRIVE_PATH
+dropbox_token = settings.PUBLICADOR_DROPBOX_TOKEN_APP
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
 

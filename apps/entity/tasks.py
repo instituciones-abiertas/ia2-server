@@ -6,7 +6,7 @@ from django.utils.crypto import get_random_string
 from celery_once import QueueOnce
 
 from celery import shared_task
-from liberajus.celery import app
+from ia2.celery import app
 import time
 
 celery = app

@@ -84,7 +84,7 @@ def anonimyzed_convert_document(
         data_replace_header = data_to_replace[0]
         data_replace_body = data_to_replace[1]
         oo.replace_with_index(data_replace_body, path_output, format_output, offset, settings.NEIGHBOR_CHARS_SCAN)
-        if settings.HEADER_EXTRACT_ENABLE:
+        if settings.IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION:
             oo.replace_with_index_in_header(
                 data_replace_header, path_output, format_output, 0, settings.NEIGHBOR_CHARS_SCAN, HEADER_STYLE_NAME
             )

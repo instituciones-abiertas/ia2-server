@@ -3,14 +3,14 @@ FROM cambalab/python3-uno
 RUN apt-get update && \
    apt-get install -y python-dev python-mysqldb gettext
 
-ARG LIBERAJUS_MODEL_FILE
+ARG IA2_MODEL_FILE
 
 ENV PYTHONUNBUFFERED 1
 
 ENV HOME=/home/app
 ENV APP_HOME=$HOME/web
 
-ENV LIBERAJUS_MODEL_FILE=${LIBERAJUS_MODEL_FILE}
+ENV IA2_MODEL_FILE=${IA2_MODEL_FILE}
 
 RUN mkdir $HOME
 RUN mkdir $APP_HOME
