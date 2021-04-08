@@ -15,13 +15,13 @@ from spacy.tokens import Span
 from re import match
 
 logger = logging.getLogger("django.server")
-if settings.LIBERAJUS_MODEL_FILE is None or not settings.LIBERAJUS_MODEL_FILE:
+if settings.IA2_MODEL_FILE is None or not settings.IA2_MODEL_FILE:
     logger.error("No hay un modelo valido para utilizar")
-    logger.error("Pone el nombre del paquete en la variable de ambiente LIBERAJUS_MODEL_FILE")
+    logger.error("Pone el nombre del paquete en la variable de ambiente IA2_MODEL_FILE")
     quit()
-model_name = os.path.basename(settings.LIBERAJUS_MODEL_FILE).split("-")[0]
+model_name = os.path.basename(settings.IA2_MODEL_FILE).split("-")[0]
 
-DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
+DISABLE_ENTITIES = settings.IA2_DISABLED_ENTITIES
 
 
 class Nlp:

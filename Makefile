@@ -51,14 +51,16 @@ venv-wipe: venv-check
 	fi
 
 
-# Pip
+# Pip commands
+
 pip-install: venv-check
 	pip install -r requirements/local.txt
 
 
-# Django
+# Django commands
+
 django-test:
-	./manage.py test
+	docker-compose exec web python ./manage.py test --settings=ia2.settings.test
 
 django-createsuperuser: DJANGO_DEV_USERNAME ?= admin
 django-createsuperuser: DJANGO_DEV_MAIL_DOMAIN ?= @camba.coop

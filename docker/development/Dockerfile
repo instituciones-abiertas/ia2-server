@@ -25,26 +25,26 @@ ARG model_file
 ARG test_model_file
 
 # Domain specific database environment
-ENV LIBERAJUS_DB_NAME=${main_db_name}
-ENV LIBERAJUS_DB_USER=${main_db_user}
-ENV LIBERAJUS_DB_PASS=${main_db_password}
+ENV IA2_MAIN_DB_NAME=${main_db_name}
+ENV IA2_MAIN_DB_USER=${main_db_user}
+ENV IA2_MAIN_DB_PASS=${main_db_password}
 ENV LIBERAJUS_DB_HOST=${main_db_host}
-ENV LIBERAJUS_DB_PORT=${main_db_port}
+ENV IA2_MAIN_DB_PORT=${main_db_port}
 # Data Extraction database environment
-ENV LIBERAJUS_DB_DATA_NAME=${data_db_name}
-ENV LIBERAJUS_DB_DATA_USER=${data_db_user}
-ENV LIBERAJUS_DB_DATA_PASS=${data_db_password}
+ENV IA2_DB_DATA_NAME=${data_db_name}
+ENV IA2_DB_DATA_USER=${data_db_user}
+ENV IA2_DB_DATA_PASS=${data_db_password}
 ENV LIBERAJUS_DB_DATA_HOST=${data_db_host}
-ENV LIBERAJUS_DB_DATA_PORT=${data_db_port}
+ENV IA2_DB_DATA_PORT=${data_db_port}
 
 ENV WAIT_HOSTS=main_db:3306,data_db:3306
 # Django and third party services environment
 ENV PYTHONUNBUFFERED 1
 ENV SECRET_KEY=${secret_key}
-ENV LIBERAJUS_DROPBOX_TOKEN_APP=${dropbox_token}
-ENV LIBERAJUS_DISABLE_ENTITIES=${disable_entities}
-ENV LIBERAJUS_MODEL_FILE=${model_file}
-ENV LIBERAJUS_TEST_MODEL_FILE=${test_model_file}
+ENV PUBLICADOR_DROPBOX_TOKEN_APP=${dropbox_token}
+ENV IA2_DISABLED_ENTITIES=${disable_entities}
+ENV IA2_MODEL_FILE=${model_file}
+ENV IA2_TEST_MODEL_FILE=${test_model_file}
 
 # Exposes Django server port
 EXPOSE 8000

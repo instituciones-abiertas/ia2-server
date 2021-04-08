@@ -37,17 +37,17 @@ if os.environ.get("DOCKER_COMPOSE"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": os.environ.get("LIBERAJUS_DB_NAME"),
-            "USER": os.environ.get("LIBERAJUS_DB_USER"),
-            "PASSWORD": os.environ.get("LIBERAJUS_DB_PASS"),
+            "NAME": os.environ.get("IA2_MAIN_DB_NAME"),
+            "USER": os.environ.get("IA2_MAIN_DB_USER"),
+            "PASSWORD": os.environ.get("IA2_MAIN_DB_PASS"),
             "HOST": os.environ.get("LIBERAJUS_DB_HOST"),
             "PORT": 3306,
         },
         "data_db": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": os.environ.get("LIBERAJUS_DB_DATA_NAME"),
-            "USER": os.environ.get("LIBERAJUS_DB_DATA_USER"),
-            "PASSWORD": os.environ.get("LIBERAJUS_DB_DATA_PASS"),
+            "NAME": os.environ.get("IA2_DB_DATA_NAME"),
+            "USER": os.environ.get("IA2_DB_DATA_USER"),
+            "PASSWORD": os.environ.get("IA2_DB_DATA_PASS"),
             "HOST": os.environ.get("LIBERAJUS_DB_DATA_HOST"),
             "PORT": 3306,
         },
@@ -61,10 +61,10 @@ MEDIA_ROOT_ANONYMOUS_FILES = os.path.join(MEDIA_ROOT, "anonymous/")
 LIBREOFFICE_HOST = os.environ.get("LIBREOFFICE_HOST")
 LIBREOFFICE_PORT = os.environ.get("LIBREOFFICE_PORT")
 
-LIBERAJUS_CLOUDFOLDER_STORE = os.environ.get("LIBERAJUS_CLOUDFOLDER_STORE")
-LIBERAJUS_CLOUD_STORAGE_PROVIDER = os.environ.get("LIBERAJUS_CLOUD_STORAGE_PROVIDER")
-LIBERAJUS_DROPBOX_TOKEN_APP = os.environ.get("LIBERAJUS_DROPBOX_TOKEN_APP")
-LIBERAJUS_CREDENTIALS_DRIVE_PATH = os.environ.get("LIBERAJUS_CREDENTIALS_DRIVE_PATH")
+PUBLICADOR_CLOUDFOLDER_STORE = os.environ.get("PUBLICADOR_CLOUDFOLDER_STORE")
+PUBLICADOR_CLOUD_STORAGE_PROVIDER = os.environ.get("PUBLICADOR_CLOUD_STORAGE_PROVIDER")
+PUBLICADOR_DROPBOX_TOKEN_APP = os.environ.get("PUBLICADOR_DROPBOX_TOKEN_APP")
+PUBLICADOR_CREDENTIALS_DRIVE_PATH = os.environ.get("PUBLICADOR_CREDENTIALS_DRIVE_PATH")
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=20),
@@ -86,7 +86,7 @@ sentry_sdk.init(
     debug=False,
 )
 
-LIBERAJUS_DISABLE_ENTITIES = os.environ.get("LIBERAJUS_DISABLE_ENTITIES")
+IA2_DISABLED_ENTITIES = os.environ.get("IA2_DISABLED_ENTITIES")
 
 ## ML Model
-LIBERAJUS_MODEL_FILE = os.environ.get("LIBERAJUS_MODEL_FILE")
+IA2_MODEL_FILE = os.environ.get("IA2_MODEL_FILE")

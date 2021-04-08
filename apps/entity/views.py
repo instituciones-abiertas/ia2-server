@@ -40,7 +40,7 @@ ANON_REPLACE_TPL = "<$name>"
 # Color de fondo para texto anonimizado
 ANON_FONT_BACK_COLOR = [255, 255, 0]
 # Entidades a no mostrar
-DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
+DISABLE_ENTITIES = settings.IA2_DISABLED_ENTITIES
 
 
 # Uso de logger server de django, agrega
@@ -192,12 +192,12 @@ class ActViewSet(viewsets.ModelViewSet):
         act_check = check_exist_act(pk)
         publish_document(
             act_check.file.path,
-            settings.LIBERAJUS_CLOUDFOLDER_STORE,
-            settings.LIBERAJUS_CLOUD_STORAGE_PROVIDER,
+            settings.PUBLICADOR_CLOUDFOLDER_STORE,
+            settings.PUBLICADOR_CLOUD_STORAGE_PROVIDER,
         )
         dataResponse = {
             "status": "Ok",
-            "text": "Se publico en  {}".format(settings.LIBERAJUS_CLOUD_STORAGE_PROVIDER),
+            "text": "Se publico en  {}".format(settings.PUBLICADOR_CLOUD_STORAGE_PROVIDER),
         }
         return Response(data=dataResponse)
 
@@ -206,7 +206,7 @@ class ActViewSet(viewsets.ModelViewSet):
         act_check = check_exist_act(pk)
         publish_document(
             act_check.file.path,
-            settings.LIBERAJUS_CLOUDFOLDER_STORE,
+            settings.PUBLICADOR_CLOUDFOLDER_STORE,
             "drive",
         )
         dataResponse = {
