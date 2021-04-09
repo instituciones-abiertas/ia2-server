@@ -1,9 +1,8 @@
 import unittest
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
-from django.test import tag
-from apps.entity.models import Act, Entity
-from .factories import ActFactory, EntityFactory
+from django.test import TestCase, tag
+from apps.entity.models import Act, ActStats, Entity
+from .factories import ActFactory, ActStatsFactory, EntityFactory
 
 
 class EntityTest(TestCase):
@@ -101,4 +100,52 @@ class ActTest(TestCase):
     def test_delete_entity(self):
         act = ActFactory.create()
         deleted_objects, _ = act.delete()
+        self.assertEquals(deleted_objects, 1)
+
+
+class ActStatsTest(TestCase):
+    def valid_attrs(self):
+        return {
+            "act_id": ActFactory(
+                text="some text",
+                file=SimpleUploadedFile("some-file.docx", b"some file contents."),
+                offset_header=0,
+            ).id,
+        }
+
+    def update_attrs(self):
+        return {
+            "act_id": ActFactory(
+                text="some updated text",
+                file=SimpleUploadedFile("some-file.docx", b"some file contents."),
+                offset_header=0,
+            ).id,
+        }
+
+    def invalid_attrs(self):
+        return {
+            "act_id": None,
+        }
+
+    def test_create_with_valid_args(self):
+        act_stats = ActStatsFactory(**self.valid_attrs())
+        self.assertIsNotNone(act_stats.act_id)
+
+    @unittest.expectedFailure
+    def test_create_with_invalid_args(self):
+        ActStatsFactory(**self.invalid_attrs())
+
+    def test_update_with_valid_args(self):
+        act_stats = ActStatsFactory.create()
+        updated_act_stats_id = ActStats.objects.filter(act_id=act_stats.act_id).update(**self.valid_attrs())
+        self.assertIsNotNone(updated_act_stats_id)
+
+    @unittest.expectedFailure
+    def test_update_with_invalid_args(self):
+        act_stats = ActStatsFactory.create()
+        ActStats.objects.filter(id=act_stats.id).update(**self.invalid_attrs())
+
+    def test_delete_entity(self):
+        act_stats = ActStatsFactory.create()
+        deleted_objects, _ = act_stats.delete()
         self.assertEquals(deleted_objects, 1)
