@@ -62,18 +62,10 @@ pip-install: venv-check
 
 # Django commands
 
-django-collectstatic:
-	docker-compose exec web python ./manage.py collectstatic --verbosity 0 --noinput
-
-django-drop-test-database:
-	docker-compose exec web python manage.py reset_db --noinput
-
-django-setup-tests: django-collectstatic django-drop-test-database
-
-django-test: django-setup-tests
+django-test:
 	docker-compose exec web python manage.py test --settings=ia2.settings.test --noinput --exclude-tag="skip" --pattern=test*.py
 
-django-test-only: django-setup-tests
+django-test-only:
 	docker-compose exec web python manage.py test --settings=ia2.settings.test --noinput --tag="wip" --pattern=test*.py
 
 django-createsuperuser: DJANGO_DEV_USERNAME ?= admin
