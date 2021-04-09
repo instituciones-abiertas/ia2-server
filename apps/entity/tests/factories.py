@@ -1,9 +1,10 @@
-import factory
+from factory import SubFactory
+from factory.django import DjangoModelFactory
 from django.core.files.uploadedfile import SimpleUploadedFile
-from apps.entity.models import Act, Entity
+from apps.entity.models import Act, ActStats, Entity
 
 
-class EntityFactory(factory.django.DjangoModelFactory):
+class EntityFactory(DjangoModelFactory):
     class Meta:
         model = Entity
 
@@ -14,10 +15,17 @@ class EntityFactory(factory.django.DjangoModelFactory):
     enable_multiple_selection = False
 
 
-class ActFactory(factory.django.DjangoModelFactory):
+class ActFactory(DjangoModelFactory):
     class Meta:
         model = Act
 
     text = "a text"
     file = SimpleUploadedFile("a-file.docx", b"file contents.")
     offset_header = 0
+
+
+class ActStatsFactory(DjangoModelFactory):
+    class Meta:
+        model = ActStats
+
+    act = SubFactory(ActFactory)
