@@ -1,7 +1,7 @@
 from factory import SubFactory
 from factory.django import DjangoModelFactory
 from django.core.files.uploadedfile import SimpleUploadedFile
-from apps.entity.models import Act, ActStats, Entity, OcurrencyEntity
+from apps.entity.models import Act, ActStats, Entity, OcurrencyEntity, LearningModel
 
 
 class EntityFactory(DjangoModelFactory):
@@ -43,3 +43,10 @@ class OcurrencyEntityFactory(DjangoModelFactory):
     text = "an occurrency entity"
     human_marked_ocurrency = False
     human_deleted_ocurrency = False
+
+
+class LearningModelFactory(DjangoModelFactory):
+    class Meta:
+        model = LearningModel
+
+    name_subject = "a subject name"
