@@ -1,8 +1,8 @@
 import unittest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, tag
-from apps.entity.models import Act, ActStats, Entity
-from .factories import ActFactory, ActStatsFactory, EntityFactory
+from apps.entity.models import Act, ActStats, Entity, OcurrencyEntity
+from .factories import ActFactory, ActStatsFactory, EntityFactory, OcurrencyEntityFactory
 
 
 class EntityTest(TestCase):
@@ -43,7 +43,7 @@ class EntityTest(TestCase):
 
     def test_update_with_valid_args(self):
         entity = EntityFactory.create()
-        updated_entity_id = Entity.objects.filter(id=entity.id).update(**self.valid_attrs())
+        updated_entity_id = Entity.objects.filter(id=entity.id).update(**self.update_attrs())
         self.assertIsNotNone(updated_entity_id)
 
     @unittest.expectedFailure
@@ -89,7 +89,7 @@ class ActTest(TestCase):
 
     def test_update_with_valid_args(self):
         act = ActFactory.create()
-        updated_act_id = Act.objects.filter(id=act.id).update(**self.valid_attrs())
+        updated_act_id = Act.objects.filter(id=act.id).update(**self.update_attrs())
         self.assertIsNotNone(updated_act_id)
 
     @unittest.expectedFailure
@@ -117,7 +117,7 @@ class ActStatsTest(TestCase):
         return {
             "act_id": ActFactory(
                 text="some updated text",
-                file=SimpleUploadedFile("some-file.docx", b"some file contents."),
+                file=SimpleUploadedFile("some-updated-file.docx", b"some updated file contents."),
                 offset_header=0,
             ).id,
         }
@@ -129,23 +129,85 @@ class ActStatsTest(TestCase):
 
     def test_create_with_valid_args(self):
         act_stats = ActStatsFactory(**self.valid_attrs())
+        print(act_stats.act.__dict__)
         self.assertIsNotNone(act_stats.act_id)
 
-    @unittest.expectedFailure
     def test_create_with_invalid_args(self):
-        ActStatsFactory(**self.invalid_attrs())
+        act_stats = ActStatsFactory(**self.invalid_attrs())
+        self.assertIsNone(act_stats.act_id)
 
     def test_update_with_valid_args(self):
         act_stats = ActStatsFactory.create()
-        updated_act_stats_id = ActStats.objects.filter(act_id=act_stats.act_id).update(**self.valid_attrs())
+        updated_act_stats_id = ActStats.objects.filter(act_id=act_stats.act_id).update(**self.update_attrs())
         self.assertIsNotNone(updated_act_stats_id)
 
     @unittest.expectedFailure
     def test_update_with_invalid_args(self):
         act_stats = ActStatsFactory.create()
-        ActStats.objects.filter(id=act_stats.id).update(**self.invalid_attrs())
+        ActStats.objects.filter(id=act_stats.act_id).update(**self.update_attrs())
 
     def test_delete_entity(self):
         act_stats = ActStatsFactory.create()
         deleted_objects, _ = act_stats.delete()
+        self.assertEquals(deleted_objects, 1)
+
+
+class OcurrencyEntityTest(TestCase):
+    def valid_attrs(self):
+        return {
+            "act": ActFactory(),
+            "startIndex": 0,
+            "endIndex": 9,
+            "entity": EntityFactory(),
+            "should_anonymized": False,
+            "text": "some text",
+            "human_marked_ocurrency": False,
+            "human_deleted_ocurrency": False,
+        }
+
+    def update_attrs(self):
+        return {
+            "act": ActFactory(),
+            "startIndex": 45,
+            "endIndex": 55,
+            "entity": EntityFactory(),
+            "should_anonymized": True,
+            "text": "some updated text",
+            "human_marked_ocurrency": True,
+            "human_deleted_ocurrency": True,
+        }
+
+    def invalid_attrs(self):
+        return {
+            "act": None,
+            "startIndex": None,
+            "endIndex": None,
+            "entity": None,
+            "should_anonymized": None,
+            "text": None,
+            "human_marked_ocurrency": None,
+            "human_deleted_ocurrency": None,
+        }
+
+    def test_create_with_valid_args(self):
+        occurrency = OcurrencyEntityFactory(**self.valid_attrs())
+        self.assertIsNotNone(occurrency.id)
+
+    @unittest.expectedFailure
+    def test_create_with_invalid_args(self):
+        OcurrencyEntityFactory(**self.invalid_attrs())
+
+    def test_update_with_valid_args(self):
+        occurrency = OcurrencyEntityFactory.create()
+        updated_occurrency_id = OcurrencyEntity.objects.filter(act_id=occurrency.id).update(**self.update_attrs())
+        self.assertIsNotNone(updated_occurrency_id)
+
+    @unittest.expectedFailure
+    def test_update_with_invalid_args(self):
+        occurrency = OcurrencyEntityFactory.create()
+        OcurrencyEntity.objects.filter(id=occurrency.id).update(**self.invalid_attrs())
+
+    def test_delete_entity(self):
+        occurrency = OcurrencyEntityFactory.create()
+        deleted_objects, _ = occurrency.delete()
         self.assertEquals(deleted_objects, 1)
