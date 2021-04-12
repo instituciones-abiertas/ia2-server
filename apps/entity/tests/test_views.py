@@ -11,10 +11,15 @@ class EntityViewSetTest(APITestCase):
     def setUp(self):
         self.client = Client()
         self.entities = EntityFactory.create_batch(10)
-        create_and_login_user(self.client)
 
     def test_an_authenticated_user_gets_an_entity_list(self):
+        create_and_login_user(self.client)
         url = reverse("entity-list")
         response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(len(response.data), len(self.entities))
+
+    def test_an_unauthenticated_user_cannot_get_an_entity_list(self):
+        url = reverse("entity-list")
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 403)
