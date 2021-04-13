@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-19 14:17+0000\n"
+"POT-Creation-Date: 2021-04-13 11:43-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,18 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: applicationname/settings/base.py:130
+#: ia2/settings/base.py:125
 msgid "english"
 msgstr "English"
 
-#: applicationname/settings/base.py:131
+#: ia2/settings/base.py:126
 msgid "spanish"
 msgstr "Spanish"
 
-#: applicationname/templates/admin/base_site.html:22
+#: ia2/templates/admin/base_site.html:22
 msgid "change_password"
 msgstr "Change Password"
 
-#: applicationname/templates/admin/base_site.html:24
+#: ia2/templates/admin/base_site.html:24
 msgid "log_out"
 msgstr "Log Out"
+
