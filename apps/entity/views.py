@@ -21,8 +21,10 @@ from .serializers import (
 )
 from .models import Entity, Act, OcurrencyEntity, LearningModel
 
-from .tasks import train_model
+from .tasks import train_model, extraer_datos_de_ocurrencias
+
 from .utils.spacy import write_model_test_in_file, Nlp
+
 from .utils.oodocument import (
     generate_data_for_anonymization,
     convert_document_to_format,
@@ -179,8 +181,8 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         # Guardado del archivo anonimizado
         act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
 
-        timeit_extract = timeit_save_stats(act_check, "extraction_time")(extraer_datos_de_ocurrencias)
-        timeit_extract(all_query)
+        timeit_extract = timeit_save_stats(act_check, "extraction_time")(extraer_datos_de_ocurrencias.apply_async)
+        timeit_extract([act_check.id])
         act_check.save()
 
         # Construyo el response
