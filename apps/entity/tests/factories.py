@@ -3,7 +3,6 @@ from factory.django import DjangoModelFactory
 from django.core.files.uploadedfile import SimpleUploadedFile
 from apps.entity.models import Act, ActStats, Entity, OcurrencyEntity, LearningModel
 from apps.entity.tests.faker import fake
-from ia2.settings.base import BASE_DIR
 
 
 class EntityFactory(DjangoModelFactory):

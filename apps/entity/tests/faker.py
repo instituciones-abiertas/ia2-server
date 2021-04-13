@@ -1,12 +1,14 @@
+import json
 from faker.providers import BaseProvider
 from faker import Faker
-from .seeds import get_entities
 
 
 class EntityProvider(BaseProvider):
     def get_entity(self, entity_name):
         entity = None
-        entities = get_entities()
+        entities = []
+        with open("apps/entity/fixtures/1_entity.json") as entities_json:
+            entities = [e["fields"] for e in json.load(entities_json)]
         if entity_name is not None:
             for e in entities:
                 if e["name"] == entity_name:
