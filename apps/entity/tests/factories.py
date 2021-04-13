@@ -1,3 +1,4 @@
+import random
 from factory import Faker as FactoryFaker, LazyAttribute, LazyFunction, SubFactory
 from factory.django import DjangoModelFactory
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -37,13 +38,13 @@ class EntityOccurrenceFactory(DjangoModelFactory):
         model = OcurrencyEntity
 
     act = SubFactory(ActFactory)
-    startIndex = 0
-    endIndex = 20
+    startIndex = LazyAttribute(lambda o: random.randint(0, len(o.act.text) - int(len(o.act.text) / 3)))
+    endIndex = LazyAttribute(lambda o: random.randint(o.startIndex + 1, o.startIndex + 40))
     entity = SubFactory(EntityFactory)
-    should_anonymized = False
-    text = "an occurrency entity"
-    human_marked_ocurrency = False
-    human_deleted_ocurrency = False
+    should_anonymized = random.choice([True, False])
+    text = LazyAttribute(lambda o: o.act.text)
+    human_marked_ocurrency = random.choice([True, False])
+    human_deleted_ocurrency = random.choice([True, False])
 
 
 class LearningModelFactory(DjangoModelFactory):
