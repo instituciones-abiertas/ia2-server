@@ -174,6 +174,18 @@ make test
 make test.wip
 ```
 
+### Agregar nuevas traducciones
+
+Para crear nuevas traducciones en una app primero debemos verificar si en esa app existe un directorio `locale`. Si no existe, lo creamos. Luego de actualizarlos, correr el comando `make messages`.
+
+Si simplemente estamos actualizando o agregando traducciones a una archivo existente, una vez finalizada la actualización, ejecutamos el siguiente comando.
+
+*El siguiente comando actualiza todos los archivos `.mo` de traducciones, incluso la fecha de actualización de archivos que no sufrieron cambios. Por éste motivo es necesario verificar que no se agreguen archivos que no sufrieron cambios de traducción en un nuevp commit.*
+
+```bash
+make messages
+```
+
 ## API Rest
 
 Los servicios del backend pueden ser encontrados en [éste archivo](link-a-json) de [Insomnia](https://insomnia.rest/download/).

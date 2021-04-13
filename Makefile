@@ -25,6 +25,9 @@ nuke-reset: nuke reset django-load-fixtures
 clear: ## Like reset but without the wiping of the installs.
 clear: django-migrate
 
+messages: ## Creates locale translations for apps
+messages: django-make-messages
+
 test: ## Run tests.
 test: django-test
 
@@ -78,6 +81,9 @@ django-createsuperuser:
 	@echo
 	@echo "    $(DJANGO_DEV_USERNAME)$(DJANGO_DEV_MAIL_DOMAIN):$(DJANGO_DEV_PASSWORD)"
 	@echo
+
+django-make-messages:
+	docker-compose exec web python manage.py makemessages
 
 django-migrate:
 	./manage.py migrate
