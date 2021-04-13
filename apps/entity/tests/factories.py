@@ -1,15 +1,17 @@
-from factory import SubFactory
+from factory import Faker as FactoryFaker, LazyAttribute, LazyFunction, SubFactory
 from factory.django import DjangoModelFactory
 from django.core.files.uploadedfile import SimpleUploadedFile
 from apps.entity.models import Act, ActStats, Entity, OcurrencyEntity, LearningModel
+from apps.entity.tests.faker import fake
+from ia2.settings.base import BASE_DIR
 
 
 class EntityFactory(DjangoModelFactory):
     class Meta:
         model = Entity
 
-    name = "an entity"
-    description = "this entity represents something in a text"
+    name = fake.entity_name()
+    description = LazyAttribute(lambda o: fake.entity_description(entity_name=o.name))
     should_anonimyzation = False
     should_trained = False
     enable_multiple_selection = False
@@ -19,8 +21,8 @@ class ActFactory(DjangoModelFactory):
     class Meta:
         model = Act
 
-    text = "a text"
-    file = SimpleUploadedFile("a-file.docx", b"file contents.")
+    text = FactoryFaker("text", max_nb_chars=10000)
+    file = SimpleUploadedFile(fake.file_name(extension="docx"), f"{fake.text(max_nb_chars=10000)}".encode())
     offset_header = 0
 
 
