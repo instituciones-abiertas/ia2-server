@@ -1,0 +1,38 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-04-13 11:43-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: apps/entity/admin.py:23
+msgid "act_id"
+msgstr "Acta Id"
+
+#: apps/entity/admin.py:28 apps/entity/models.py:60
+msgid "load_time_seconds"
+msgstr "Tiempo de carga en segundos"
+
+#: apps/entity/admin.py:33 apps/entity/models.py:64
+msgid "detection_time_seconds"
+msgstr "Tiempo de detección en segundos"
+
+#: apps/entity/admin.py:38 apps/entity/models.py:68
+msgid "anonymization_time_seconds"
+msgstr "Tiempo de anonimización en segundos"
+
+#: apps/entity/admin.py:43 apps/entity/models.py:72
+msgid "extraction_time_seconds"
+msgstr "Tiempo de extracción en segundos"
