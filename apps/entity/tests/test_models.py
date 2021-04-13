@@ -2,7 +2,7 @@ import unittest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, tag
 from apps.entity.models import Act, ActStats, Entity, LearningModel, OcurrencyEntity
-from .factories import ActFactory, ActStatsFactory, EntityFactory, LearningModelFactory, OcurrencyEntityFactory
+from .factories import ActFactory, ActStatsFactory, EntityFactory, LearningModelFactory, EntityOccurrenceFactory
 
 
 class EntityTest(TestCase):
@@ -189,25 +189,25 @@ class OcurrencyEntityTest(TestCase):
         }
 
     def test_create_with_valid_args(self):
-        occurrency = OcurrencyEntityFactory(**self.valid_attrs())
+        occurrency = EntityOccurrenceFactory(**self.valid_attrs())
         self.assertIsNotNone(occurrency.id)
 
     @unittest.expectedFailure
     def test_create_with_invalid_args(self):
-        OcurrencyEntityFactory(**self.invalid_attrs())
+        EntityOccurrenceFactory(**self.invalid_attrs())
 
     def test_update_with_valid_args(self):
-        occurrency = OcurrencyEntityFactory.create()
+        occurrency = EntityOccurrenceFactory.create()
         updated_occurrency_id = OcurrencyEntity.objects.filter(id=occurrency.id).update(**self.update_attrs())
         self.assertIsNotNone(updated_occurrency_id)
 
     @unittest.expectedFailure
     def test_update_with_invalid_args(self):
-        occurrency = OcurrencyEntityFactory.create()
+        occurrency = EntityOccurrenceFactory.create()
         OcurrencyEntity.objects.filter(id=occurrency.id).update(**self.invalid_attrs())
 
     def test_delete_entity(self):
-        occurrency = OcurrencyEntityFactory.create()
+        occurrency = EntityOccurrenceFactory.create()
         deleted_objects, _ = occurrency.delete()
         self.assertEquals(deleted_objects, 1)
 

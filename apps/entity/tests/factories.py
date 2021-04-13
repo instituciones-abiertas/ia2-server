@@ -32,7 +32,7 @@ class ActStatsFactory(DjangoModelFactory):
     act = SubFactory(ActFactory)
 
 
-class OcurrencyEntityFactory(DjangoModelFactory):
+class EntityOccurrenceFactory(DjangoModelFactory):
     class Meta:
         model = OcurrencyEntity
 
