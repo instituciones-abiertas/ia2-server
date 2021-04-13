@@ -28,6 +28,9 @@ clear: django-migrate
 test: ## Run tests.
 test: django-test
 
+test.wip: ## Run work-in-progress tests. Useful when working on new tests
+test.wip: django-test-only
+
 shell: ## Runs a python shell
 shell:
 	docker-compose exec web python manage.py shell
@@ -60,7 +63,10 @@ pip-install: venv-check
 # Django commands
 
 django-test:
-	docker-compose exec web python ./manage.py test --settings=ia2.settings.test
+	docker-compose exec web python manage.py test --settings=ia2.settings.test --noinput --exclude-tag="skip" --pattern=test*.py
+
+django-test-only:
+	docker-compose exec web python manage.py test --settings=ia2.settings.test --noinput --tag="wip" --pattern=test*.py
 
 django-createsuperuser: DJANGO_DEV_USERNAME ?= admin
 django-createsuperuser: DJANGO_DEV_MAIL_DOMAIN ?= @camba.coop

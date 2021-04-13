@@ -6,8 +6,9 @@
 .vscode
 
 # Misc
-uploads
 profiles
+static
+uploads
 
 # Python
 *.py[co]
