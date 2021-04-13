@@ -1,5 +1,5 @@
 import string
-
+from .models import OcurrencyEntity
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
@@ -8,8 +8,18 @@ from celery_once import QueueOnce
 from celery import shared_task
 from ia2.celery import app
 import time
+from apps.data.helpers import extraer_datos
+
 
 celery = app
+
+# Esta dependencia esta solamente en produccion
+try:
+    from sentry_sdk import capture_exception
+except ImportError:
+
+    def capture_exception(err):
+        print(err)
 
 
 @shared_task
@@ -34,3 +44,32 @@ def train_model():
     print(model)
 
     return "wait: secs and train, task Done!"
+
+
+@shared_task
+def extraer_datos_de_ocurrencias(act_id):
+    ocurrencias = list(OcurrencyEntity.objects.filter(act__id=act_id))
+    # Consideracion: solo se queda con la 1er ocurrencia de estas entiedades
+
+    def buscar(entidad):
+        return next((o.text for o in ocurrencias if o.entity.name == entidad), None)
+
+    entidades = [
+        "CONTEXTO_VIOLENCIA",
+        "CONTEXTO_VIOLENCIA_DE_GÉNERO",
+        "LUGAR_HECHO",
+        "FECHA_HECHO",
+        "EDAD_ACUSADX",
+        "EDAD_VICTIMA",
+    ]
+    contexto_violencia, contexto_violencia_de_genero, lugar, fecha, edad_acusadx, edad_victima = list(
+        map(buscar, entidades)
+    )
+
+    if contexto_violencia or contexto_violencia_de_genero or lugar or fecha or edad_acusadx or edad_victima:
+        try:
+            extraer_datos(contexto_violencia, contexto_violencia_de_genero, lugar, fecha, edad_acusadx, edad_victima)
+        except Exception as error:
+            capture_exception(error)
+
+    return "wait: secs and extract, task Done!"
