@@ -1,0 +1,50 @@
+[
+  {
+    "model": "data.historico",
+    "pk": 1,
+    "fields": {
+      "fecha": null,
+      "lugar": "6633 de la Av. Eva Per\u00f3n",
+      "contexto_violencia": "circunstancias de modo",
+      "contexto_violencia_de_genero": "provocaron la muerte",
+      "edad_acusadx": null,
+      "edad_victima": null
+    }
+  },
+  {
+    "model": "data.historico",
+    "pk": 2,
+    "fields": {
+      "fecha": null,
+      "lugar": null,
+      "contexto_violencia": "violencia",
+      "contexto_violencia_de_genero": null,
+      "edad_acusadx": null,
+      "edad_victima": null
+    }
+  },
+  {
+    "model": "data.hecho",
+    "pk": 1,
+    "fields": {
+      "_contexto_violencia": true,
+      "_contexto_violencia_de_genero": true,
+      "_fecha": null,
+      "_edad_acusadx": null,
+      "_edad_victima": null,
+      "lugares": []
+    }
+  },
+  {
+    "model": "data.hecho",
+    "pk": 2,
+    "fields": {
+      "_contexto_violencia": true,
+      "_contexto_violencia_de_genero": false,
+      "_fecha": null,
+      "_edad_acusadx": null,
+      "_edad_victima": null,
+      "lugares": []
+    }
+  }
+]
