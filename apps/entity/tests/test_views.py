@@ -1,7 +1,7 @@
 from apps.accounts.models import User
 from apps.accounts.tests.support import create_and_login_user
 from apps.entity.models import Entity
-from apps.entity.tests.factories import ActFactory, EntityFactory
+from apps.entity.tests.factories import ActFactory, EntityFactory, EntityOccurrenceFactory, OcurrencyEntity
 from django.contrib.auth import authenticate, login
 from django.test import Client, TestCase, tag
 from django.urls import reverse
@@ -42,5 +42,25 @@ class ActViewSetTest(APITestCase):
 
     def test_an_unauthenticated_user_cannot_get_an_act_list(self):
         url = reverse("act-list")
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 403)
+
+
+class EntityOccurrenceTest(APITestCase):
+    fixtures = ["1_entity.json", "3_acts.json", "5_ocurrences.json"]
+
+    def setUp(self):
+        self.client = Client()
+        self.entity_occurrences = OcurrencyEntity.objects.all()
+
+    def test_an_authenticated_user_gets_an_entity_occurrence_list(self):
+        create_and_login_user(self.client)
+        url = reverse("ocurrencyentity-list")
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(len(response.data), len(list(self.entity_occurrences)))
+
+    def test_an_unauthenticated_user_cannot_get_an_entity_occurrence_list(self):
+        url = reverse("ocurrencyentity-list")
         response = self.client.get(url)
         self.assertEquals(response.status_code, 403)
