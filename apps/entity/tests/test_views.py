@@ -26,3 +26,21 @@ class EntityViewSetTest(APITestCase):
         url = reverse("entity-list")
         response = self.client.get(url)
         self.assertEquals(response.status_code, 403)
+
+
+class ActViewSetTest(APITestCase):
+    def setUp(self):
+        self.client = Client()
+        self.acts = ActFactory.create_batch(10)
+
+    def test_an_authenticated_user_gets_an_act_list(self):
+        create_and_login_user(self.client)
+        url = reverse("act-list")
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(len(response.data), len(self.acts))
+
+    def test_an_unauthenticated_user_cannot_get_an_act_list(self):
+        url = reverse("act-list")
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 403)
