@@ -31,6 +31,9 @@ CELERY_TIMEZONE = "America/Argentina/Buenos_Aires"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
+MEDIA_ROOT_TEMP_FILES = os.path.join(MEDIA_ROOT, "test_tmp/")
+MEDIA_ROOT_ANONYMOUS_FILES = os.path.join(MEDIA_ROOT, "test_anonymous/")
+
 # OODocument Configuration
 
 LIBREOFFICE_HOST = "0.0.0.0"
