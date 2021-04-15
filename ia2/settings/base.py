@@ -15,8 +15,9 @@ import dj_database_url
 from django.utils.translation import ugettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_PATH = os.path.abspath(os.path.dirname(__name__))
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -174,7 +175,7 @@ PRIVATE_STORAGE_ANONYMOUS_URL = "anonymous/"
 PRIVATE_STORAGE_AUTH_FUNCTION = "private_storage.permissions.allow_superuser"
 
 MODELS_PATH = f"{os.path.abspath(os.path.dirname(__name__))}/custom_models"
-IA2_DISABLED_ENTITIES = []
+IA2_DISABLED_ENTITIES = os.environ.get("IA2_DISABLED_ENTITIES")
 
 # Celery Configuration Options
 
