@@ -101,16 +101,13 @@ def create_act(request_file):
 def detect_entities(act):
     nlp = Nlp()
     ents = nlp.get_all_entities(act.text)
-    # Traigo todas las entidades para hacer busquedas mas rapida
+    # Gets all entities for performance
     entities = Entity.objects.all()
-    # Guardo las ocurrencias para no tener que hacer una llamada  a la base despues
     all_ocurrency = []
-
     for ent in ents:
         entity_name = ent.label_
         entity = entities.get(name=entity_name)
         should_be_anonymized = entity.should_anonimyzation
-        # Falta definir el nombre exacto del campo en el frontend
         ocurrency = OcurrencyEntity.objects.create(
             act=act,
             startIndex=ent.start_char,
