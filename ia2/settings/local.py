@@ -91,7 +91,5 @@ SIMPLE_JWT = {
 }
 
 
-IA2_DISABLED_ENTITIES = os.environ.get("IA2_DISABLED_ENTITIES")
-
 ## ML Model
 IA2_MODEL_FILE = os.environ.get("IA2_MODEL_FILE")

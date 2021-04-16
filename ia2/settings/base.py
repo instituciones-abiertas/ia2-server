@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+import ast
 import os
 import dj_database_url
 from django.utils.translation import ugettext_lazy as _
@@ -175,7 +176,7 @@ PRIVATE_STORAGE_ANONYMOUS_URL = "anonymous/"
 PRIVATE_STORAGE_AUTH_FUNCTION = "private_storage.permissions.allow_superuser"
 
 MODELS_PATH = f"{os.path.abspath(os.path.dirname(__name__))}/custom_models"
-IA2_DISABLED_ENTITIES = os.environ.get("IA2_DISABLED_ENTITIES")
+DISABLED_ENTITIES = ast.literal_eval(os.environ.get("IA2_DISABLED_ENTITIES", "[]"))
 
 # Celery Configuration Options
 
