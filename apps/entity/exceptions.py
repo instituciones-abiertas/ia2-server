@@ -60,3 +60,9 @@ class BadRequestAPI(APIException):
     status_code = 400
     default_detail = settings.ERROR_REQUEST_API
     default_code = "bad_request_api"
+
+
+class ZeroOcurrencyDetectInAct(APIException):
+    status_code = 503
+    default_detail = settings.ZERO_OCURRENCY_DETECT_IN_ACT
+    default_code = "zero_ocurrency_detect_in_act"
