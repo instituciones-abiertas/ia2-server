@@ -241,13 +241,13 @@ PUBLICADOR_CREDENTIALS_DRIVE_PATH = os.environ.get("PUBLICADOR_CREDENTIALS_DRIVE
 
 ## Publicador Error types
 
-ERROR_TEXT_FILE_TYPE = "El tipo de archivo no es soportado por el sistema"
-ERROR_OODOCUMENT_NOT_WORKING = "El servicio de transcripcion no esta funcionando"
+ERROR_TEXT_FILE_TYPE = "Tipo de archivo no soportado"
+ERROR_OODOCUMENT_NOT_WORKING = "El servicio de transcripcion no esta disponible"
 ERROR_NAME_TOO_LONG = "El nombre del archivo excede los 150 caracteres"
-ERROR_ACT_FILE_NOT_FOUND = "No envio un archivo"
-ERROR_DROPBOX_CREDENTIALS = "Las credenciales de dropbox estan expiradaso o son incorrectas"
-ERROR_DRIVE_CREDENTIALS = "Las credenciales de Drive estan expiradas o son incorrectas"
+ERROR_CREATE_ACT_FILE_NOT_FOUND = "No se ha enviado ningún archivo"
+ERROR_DROPBOX_CREDENTIALS = "Las credenciales de Dropbox han expirado o son incorrectas"
+ERROR_DRIVE_CREDENTIALS = "Las credenciales de Google Drive han expirado o son incorrectas"
 ERROR_ACT_NOT_EXIST = "No existe el acta que se quiere acceder"
 ERROR_STORAGE_FILE_NOT_EXIST = "El archivo no se encuentra disponible"
-ERROR_DRIVE_CREDENTIALS_NOT_FOUND = "No se encuentran las credenciales en el servidor"
-ERROR_STORAGE_CLOUD_FOLDER_NOT_EXIST = "No existe la carpeta configurada en el servidor"
+ERROR_DRIVE_CREDENTIALS_NOT_FOUND = "No existen credenciales para Google Drive"
+ERROR_STORAGE_CLOUD_FOLDER_NOT_EXIST = "El directorio cloud al que intenta acceder no existe o es inválido"
