@@ -9,7 +9,7 @@ from time import time
 from datetime import timedelta
 from ..utils.oodocument import convert_document_to_format, extract_text_from_file, extract_header
 from ..validator import is_docx_file
-from ..exceptions import nameTooLong, ActFileNotFound
+from ..exceptions import nameTooLong, CreateActFileIsMissingException
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import UnsupportedMediaType
 
@@ -74,7 +74,7 @@ def create_act(request_file):
     if request_file is False:
         # Caso excepcional ya que no se lanza una excepcion de sistema primero
         logger.error("No se adjunto el archivo")
-        raise ActFileNotFound()
+        raise CreateActFileIsMissingException()
 
     # Creo el acta base
     act = Act(file=request_file)
