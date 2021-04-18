@@ -7,8 +7,9 @@ from apps.accounts.tests.support import create_and_login_user
 from apps.entity.models import Entity
 from apps.entity.serializers import ActSerializer, EntitySerializer, OcurrencyEntitySerializer
 from apps.entity.tests.factories import ActFactory, EntityFactory, EntityOccurrenceFactory, OcurrencyEntity
-from apps.entity.tests.fixtures import DocxFixture
-from apps.entity.exceptions import ActFileNotFound
+from apps.entity.tests.fixtures import ActFileFixture
+from apps.entity.tests.support import generate_random_string, get_test_file_dir
+from apps.entity.exceptions import CreateActFileIsMissingException
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -87,33 +88,41 @@ class ActViewSetTest(APITestCase):
 
     def test_a_superuser_creates_an_act_with_valid_args(self):
         create_and_login_user(self.client)
-
         file_name = "file.docx"
-        file_dir = os.path.join(settings.ACT_FILES_DIR, file_name)
-        test_file = open(file_dir, "r")
-        _file = InMemoryUploadedFile(test_file.buffer, "file", file_name, None, None, test_file.buffer.tell(), None)
-        data = {"file": _file}
+        with open(get_test_file_dir(file_name)) as _file:
+            data = {"file": ActFileFixture(_file, file_name)}
+            response = self.client.post(self.list_url, data=data)
+            _file.close()
+            self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+            self.assertIsNotNone(response.data["id"])
+            self.assertIsNotNone(response.data["text"])
+            self.assertIsNotNone(response.data["ents"])
 
-        response = self.client.post(self.list_url, data=data)
-
-        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
-        self.assertIsNotNone(response.data["id"])
-        self.assertIsNotNone(response.data["text"])
-        self.assertIsNotNone(response.data["ents"])
-
-    def test_a_superuser_creates_an_act_with_invalid_file_arg(self):
+    def test_a_superuser_cannot_create_an_act_with_an_invalid_file_format(self):
         create_and_login_user(self.client)
-
         file_name = "file.pdf"
-        file_dir = os.path.join(settings.ACT_FILES_DIR, file_name)
-        test_file = open(file_dir, "r")
-        _file = InMemoryUploadedFile(test_file.buffer, "file", file_name, None, None, test_file.buffer.tell(), None)
-        data = {"file": _file}
+        with open(get_test_file_dir(file_name)) as _file:
+            data = {"file": ActFileFixture(_file, file_name)}
+            response = self.client.post(self.list_url, data=data)
+            _file.close()
+            self.assertEquals(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+            self.assertEquals(response.data["detail"], settings.ERROR_TEXT_FILE_TYPE)
 
-        response = self.client.post(self.list_url, data=data)
+    def test_a_superuser_cannot_create_an_act_with_a_long_file_name(self):
+        create_and_login_user(self.client)
+        file_name = "file.docx"
+        with open(get_test_file_dir(file_name)) as _file:
+            data = {"file": ActFileFixture(_file, f"{generate_random_string(151)}.docx")}
+            response = self.client.post(self.list_url, data=data)
+            _file.close()
+            self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEquals(response.data["detail"], settings.ERROR_TEXT_FILE_TYPE)
 
-        self.assertEquals(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-        self.assertEquals(response.data["detail"], settings.ERROR_TEXT_FILE_TYPE)
+    def test_a_superuser_cannot_create_an_act_with_empty_file_arg(self):
+        create_and_login_user(self.client)
+        response = self.client.post(self.list_url)
+        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEquals(response.data["detail"], settings.ERROR_CREATE_ACT_FILE_NOT_FOUND)
 
 
 class EntityOccurrenceTest(APITestCase):
