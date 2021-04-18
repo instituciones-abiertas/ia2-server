@@ -5,7 +5,7 @@ import logging
 from django.conf import settings
 from django.http import FileResponse
 
-from rest_framework import viewsets
+from rest_framework import mixins, parsers, status, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -13,6 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import (
     EntitySerializer,
     ActSerializer,
+    CreateActSerializer,
     OcurrencyEntitySerializer,
     EntSerializer,
     LearningModelSerializer,
@@ -40,7 +41,6 @@ ANON_REPLACE_TPL = "<$name>"
 # Color de fondo para texto anonimizado
 ANON_FONT_BACK_COLOR = [255, 255, 0]
 # Entidades a no mostrar
-DISABLE_ENTITIES = settings.IA2_DISABLED_ENTITIES
 
 
 # Uso de logger server de django, agrega
@@ -64,34 +64,40 @@ class EntityViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         queryset = Entity.objects.all()
-        if DISABLE_ENTITIES:
-            for ent in ast.literal_eval(DISABLE_ENTITIES):
-                queryset = queryset.exclude(name=ent)
+        for ent_name in settings.DISABLED_ENTITIES:
+            queryset = queryset.exclude(name=ent_name)
         queryset = queryset.order_by("name")
         serializer = EntitySerializer(queryset, many=True)
         return Response(serializer.data)
 
 
-class ActViewSet(viewsets.ModelViewSet):
-    queryset = Act.objects.all()
-    serializer_class = ActSerializer
+class CreateActMixin(mixins.CreateModelMixin):
+    serializer_class = CreateActSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = [parsers.MultiPartParser]
 
     def create(self, request):
         new_file = request.FILES.get("file", False)
+        # Persists a document
         act = create_act(new_file)
-
+        # Detects entities
         timeit_detect_ents = timeit_save_stats(act, "detection_time")(detect_entities)
         ocurrencies = timeit_detect_ents(act)
         ents = EntSerializer(ocurrencies, many=True)
 
-        dataReturn = {
+        data = {
             "text": act.text,
             "ents": ents.data,
             "id": act.id,
         }
 
-        return Response(dataReturn)
+        return Response(data, status=status.HTTP_201_CREATED)
+
+
+class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Act.objects.all()
+    serializer_class = ActSerializer
+    permission_classes = [IsAuthenticated]
 
     def update(self, request, pk):
         act_check = check_exist_act(pk)
