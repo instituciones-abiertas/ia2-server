@@ -96,23 +96,6 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
     serializer_class = ActSerializer
     permission_classes = [IsAuthenticated]
 
-    def update(self, request, pk):
-        act_check = check_exist_act(pk)
-        ocurrency_query = OcurrencyEntity.objects.filter(act=act_check)
-        if ocurrency_query.exists():
-            ocurrency_query.delete()
-        new_ents = request.data.get("ents")
-        for ent in new_ents:
-            OcurrencyEntity.objects.create(
-                act=act_check,
-                startIndex=ent["start"],
-                endIndex=ent["end"],
-                entity=Entity.objects.get(name=ent["tag"]),
-                should_anonymized=ent["should_anonymized"],
-            )
-
-        return Response()
-
     @action(methods=["post"], detail=True)
     def addAnnotations(self, request, pk=None):
         act_check = check_exist_act(pk)
