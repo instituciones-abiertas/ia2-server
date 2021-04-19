@@ -13,7 +13,6 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import (
     EntitySerializer,
     ActSerializer,
-    CreateActSerializer,
     OcurrencyEntitySerializer,
     EntSerializer,
     LearningModelSerializer,
@@ -72,9 +71,7 @@ class EntityViewSet(viewsets.ModelViewSet):
 
 
 class CreateActMixin(mixins.CreateModelMixin):
-    serializer_class = CreateActSerializer
     permission_classes = [IsAuthenticated]
-    parser_classes = [parsers.MultiPartParser]
 
     def create(self, request):
         new_file = request.FILES.get("file", False)
