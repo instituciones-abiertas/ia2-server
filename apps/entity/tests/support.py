@@ -9,4 +9,4 @@ def get_test_file_dir(file_name):
 
 
 def generate_random_string(string_length):
-    "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(string_length))
+    return "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(string_length))

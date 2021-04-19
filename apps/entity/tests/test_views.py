@@ -75,14 +75,14 @@ class ActViewSetTest(APITestCase):
         response = self.client.get(self.list_url)
         self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_a_superuser_gets_a_single_entity(self):
+    def test_a_superuser_gets_a_single_act(self):
         create_and_login_user(self.client)
         response = self.client.get(self.detail_url)
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         serializer = ActSerializer(self.subject)
         self.assertEquals(response.data, serializer.data)
 
-    def test_an_unauthenticated_user_cannot_get_a_single_entity(self):
+    def test_an_unauthenticated_user_cannot_get_a_single_act(self):
         response = self.client.get(self.detail_url)
         self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -98,6 +98,18 @@ class ActViewSetTest(APITestCase):
             self.assertIsNotNone(response.data["text"])
             self.assertIsNotNone(response.data["ents"])
 
+    def test_an_unauthenticated_user_cannot_create_an_act_with_valid_args(self):
+        file_name = "file.docx"
+        with open(get_test_file_dir(file_name)) as _file:
+            data = {"file": ActFileFixture(_file, file_name)}
+            response = self.client.post(self.list_url, data=data)
+            _file.close()
+            self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_an_unauthenticated_user_cannot_create_an_act_with_invalid_args(self):
+        response = self.client.post(self.list_url, data=None)
+        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_a_superuser_cannot_create_an_act_with_an_invalid_file_format(self):
         create_and_login_user(self.client)
         file_name = "file.pdf"
@@ -112,11 +124,11 @@ class ActViewSetTest(APITestCase):
         create_and_login_user(self.client)
         file_name = "file.docx"
         with open(get_test_file_dir(file_name)) as _file:
-            data = {"file": ActFileFixture(_file, f"{generate_random_string(151)}.docx")}
+            data = {"file": ActFileFixture(_file, f"{generate_random_string(150)}.docx")}
             response = self.client.post(self.list_url, data=data)
             _file.close()
             self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
-            self.assertEquals(response.data["detail"], settings.ERROR_TEXT_FILE_TYPE)
+            self.assertEquals(response.data["detail"], settings.ERROR_NAME_TOO_LONG)
 
     def test_a_superuser_cannot_create_an_act_with_empty_file_arg(self):
         create_and_login_user(self.client)
@@ -146,13 +158,13 @@ class EntityOccurrenceTest(APITestCase):
         response = self.client.get(self.list_url)
         self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_a_superuser_gets_a_single_entity(self):
+    def test_a_superuser_gets_a_single_entity_occurrence(self):
         create_and_login_user(self.client)
         response = self.client.get(self.detail_url)
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         serializer = OcurrencyEntitySerializer(self.subject)
         self.assertEquals(response.data, serializer.data)
 
-    def test_an_unauthenticated_user_cannot_get_a_single_entity(self):
+    def test_an_unauthenticated_user_cannot_get_a_single_entity_occurrence(self):
         response = self.client.get(self.detail_url)
         self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
