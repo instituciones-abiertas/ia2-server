@@ -160,7 +160,7 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         # Todas las ocurrencias actualizadas para el texto
         all_query = list(OcurrencyEntity.objects.filter(act=act_check))
         # Generar el archivo en formato de entrada anonimizado
-        timeit_anonimyzation = timeit_save_stats(act_check, "anonymization_time")(anonimyzed_convert_document)
+        timeit_anonimyzation = timeit_save_stats(act_check.id, "anonymization_time")(anonimyzed_convert_document)
         timeit_anonimyzation(
             act_check.file.path,
             settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format,
@@ -181,8 +181,9 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         # Guardado del archivo anonimizado
         act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
 
-        timeit_extract = timeit_save_stats(act_check, "extraction_time")(extraer_datos_de_ocurrencias.apply_async)
+        timeit_extract = timeit_save_stats(act_check.id, "extraction_time")(extraer_datos_de_ocurrencias.apply_async)
         timeit_extract([act_check.id])
+
         act_check.save()
 
         # Construyo el response

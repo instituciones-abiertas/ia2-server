@@ -17,12 +17,13 @@ from ..validator import is_docx_file
 from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsTooLongException
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import UnsupportedMediaType
+from .general import check_exist_act
 
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
 
 
-def timeit_save_stats(act, key):
+def timeit_save_stats(act_id, key):
     """
     :param func: Decorated function
     :return: Execution time for the decorated function
@@ -34,7 +35,7 @@ def timeit_save_stats(act, key):
             r = func(*args, **kwargs)
             end = time()
             stats = {key: end - start}
-            save_act_stats(act, stats)
+            save_act_stats(act_id, stats)
             return r
 
         return wrapper
@@ -42,8 +43,9 @@ def timeit_save_stats(act, key):
     return Inner
 
 
-def save_act_stats(act, stats):
-    if act:
+def save_act_stats(act_id, stats):
+    if act_id:
+        act = check_exist_act(act_id)
         if not hasattr(act, "actstats"):
             s = ActStats(act=act)
         else:
@@ -93,7 +95,7 @@ def create_act(request_file):
     else:
         act.save()
 
-    timeit_convert_to_txt = timeit_save_stats(act, "load_time")(convert_to_txt)
+    timeit_convert_to_txt = timeit_save_stats(act.id, "load_time")(convert_to_txt)
     act = timeit_convert_to_txt(act)
 
     act.save()
