@@ -160,19 +160,6 @@ mysqlclient==1.4.4
 
 ### Correr pruebas
 
-Algunas de las pruebas utilizan archivos `.docx` y `.pdf` que no se encuentran disponibles en el código fuente. Por lo tanto, será necesario disponer de archivos de prueba. A continuación las isntrucciones.
-
-Crear directorio de archivos de prueba en la raíz del proyecto
-
-```bash
-mkdir -p test_files/act
-```
-
-Copiar archivos con los siguientes nombres en ése directorio:
-
-+ `file.docx`
-+ `file.pdf`
-
 Los comandos para correr las pruebas soportan los decorators de `django.test` para realizar filtrados o excepciones cuando se corren las pruebas. Más información sobre tags [aquí](https://docs.djangoproject.com/en/3.1/topics/testing/tools/#tagging-tests).
 
 *Correr todas las pruebas, excepto aquellas con tag* ***skip***.
@@ -186,6 +173,8 @@ make test
 ```bash
 make test.wip
 ```
+
+> Los comandos `make test` y `make test.wip` asumen que los servicios de docker están activos.
 
 ### Agregar nuevas traducciones
 
