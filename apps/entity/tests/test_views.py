@@ -62,6 +62,7 @@ class ActViewSetTest(APITestCase):
         self.list_url = reverse("act-list")
         self.subject = random.choice(self.subject_list)
         self.detail_url = reverse("act-detail", args=[self.subject.id])
+        self.add_annotations_url = reverse("act-addAnnotations", kwargs={"pk": self.subject.id})
 
     def test_a_superuser_gets_an_act_list(self):
         create_and_login_user(self.client)
@@ -134,6 +135,10 @@ class ActViewSetTest(APITestCase):
         response = self.client.post(self.list_url)
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEquals(response.data["detail"], settings.ERROR_CREATE_ACT_FILE_NOT_FOUND)
+
+    def test_an_unauthenticated_user_cannot_add_annotations(self):
+        response = self.client.post(self.add_annotations_url)
+        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class EntityOccurrenceTest(APITestCase):
