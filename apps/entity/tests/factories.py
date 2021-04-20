@@ -42,7 +42,7 @@ class EntityOccurrenceFactory(DjangoModelFactory):
     endIndex = LazyAttribute(lambda o: random.randint(o.startIndex + 1, o.startIndex + 40))
     entity = SubFactory(EntityFactory)
     should_anonymized = random.choice([True, False])
-    text = LazyAttribute(lambda o: o.act.text)
+    text = LazyAttribute(lambda o: o.act.text[o.startIndex:o.endIndex])
     human_marked_ocurrency = random.choice([True, False])
     human_deleted_ocurrency = random.choice([True, False])
 

@@ -9,7 +9,6 @@ from apps.entity.serializers import ActSerializer, EntitySerializer, OcurrencyEn
 from apps.entity.tests.factories import ActFactory, EntityFactory, EntityOccurrenceFactory, OcurrencyEntity
 from apps.entity.tests.fixtures import ActFileFixture
 from apps.entity.tests.support import generate_random_string, get_test_file_dir
-from apps.entity.exceptions import CreateActFileIsMissingException
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -138,7 +137,7 @@ class ActViewSetTest(APITestCase):
 
 
 class EntityOccurrenceTest(APITestCase):
-    fixtures = ["1_entity.json", "3_acts.json", "5_ocurrences.json"]
+    fixtures = ["1_entity.json", "3_acts.json", "5_occurrences.json"]
 
     def setUp(self):
         self.client = Client()
