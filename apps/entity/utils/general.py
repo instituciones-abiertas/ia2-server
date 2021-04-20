@@ -1,6 +1,10 @@
 from ..models import Act, OcurrencyEntity
+<<<<<<< HEAD
 from ..exceptions import ActNotExist, StorageFileNotExist, BadRequestAPI, ZeroOcurrencyDetectInAct
 
+=======
+from ..exceptions import ActNotExist, StorageFileNotExist, NoEntitiesDetected
+>>>>>>> actualizacion de llamadas  de la excepcion
 from apps.data.helpers import extraer_datos
 import logging
 import numbers
@@ -154,4 +158,4 @@ def check_act_with_ocurrency(act, new_ocurrency_list):
     if model_ocurrency.exists() or (not model_ocurrency.exists() and new_ocurrency_list):
         return new_ocurrency_list
     else:
-        raise ZeroOcurrencyDetectInAct()
+        raise NoEntitiesDetected()
