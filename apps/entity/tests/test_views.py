@@ -89,10 +89,12 @@ class ActViewSetTest(APITestCase):
     def test_a_superuser_creates_an_act_with_valid_args(self):
         create_and_login_user(self.client)
         file_name = "file.docx"
-        with open(get_test_file_dir(file_name)) as _file:
-            data = {"file": ActFileFixture(_file, file_name)}
+        dummy_file = ActFileFixture(file_name)
+
+        with open(dummy_file.output_dir) as opened_dummy_file:
+            data = {"file": dummy_file.build_in_memory_uploaded_file(opened_dummy_file)}
             response = self.client.post(self.list_url, data=data)
-            _file.close()
+            opened_dummy_file.close()
             self.assertEquals(response.status_code, status.HTTP_201_CREATED)
             self.assertIsNotNone(response.data["id"])
             self.assertIsNotNone(response.data["text"])
@@ -100,33 +102,41 @@ class ActViewSetTest(APITestCase):
 
     def test_an_unauthenticated_user_cannot_create_an_act_with_valid_args(self):
         file_name = "file.docx"
-        with open(get_test_file_dir(file_name)) as _file:
-            data = {"file": ActFileFixture(_file, file_name)}
+        dummy_file = ActFileFixture(file_name)
+        with open(dummy_file.output_dir) as opened_dummy_file:
+            data = {"file": dummy_file.build_in_memory_uploaded_file(opened_dummy_file)}
             response = self.client.post(self.list_url, data=data)
-            _file.close()
+            opened_dummy_file.close()
             self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_an_unauthenticated_user_cannot_create_an_act_with_invalid_args(self):
         response = self.client.post(self.list_url, data=None)
         self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    @tag("skip")
     def test_a_superuser_cannot_create_an_act_with_an_invalid_file_format(self):
         create_and_login_user(self.client)
         file_name = "file.pdf"
-        with open(get_test_file_dir(file_name)) as _file:
-            data = {"file": ActFileFixture(_file, file_name)}
+        dummy_file = ActFileFixture(file_name, type="pdf")
+        with open(dummy_file.output_dir) as opened_dummy_file:
+            data = {"file": dummy_file.build_in_memory_uploaded_file(opened_dummy_file)}
             response = self.client.post(self.list_url, data=data)
-            _file.close()
+            opened_dummy_file.close()
             self.assertEquals(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
             self.assertEquals(response.data["detail"], settings.ERROR_TEXT_FILE_TYPE)
 
     def test_a_superuser_cannot_create_an_act_with_a_long_file_name(self):
         create_and_login_user(self.client)
         file_name = "file.docx"
-        with open(get_test_file_dir(file_name)) as _file:
-            data = {"file": ActFileFixture(_file, f"{generate_random_string(150)}.docx")}
+        dummy_file = ActFileFixture(file_name)
+        with open(dummy_file.output_dir) as opened_dummy_file:
+            data = {
+                "file": dummy_file.build_in_memory_uploaded_file(
+                    opened_dummy_file, file_name=f"{generate_random_string(150)}.docx"
+                )
+            }
             response = self.client.post(self.list_url, data=data)
-            _file.close()
+            opened_dummy_file.close()
             self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
             self.assertEquals(response.data["detail"], settings.ERROR_NAME_TOO_LONG)
 
