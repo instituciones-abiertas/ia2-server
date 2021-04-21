@@ -27,8 +27,4 @@ uploads
 custom_models/*
 !custom_models/.gitkeep
 
-# Test
-test_files/*/*
-!test_files/**/.gitkeep
-
 credentials.json
