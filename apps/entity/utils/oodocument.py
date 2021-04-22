@@ -9,6 +9,7 @@ from string import Template
 from .general import open_file
 from docx import Document
 
+# from .vistas import timeit_save_stats
 
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
@@ -49,6 +50,7 @@ def extract_text_from_file(file_path):
     return read_result
 
 
+# @timeit_save_stats
 def anonimyzed_convert_document(
     path_document,
     path_output,

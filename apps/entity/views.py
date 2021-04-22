@@ -2,6 +2,7 @@ import os
 import uuid
 import ast
 import logging
+from time import time
 from django.conf import settings
 from django.http import FileResponse
 from django.db.models import Q
@@ -44,7 +45,6 @@ from .utils.general import (
     check_new_ocurrencies,
 )
 from .utils.data_visualization import generate_data_visualization
-
 from .utils.vistas import (
     timeit_save_stats,
     create_act,
@@ -56,6 +56,9 @@ from .utils.vistas import (
     create_new_occurrencies,
     delete_ocurrencies,
     add_entities_by_multiple_selection,
+    save_act_stats,
+    extraccion_de_datos,
+    anonimizacion_de_documentos,
 )
 
 # Para usar Python Template de string
@@ -116,6 +119,13 @@ class CreateActMixin(mixins.CreateModelMixin):
 
         ents = EntSerializer(OcurrencyEntity.objects.filter(act=act.id), many=True)
 
+        # Detects entities
+        timeit_detect_ents = timeit_save_stats(act, "detection_time")(detect_entities)
+        ocurrencies = timeit_detect_ents(act)
+
+        ocurrencies = detect_entities(act, act_id=act.id, key="detection_time")
+        ents = EntSerializer(ocurrencies, many=True)
+
         data = {
             "text": act.text,
             "ents": ents.data,
@@ -160,8 +170,7 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         # Todas las ocurrencias actualizadas para el texto
         all_query = list(OcurrencyEntity.objects.filter(act=act_check))
         # Generar el archivo en formato de entrada anonimizado
-        timeit_anonimyzation = timeit_save_stats(act_check.id, "anonymization_time")(anonimyzed_convert_document)
-        timeit_anonimyzation(
+        anonimizacion_de_documentos(
             act_check.file.path,
             settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format,
             extension,
@@ -170,6 +179,8 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
             "txt",
             ANON_FONT_BACK_COLOR,
             convert_offset_header_to_cursor(act_check.offset_header),
+            act_id=act_check.id,
+            key="anonymization_time",
         )
         # Generar el archivo para poder extraer el texto
         # convert_document_to_format(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format, output_text, "txt")
@@ -181,8 +192,10 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         # Guardado del archivo anonimizado
         act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
 
-        timeit_extract = timeit_save_stats(act_check.id, "extraction_time")(extraer_datos_de_ocurrencias.apply_async)
-        timeit_extract([act_check.id])
+        # timeit_extract = timeit_save_stats(act_check.id, "extraction_time")(extraer_datos_de_ocurrencias.apply_async)
+        # timeit_extract([act_check.id])
+
+        extraccion_de_datos([act_check.id], act_id=act_check.id, key="extraction_time")
 
         act_check.save()
 

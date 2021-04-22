@@ -12,35 +12,42 @@ from time import time
 from datetime import timedelta
 from django.utils import timezone
 
-from ..utils.oodocument import convert_document_to_format, extract_text_from_file, extract_header
+from ..utils.oodocument import (
+    convert_document_to_format,
+    extract_text_from_file,
+    extract_header,
+    anonimyzed_convert_document,
+)
 from ..validator import is_docx_file
 from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsTooLongException
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import UnsupportedMediaType
 from .general import check_exist_act
+from ..tasks import train_model, extraer_datos_de_ocurrencias, time_task
+from celery import chord
 
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
 
 
-def timeit_save_stats(act_id, key):
+def timeit_save_stats(func, *args, act_id=None, key=None):
     """
     :param func: Decorated function
     :return: Execution time for the decorated function
     """
 
-    def Inner(func):
-        def wrapper(*args, **kwargs):
-            start = time()
-            r = func(*args, **kwargs)
-            end = time()
-            stats = {key: end - start}
-            save_act_stats(act_id, stats)
-            return r
+    def wrapper(*args, **kwargs):
+        key = kwargs["key"]
+        act_id = kwargs["act_id"]
+        start = time()
+        re = func(*args)
+        end = time()
+        stats = {key: end - start}
+        print(stats)
+        save_act_stats(act_id, stats)
+        return re
 
-        return wrapper
-
-    return Inner
+    return wrapper
 
 
 def save_act_stats(act_id, stats):
@@ -55,6 +62,7 @@ def save_act_stats(act_id, stats):
         s.save()
 
 
+@timeit_save_stats
 def convert_to_txt(act):
     output_path = settings.MEDIA_ROOT_TEMP_FILES + "output.txt" + str(uuid.uuid4())
     # Transformo el archivo de entrada a txt para procesarlo
@@ -95,8 +103,7 @@ def create_act(request_file):
     else:
         act.save()
 
-    timeit_convert_to_txt = timeit_save_stats(act.id, "load_time")(convert_to_txt)
-    act = timeit_convert_to_txt(act)
+    convert_to_txt(act, act_id=act.id, key="load_time")
 
     act.save()
 
@@ -239,3 +246,14 @@ def calculate_and_set_elapsed_review_time(act):
     s = act.actstats
     s.review_time = timezone.now() - s.begin_review_time
     s.save()
+
+
+@timeit_save_stats
+def extraccion_de_datos(act_id):
+    # En este metodo deberia implementar el calculo asincronico de tiempo para almacenar
+    extraer_datos_de_ocurrencias.apply_async([act_id])
+
+
+@timeit_save_stats
+def anonimizacion_de_documentos(*args):
+    return anonimyzed_convert_document(*args)
