@@ -23,6 +23,9 @@ uploads
 *.docx
 *.doc
 
+# Logs
+*.log
+
 # Models
 custom_models/*
 !custom_models/.gitkeep
