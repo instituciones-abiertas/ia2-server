@@ -5,14 +5,15 @@ import random
 import warnings
 import time
 import logging
+import re
 
 from django.conf import settings
 from pathlib import Path
-from spacy.util import minibatch, compounding
+from spacy.util import minibatch, compounding, filter_spans
 from spacy.matcher import Matcher
 from spacy.pipeline import EntityRuler
 from spacy.tokens import Span
-from re import match
+from re import match, finditer
 
 logger = logging.getLogger("django.server")
 if settings.IA2_MODEL_FILE is None or not settings.IA2_MODEL_FILE:
@@ -61,3 +62,33 @@ def filter_entity(ent_list, ents_filter):
     if ents_filter:
         res = [ent for ent in ent_list if ent.label_ not in ents_filter]
     return res
+
+
+def filter_ents(ent_list):
+    res = filter_spans(ent_list)
+    return res
+
+
+def find_all_entity_ocurrencies(text, ent):
+    res = []
+    nlp = Nlp()
+    doc = nlp.generate_doc(text)
+
+    # Encuentro el texto correspondiente a la entidad
+    end_index = ent["end"]
+    start_index = ent["start"]
+    ent_text = doc.char_span(start_index, end_index)
+    print(ent_text.text)
+
+    # en el doc busco las nuevas entidades que matcheen con el texto ent_text
+    ents = []
+
+    for match in finditer(ent_text.text, doc.text):
+        if not match.span()[0] == start_index:
+            new_span = doc.char_span(match.span()[0], match.span()[1], label=ent["tag"])
+            ents.append(new_span)
+
+    print("ents")
+    print(ents)
+    filtered_ents = filter_spans(ents)
+    return filtered_ents
