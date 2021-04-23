@@ -7,7 +7,7 @@ from apps.accounts.tests.support import create_and_login_user
 from apps.entity.models import Entity
 from apps.entity.serializers import ActSerializer, EntitySerializer, OcurrencyEntitySerializer
 from apps.entity.tests.factories import ActFactory, EntityFactory, EntityOccurrenceFactory, OcurrencyEntity
-from apps.entity.tests.fixtures import ActFileFixture
+from apps.entity.tests.fixtures import ActDocxFileFixture, ActPdfFileFixture
 from apps.entity.tests.support import generate_random_string, get_test_file_dir
 from django.conf import settings
 from django.contrib.auth import authenticate, login
@@ -89,8 +89,7 @@ class ActViewSetTest(APITestCase):
     def test_a_superuser_creates_an_act_with_valid_args(self):
         create_and_login_user(self.client)
         file_name = "file.docx"
-        dummy_file = ActFileFixture(file_name)
-
+        dummy_file = ActDocxFileFixture(file_name)
         with open(dummy_file.output_dir) as opened_dummy_file:
             data = {"file": dummy_file.build_in_memory_uploaded_file(opened_dummy_file)}
             response = self.client.post(self.list_url, data=data)
@@ -102,7 +101,7 @@ class ActViewSetTest(APITestCase):
 
     def test_an_unauthenticated_user_cannot_create_an_act_with_valid_args(self):
         file_name = "file.docx"
-        dummy_file = ActFileFixture(file_name)
+        dummy_file = ActDocxFileFixture(file_name)
         with open(dummy_file.output_dir) as opened_dummy_file:
             data = {"file": dummy_file.build_in_memory_uploaded_file(opened_dummy_file)}
             response = self.client.post(self.list_url, data=data)
@@ -113,11 +112,10 @@ class ActViewSetTest(APITestCase):
         response = self.client.post(self.list_url, data=None)
         self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    @tag("skip")
     def test_a_superuser_cannot_create_an_act_with_an_invalid_file_format(self):
         create_and_login_user(self.client)
         file_name = "file.pdf"
-        dummy_file = ActFileFixture(file_name, type="pdf")
+        dummy_file = ActPdfFileFixture(file_name)
         with open(dummy_file.output_dir) as opened_dummy_file:
             data = {"file": dummy_file.build_in_memory_uploaded_file(opened_dummy_file)}
             response = self.client.post(self.list_url, data=data)
@@ -128,7 +126,7 @@ class ActViewSetTest(APITestCase):
     def test_a_superuser_cannot_create_an_act_with_a_long_file_name(self):
         create_and_login_user(self.client)
         file_name = "file.docx"
-        dummy_file = ActFileFixture(file_name)
+        dummy_file = ActDocxFileFixture(file_name)
         with open(dummy_file.output_dir) as opened_dummy_file:
             data = {
                 "file": dummy_file.build_in_memory_uploaded_file(
