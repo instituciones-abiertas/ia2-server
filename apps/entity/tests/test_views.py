@@ -98,6 +98,7 @@ class ActViewSetTest(APITestCase):
             self.assertIsNotNone(response.data["id"])
             self.assertIsNotNone(response.data["text"])
             self.assertIsNotNone(response.data["ents"])
+        os.remove(dummy_file.output_dir)
 
     def test_an_unauthenticated_user_cannot_create_an_act_with_valid_args(self):
         file_name = "file.docx"
@@ -107,6 +108,7 @@ class ActViewSetTest(APITestCase):
             response = self.client.post(self.list_url, data=data)
             opened_dummy_file.close()
             self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        os.remove(dummy_file.output_dir)
 
     def test_an_unauthenticated_user_cannot_create_an_act_with_invalid_args(self):
         response = self.client.post(self.list_url, data=None)
@@ -122,6 +124,7 @@ class ActViewSetTest(APITestCase):
             opened_dummy_file.close()
             self.assertEquals(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
             self.assertEquals(response.data["detail"], settings.ERROR_TEXT_FILE_TYPE)
+        os.remove(dummy_file.output_dir)
 
     def test_a_superuser_cannot_create_an_act_with_a_long_file_name(self):
         create_and_login_user(self.client)
@@ -137,6 +140,7 @@ class ActViewSetTest(APITestCase):
             opened_dummy_file.close()
             self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
             self.assertEquals(response.data["detail"], settings.ERROR_NAME_TOO_LONG)
+        os.remove(dummy_file.output_dir)
 
     def test_a_superuser_cannot_create_an_act_with_empty_file_arg(self):
         create_and_login_user(self.client)
