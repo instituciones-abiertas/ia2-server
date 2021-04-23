@@ -23,8 +23,7 @@ from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsToo
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import UnsupportedMediaType
 from .general import check_exist_act
-from ..tasks import train_model, extraer_datos_de_ocurrencias, time_task
-from celery import chord
+from ..tasks import train_model, extraer_datos_de_ocurrencias
 
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
