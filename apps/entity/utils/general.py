@@ -62,16 +62,10 @@ def extraer_datos_de_ocurrencias(ocurrencias):
 def filter_spans(a_list, b_list):
     # filtra spans de a_list que se overlapeen con algun span de b_list
     def overlap(span, span_list):
-        print("span")
-        print(span)
-        print(span.start_char)
-        print(span.end_char)
         for s in span_list:
-            print("s overlap")
-            print(s.startIndex)
-            print(s.endIndex)
-            if (span.start_char >= s.startIndex and span.end_char < s.endIndex) or (s.startIndex >= span.start_char and s.endIndex <= span.end_char):
-                print("span overlping")
+            if (span.start_char >= s.startIndex and span.end_char < s.endIndex) or (
+                s.startIndex >= span.start_char and s.endIndex <= span.end_char
+            ):
                 return True
         return False
 

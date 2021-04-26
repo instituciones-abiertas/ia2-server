@@ -64,9 +64,11 @@ def filter_entity(ent_list, ents_filter):
         res = [ent for ent in ent_list if ent.label_ not in ents_filter]
     return res
 
+
 def filter_ents(ent_list):
     res = filter_spans(ent_list)
     return res
+
 
 def overlap_ocurrency(ent_start, ent_end, ocurrency):
     print(f"original ocurrency", {ocurrency.text})
@@ -75,11 +77,23 @@ def overlap_ocurrency(ent_start, ent_end, ocurrency):
     print(f"overlap?", {ocurrency.startIndex})
     print(f"ent_start", {ent_start})
     print(f"ent_end?", {ent_end})
-    print((ent_start >= ocurrency.startIndex and ent_end <= ocurrency.endIndex) or (ent_start <= ocurrency.endIndex and ent_end >= ocurrency.endIndex) or (ent_start >= ocurrency.startIndex) and (ent_end <= ocurrency.endIndex))
-    return (ent_start >= ocurrency.startIndex and ent_end <= ocurrency.endIndex) or (ent_start <= ocurrency.endIndex and ent_end >= ocurrency.endIndex) or (ent_start >= ocurrency.startIndex) and (ent_end <= ocurrency.endIndex)
+    print(
+        (ent_start >= ocurrency.startIndex and ent_end <= ocurrency.endIndex)
+        or (ent_start <= ocurrency.endIndex and ent_end >= ocurrency.endIndex)
+        or (ent_start >= ocurrency.startIndex)
+        and (ent_end <= ocurrency.endIndex)
+    )
+    return (
+        (ent_start >= ocurrency.startIndex and ent_end <= ocurrency.endIndex)
+        or (ent_start <= ocurrency.endIndex and ent_end >= ocurrency.endIndex)
+        or (ent_start >= ocurrency.startIndex)
+        and (ent_end <= ocurrency.endIndex)
+    )
+
 
 def overlap_ocurrency_list(ent_start, ent_end, original_ocurrency_list):
     return any(overlap_ocurrency(ent_start, ent_end, ocurrency) for ocurrency in original_ocurrency_list)
+
 
 def find_all_entities(text, ent, original_ent_list):
     nlp = Nlp()
