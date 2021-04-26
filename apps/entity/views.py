@@ -21,7 +21,7 @@ from .serializers import (
 from .models import Entity, Act, OcurrencyEntity, LearningModel
 
 from .tasks import train_model
-from .utils.spacy import write_model_test_in_file, find_all_entity_ocurrencies, filter_ents
+from .utils.spacy import write_model_test_in_file, find_all_entities, filter_ents
 from .utils.oodocument import (
     generate_data_for_anonymization,
     convert_document_to_format,
@@ -32,7 +32,7 @@ from .utils.oodocument import (
 )
 
 from .utils.publicador import publish_document
-from .utils.general import check_exist_act, open_file, extraer_datos_de_ocurrencias, filter_spans
+from .utils.general import check_exist_act, open_file, extraer_datos_de_ocurrencias
 from .utils.data_visualization import generate_data_visualization
 from .utils.vistas import timeit_save_stats, create_act, detect_entities
 
@@ -185,8 +185,36 @@ class ActViewSet(viewsets.ModelViewSet):
         }
         return Response(dataReturn)
 
+    def create_occurency(self, ent):
+        print("create_occurency")
+        act_check = check_exist_act(pk)
+        entities = Entity.objects.all()
+        entity = entities.get(name=ent["tag"])
+        OcurrencyEntity.objects.create(
+            act=act_check,
+            startIndex=ent["start"],
+            endIndex=ent["end"],
+            entity=Entity.objects.get(name=ent["tag"]),
+            should_anonymized=entity.should_anonimyzation,
+            human_marked_ocurrency=True,
+            text=text[ent["start"] : ent["end"]]
+        )    
+
+    def create_new_occurrencies(self, entities):
+        if not entities == []:
+            for ent in entities:
+                if ent["start"] is not None and ent["end"] is not None:
+                    self.create_occurency(ent)
+
+    def delete_and_save(ocurrency):
+        print("delete")
+        print(ocurrency)
+        ocurrency.human_deleted_ocurrency = True  # cambio del campo
+        ocurrency.save()
+
     @action(methods=["post"], detail=True)
     def addAllOccurrencies(self, request, pk=None):
+        entities = Entity.objects.all()
         act_check = check_exist_act(pk)
         print(act_check)
         # Ocurrencias marcadas por humanx
@@ -194,63 +222,45 @@ class ActViewSet(viewsets.ModelViewSet):
         # Ocurrencias para marcar eliminadas
         delete_ents = request.data.get("deleteOcurrencies")
         text = act_check.text
-
         entity_list_for_multiple_selection = request.data.get("entityList")
-
-        entities = Entity.objects.all()
-        # Recorrido sobre las ents nuevas
-        for ent in new_ents:
-            # Chequeo por un flujo que me puede llegar entitades del front sin datos
-            if ent["start"] is not None and ent["end"] is not None:
-                entity = entities.get(name=ent["tag"])
-                should_be_anonymized = entity.should_anonimyzation
-                ocurrency = OcurrencyEntity.objects.create(
-                    act=act_check,
-                    startIndex=ent["start"],
-                    endIndex=ent["end"],
-                    entity=Entity.objects.get(name=ent["tag"]),
-                    should_anonymized=should_be_anonymized,
-                    human_marked_ocurrency=True,
-                    text=text[ent["start"] : ent["end"]],
-                )
+        
+        self.create_new_occurrencies(new_ents)
+        
         # Actualización de ocurrencias a borrar
         for ent in delete_ents:
             # Caso que sea eliminada la ocurrencia por accion humana
             ocurrency = OcurrencyEntity.objects.get(id=ent["id"])
             ocurrency.human_deleted_ocurrency = True  # cambio del campo
             ocurrency.save()
+        
+        #delete_ents_ids = [ent["id"] for ent in delete_ents]
+        #ocurrencies = OcurrencyEntity.objects.filter(id__in=delete_ents_ids)
+        #map(self.delete_and_save, ocurrencies)
 
         # Filtro las ocurrencias cuyo nombre de tag coincide con los de las entidades sobre las que aplicar la funcionalidad de múltiple selección
-        # Todas las ocurrencias actualizadas para el texto
-        all_query = EntSerializer(
-            OcurrencyEntity.objects.filter(
+        all_query = OcurrencyEntity.objects.filter(
                 human_deleted_ocurrency=False, act=act_check, entity__in=entity_list_for_multiple_selection
-            ),
-            many=True,
-        )
-        new_filtered_entities = []
-        for entity in all_query.data:
-            ents = find_all_entity_ocurrencies(text, entity)
-            new_filtered_entities = new_filtered_entities + ents
-
-        filtered_ents = filter_ents(new_filtered_entities)
-        print("filtered_ents")
-        print(filtered_ents)
-        # A las nuevas entidades le doy caracter de OcurrencyEntity
-        for ent in filtered_ents:
-            entity_name = ent.label_
-            entity = entities.get(name=entity_name)
-            should_be_anonymized = entity.should_anonimyzation
-            ocurrency = OcurrencyEntity.objects.create(
-                act=act_check,
-                startIndex=ent.start_char,
-                endIndex=ent.end_char,
-                entity=entity,
-                should_anonymized=should_be_anonymized,
-                human_marked_ocurrency=True,
-                text=ent.text,
             )
 
+        new_occurencies = list(map(lambda ent: find_all_entities(text, ent, all_query), all_query))
+        # A las nuevas entidades le doy caracter de OcurrencyEntity
+        # self.create_new_occurrencies([x for l in new_occurencies for x in l] )
+        new_all_ocurrencies = filter_ents([x for l in new_occurencies for x in l])
+        for span in new_all_ocurrencies:
+            # Chequeo por un flujo que me puede llegar entitades del front sin datos
+            if span.start_char is not None and span.end_char is not None:
+                entity = entities.get(name=span.label_)
+                should_be_anonymized = entity.should_anonimyzation
+                OcurrencyEntity.objects.create(
+                    act=act_check,
+                    startIndex=span.start_char,
+                    endIndex=span.end_char,
+                    entity=Entity.objects.get(name=span.label_),
+                    should_anonymized=should_be_anonymized,
+                    human_marked_ocurrency=True,
+                    text=text[span.start_char : span.end_char],
+                )
+        
         result = EntSerializer(OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check), many=True)
 
         dataReturn = {
@@ -258,10 +268,6 @@ class ActViewSet(viewsets.ModelViewSet):
             "ents": result.data,
             "id": act_check.id,
         }
-        print("result")
-        print(result)
-        print("result data")
-        print(result.data)
 
         return Response(dataReturn)
 

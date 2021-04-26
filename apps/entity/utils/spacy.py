@@ -14,6 +14,7 @@ from spacy.matcher import Matcher
 from spacy.pipeline import EntityRuler
 from spacy.tokens import Span
 from re import match, finditer
+from functools import reduce
 
 logger = logging.getLogger("django.server")
 if settings.IA2_MODEL_FILE is None or not settings.IA2_MODEL_FILE:
@@ -63,32 +64,40 @@ def filter_entity(ent_list, ents_filter):
         res = [ent for ent in ent_list if ent.label_ not in ents_filter]
     return res
 
-
 def filter_ents(ent_list):
     res = filter_spans(ent_list)
     return res
 
+def overlap_ocurrency(ent_start, ent_end, ocurrency):
+    print(f"original ocurrency", {ocurrency.text})
+    print(f"ocurrency.startIndex", {ocurrency.startIndex})
+    print(f"ocurrency.endIndex", {ocurrency.endIndex})
+    print(f"overlap?", {ocurrency.startIndex})
+    print(f"ent_start", {ent_start})
+    print(f"ent_end?", {ent_end})
+    print((ent_start >= ocurrency.startIndex and ent_end <= ocurrency.endIndex) or (ent_start <= ocurrency.endIndex and ent_end >= ocurrency.endIndex) or (ent_start >= ocurrency.startIndex) and (ent_end <= ocurrency.endIndex))
+    return (ent_start >= ocurrency.startIndex and ent_end <= ocurrency.endIndex) or (ent_start <= ocurrency.endIndex and ent_end >= ocurrency.endIndex) or (ent_start >= ocurrency.startIndex) and (ent_end <= ocurrency.endIndex)
 
-def find_all_entity_ocurrencies(text, ent):
-    res = []
+def overlap_ocurrency_list(ent_start, ent_end, original_ocurrency_list):
+    return any(overlap_ocurrency(ent_start, ent_end, ocurrency) for ocurrency in original_ocurrency_list)
+
+def find_all_entities(text, ent, original_ent_list):
     nlp = Nlp()
     doc = nlp.generate_doc(text)
-
     # Encuentro el texto correspondiente a la entidad
-    end_index = ent["end"]
-    start_index = ent["start"]
+    end_index = ent.endIndex
+    start_index = ent.startIndex
+    print(f"ent", {ent.startIndex})
     ent_text = doc.char_span(start_index, end_index)
-    print(ent_text.text)
+    print(f"ent text", {ent_text})
 
     # en el doc busco las nuevas entidades que matcheen con el texto ent_text
-    ents = []
-
+    result = []
     for match in finditer(ent_text.text, doc.text):
-        if not match.span()[0] == start_index:
-            new_span = doc.char_span(match.span()[0], match.span()[1], label=ent["tag"])
-            ents.append(new_span)
-
-    print("ents")
-    print(ents)
-    filtered_ents = filter_spans(ents)
-    return filtered_ents
+        print(f"match", {match})
+        if not overlap_ocurrency_list(match.span()[0], match.span()[1], original_ent_list):
+            new_span = doc.char_span(match.span()[0], match.span()[1], ent.entity.name)
+            result.append(new_span)
+    print("result")
+    print(result)
+    return result
