@@ -28,7 +28,7 @@ run_tests:
   stage: test
   script:
     - pip install -r requirements/testing.txt -i https://pypi.python.org/simple
-    - python manage.py test --settings=ia2.settings.test
+    - python manage.py test --settings=ia2.settings.test --noinput --exclude-tag="skip" --pattern=test*.py
 
 staging_deploy:
   image: cambalab/python3-uno
