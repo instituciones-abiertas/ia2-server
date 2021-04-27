@@ -45,6 +45,7 @@ class ActStats(models.Model):
     load_time = models.DurationField(default=timedelta())
     detection_time = models.DurationField(default=timedelta())
     anonymization_time = models.DurationField(default=timedelta())
+    find_all_ocurrencies = models.DurationField(default=timedelta())
 
 
 class OcurrencyEntity(models.Model):
