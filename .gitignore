@@ -24,7 +24,7 @@ uploads
 *.doc
 
 # Logs
-*.log
+logs/*.log
 
 # Models
 custom_models/*
