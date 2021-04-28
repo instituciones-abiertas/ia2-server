@@ -1,10 +1,6 @@
 from ..models import Act, OcurrencyEntity
-<<<<<<< HEAD
-from ..exceptions import ActNotExist, StorageFileNotExist, BadRequestAPI, ZeroOcurrencyDetectInAct
+from ..exceptions import ActNotExist, StorageFileNotExist, BadRequestAPI, NoEntitiesDetected
 
-=======
-from ..exceptions import ActNotExist, StorageFileNotExist, NoEntitiesDetected
->>>>>>> actualizacion de llamadas  de la excepcion
 from apps.data.helpers import extraer_datos
 import logging
 import numbers
@@ -137,7 +133,7 @@ def check_new_ocurrency(ocurrency, list_ent_name):
             # and ocurrency.keys() == 3  # Validacion para agregar en un futuro cuando desde el front solo se envie lo minimo
         )
     except Exception as e:
-        logger.error(e)
+        logger.error(f"No encuentra el campo {e}")
         logger.error(f"Nueva ocurrencia erronea {ocurrency}")
         raise BadRequestAPI()
 
@@ -158,4 +154,5 @@ def check_act_with_ocurrency(act, new_ocurrency_list):
     if model_ocurrency.exists() or (not model_ocurrency.exists() and new_ocurrency_list):
         return new_ocurrency_list
     else:
+        logger.error(f"El texto de la siguiente acta {act.id} no contiene entidades detectadas ni cargo usuarix")
         raise NoEntitiesDetected()
