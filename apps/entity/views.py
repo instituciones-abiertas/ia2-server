@@ -31,7 +31,14 @@ from .utils.oodocument import (
 )
 
 from .utils.publicador import publish_document
-from .utils.general import check_exist_act, open_file, extraer_datos_de_ocurrencias
+from .utils.general import (
+    check_exist_act,
+    open_file,
+    extraer_datos_de_ocurrencias,
+    check_delete_ocurrencies,
+    check_add_annotations_request,
+    check_new_ocurrencies,
+)
 from .utils.data_visualization import generate_data_visualization
 from .utils.vistas import timeit_save_stats, create_act, detect_entities
 
@@ -112,14 +119,17 @@ class ActViewSet(viewsets.ModelViewSet):
 
     @action(methods=["post"], detail=True)
     def addAnnotations(self, request, pk=None):
-        act_check = check_exist_act(pk)
-        # Ocurrencias marcadas por humanx
-        new_ents = request.data.get("newOcurrencies")
-        # Ocurrencias para marcar eliminadas
-        delete_ents = request.data.get("deleteOcurrencies")
-        text = act_check.text
         # Traigo todas las entidades para hacer busquedas mas rapida
         entities = Entity.objects.all()
+        request_check = check_add_annotations_request(request.data)
+        act_check = check_exist_act(pk)
+        # Ocurrencias marcadas por humanx,se provee el nombre de todas las entidades
+        new_ents = check_new_ocurrencies(
+            request_check.get("newOcurrencies"), list(entities.values_list("name", flat=True))
+        )
+        # Ocurrencias para marcar eliminadas
+        delete_ents = check_delete_ocurrencies(request_check.get("deleteOcurrencies"))
+        text = act_check.text
 
         # Recorrido sobre las ents nuevas
         for ent in new_ents:
@@ -140,9 +150,13 @@ class ActViewSet(viewsets.ModelViewSet):
         for ent in delete_ents:
             # Caso que sea eliminada la ocurrencia por accion humana
             ocurrency = OcurrencyEntity.objects.get(id=ent["id"])
-            ocurrency.human_deleted_ocurrency = True  # cambio del campo
-            ocurrency.save()
-
+            if ocurrency.act_id == act_check.id:
+                ocurrency.human_deleted_ocurrency = True  # cambio del campo
+                ocurrency.save()
+            else:
+                logger.error(
+                    f"No se elimino esta ocurrencia {ocurrency.id} ya que  pertenece al acta {ocurrency.act_id}"
+                )
         # Definicion de rutas
         output_text = settings.MEDIA_ROOT_TEMP_FILES + "anonymous.txt" + str(uuid.uuid4())
         output_format = act_check.filename()
