@@ -200,9 +200,7 @@ class ActViewSet(viewsets.ModelViewSet):
             ocurrency.human_deleted_ocurrency = True
             ocurrency.save()
         else:
-            logger.error(
-                f"No se elimino esta ocurrencia {ocurrency.id} ya que  pertenece al acta {ocurrency.act_id}"
-            )
+            logger.error(f"No se elimino esta ocurrencia {ocurrency.id} ya que  pertenece al acta {ocurrency.act_id}")
 
     def delete_ocurrencies(self, ocurrencies, act_check):
         ocurrencies_ids = [ocur["id"] for ocur in ocurrencies]
