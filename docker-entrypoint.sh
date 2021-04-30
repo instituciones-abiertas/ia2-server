@@ -21,4 +21,4 @@ echo "=> Starting Libreoffice headless"
 /usr/bin/libreoffice --headless --nologo --nofirststartwizard --accept="socket,host=0.0.0.0,port=8001;urp" &
 
 echo "=> Starting webserver..."
-gunicorn --bind 0.0.0.0:8000 ia2.wsgi:application
+gunicorn --bind 0.0.0.0:8000 --timeout 600  ia2.wsgi:application

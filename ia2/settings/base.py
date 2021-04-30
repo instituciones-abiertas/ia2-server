@@ -115,6 +115,32 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Logger
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "logs/debug.log",
+            "formatter": "verbose",
+        },
+    },
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        }
+    },
+    "loggers": {
+        "django.server": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -251,3 +277,5 @@ ERROR_ACT_NOT_EXIST = "No existe el acta que se quiere acceder"
 ERROR_STORAGE_FILE_NOT_EXIST = "El archivo no se encuentra disponible"
 ERROR_DRIVE_CREDENTIALS_NOT_FOUND = "No existen credenciales para Google Drive"
 ERROR_STORAGE_CLOUD_FOLDER_NOT_EXIST = "El directorio cloud al que intenta acceder no existe o es inválido"
+ERROR_REQUEST_API = "La información de petición es inválida"
+NO_ENTITIES_DETECTED = "No se han detectado entidades conocidas en el texto"

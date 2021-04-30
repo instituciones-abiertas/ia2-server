@@ -25,6 +25,9 @@ uploads
 *.pdf
 *.odt
 
+# Logs
+logs/*.log
+
 # Models
 custom_models/*
 !custom_models/.gitkeep

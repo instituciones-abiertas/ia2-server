@@ -54,3 +54,15 @@ class StorageCloudFolderNotExist(APIException):
     status_code = 404
     default_detail = settings.ERROR_STORAGE_CLOUD_FOLDER_NOT_EXIST
     default_code = "storage_cloud_folder_not_exist"
+
+
+class BadRequestAPI(APIException):
+    status_code = 400
+    default_detail = settings.ERROR_REQUEST_API
+    default_code = "bad_request_api"
+
+
+class NoEntitiesDetected(APIException):
+    status_code = 400
+    default_detail = settings.NO_ENTITIES_DETECTED
+    default_code = "no_entities_detected"
