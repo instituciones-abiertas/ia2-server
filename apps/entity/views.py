@@ -32,7 +32,14 @@ from .utils.oodocument import (
 )
 
 from .utils.publicador import publish_document
-from .utils.general import check_exist_act, open_file, extraer_datos_de_ocurrencias
+from .utils.general import (
+    check_exist_act,
+    open_file,
+    extraer_datos_de_ocurrencias,
+    check_delete_ocurrencies,
+    check_add_annotations_request,
+    check_new_ocurrencies,
+)
 from .utils.data_visualization import generate_data_visualization
 from .utils.vistas import timeit_save_stats, create_act, detect_entities, find_all_ocurrencies
 
@@ -113,17 +120,22 @@ class ActViewSet(viewsets.ModelViewSet):
 
     @action(methods=["post"], detail=True)
     def addAnnotations(self, request, pk=None):
+        # Traigo todas las entidades para hacer busquedas mas rapida
+        entities = Entity.objects.all()
+        request_check = check_add_annotations_request(request.data)
         act_check = check_exist_act(pk)
-        # Ocurrencias marcadas por humanx
-        new_ents = request.data.get("newOcurrencies")
+        # Ocurrencias marcadas por humanx,se provee el nombre de todas las entidades
+        new_ents = check_new_ocurrencies(
+            request_check.get("newOcurrencies"), list(entities.values_list("name", flat=True))
+        )
         # Ocurrencias para marcar eliminadas
-        delete_ents = request.data.get("deleteOcurrencies")
+        delete_ents = check_delete_ocurrencies(request_check.get("deleteOcurrencies"))
         # Traigo todas las entidades para hacer busquedas mas rapida
         entities = Entity.objects.all()
         # Se crean las nuevas entidades marcadas por usuarix
         self.create_new_occurrencies(new_ents, act_check, entities)
         # Actualización de ocurrencias eliminadas por usuarix
-        self.delete_ocurrencies(delete_ents)
+        self.delete_ocurrencies(delete_ents, act_check)
         # Definicion de rutas
         output_text = settings.MEDIA_ROOT_TEMP_FILES + "anonymous.txt" + str(uuid.uuid4())
         output_format = act_check.filename()
@@ -153,9 +165,10 @@ class ActViewSet(viewsets.ModelViewSet):
         os.remove(act_check.file.path)
         # Guardado del archivo anonimizado
         act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
-        act_check.save()
 
-        extraer_datos_de_ocurrencias(all_query)
+        timeit_extract = timeit_save_stats(act_check, "extraction_time")(extraer_datos_de_ocurrencias)
+        timeit_extract(all_query)
+        act_check.save()
 
         # Construyo el response
         dataReturn = {
@@ -182,15 +195,20 @@ class ActViewSet(viewsets.ModelViewSet):
                 if ocurrency["start"] is not None and ocurrency["end"] is not None:
                     self.create_occurency(ocurrency, act, entity_list)
 
-    def delete_and_save(self, ocurrency):
-        ocurrency.human_deleted_ocurrency = True
-        ocurrency.save()
+    def delete_and_save(self, ocurrency, act_check):
+        if ocurrency.act_id == act_check.id:
+            ocurrency.human_deleted_ocurrency = True
+            ocurrency.save()
+        else:
+            logger.error(
+                f"No se elimino esta ocurrencia {ocurrency.id} ya que  pertenece al acta {ocurrency.act_id}"
+            )
 
-    def delete_ocurrencies(self, ocurrencies):
+    def delete_ocurrencies(self, ocurrencies, act_check):
         ocurrencies_ids = [ocur["id"] for ocur in ocurrencies]
         ocurrencies_to_delete = OcurrencyEntity.objects.filter(id__in=ocurrencies_ids)
         for ocurrency in ocurrencies_to_delete:
-            self.delete_and_save(ocurrency)
+            self.delete_and_save(ocurrency, act_check)
 
     @action(methods=["post"], detail=True)
     def addAllOccurrencies(self, request, pk=None):
@@ -202,7 +220,7 @@ class ActViewSet(viewsets.ModelViewSet):
         # Se crean las nuevas entidades marcadas por usuarix
         self.create_new_occurrencies(new_ents, act_check, entities)
         # Actualización de ocurrencias eliminadas por usuarix
-        self.delete_ocurrencies(deleted_ents)
+        self.delete_ocurrencies(deleted_ents, act_check)
         # Busco todas las ocurrencias en db
         all_ocurrencies_query = OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check)
         # Busco todas las multiples apariciones de las ocurrencias filtradas por el listado de tags

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-13 11:43-0300\n"
+"POT-Creation-Date: 2021-04-13 13:15-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ia2/settings/base.py:125
-msgid "english"
-msgstr "English"
+#: apps/entity/admin.py:23
+msgid "act_id"
+msgstr "Acta Id"
 
-#: ia2/settings/base.py:126
-msgid "spanish"
-msgstr "Spanish"
+#: apps/entity/admin.py:28
+msgid "load_time_seconds"
+msgstr "Tiempo de carga en segundos"
 
-#: ia2/templates/admin/base_site.html:22
-msgid "change_password"
-msgstr "Change Password"
+#: apps/entity/admin.py:33
+msgid "detection_time_seconds"
+msgstr "Tiempo de detección en segundos"
 
-#: ia2/templates/admin/base_site.html:24
-msgid "log_out"
-msgstr "Log Out"
+#: apps/entity/admin.py:38
+msgid "anonymization_time_seconds"
+msgstr "Tiempo de anonimización en segundos"
 
+#: apps/entity/admin.py:43
+msgid "extraction_time_seconds"
+msgstr "Tiempo de extracción en segundos"

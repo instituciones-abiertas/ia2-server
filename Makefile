@@ -25,8 +25,14 @@ nuke-reset: nuke reset django-load-fixtures
 clear: ## Like reset but without the wiping of the installs.
 clear: django-migrate
 
+messages: ## Creates locale translations for apps
+messages: django-make-messages
+
 test: ## Run tests.
 test: django-test
+
+test.wip: ## Run work-in-progress tests. Useful when working on new tests
+test.wip: django-test-only
 
 shell: ## Runs a python shell
 shell:
@@ -60,7 +66,10 @@ pip-install: venv-check
 # Django commands
 
 django-test:
-	docker-compose exec web python ./manage.py test --settings=ia2.settings.test
+	docker-compose exec web python manage.py test --settings=ia2.settings.test --noinput --exclude-tag="skip" --pattern=test*.py
+
+django-test-only:
+	docker-compose exec web python manage.py test --settings=ia2.settings.test --noinput --tag="wip" --pattern=test*.py
 
 django-createsuperuser: DJANGO_DEV_USERNAME ?= admin
 django-createsuperuser: DJANGO_DEV_MAIL_DOMAIN ?= @camba.coop
@@ -72,6 +81,9 @@ django-createsuperuser:
 	@echo
 	@echo "    $(DJANGO_DEV_USERNAME)$(DJANGO_DEV_MAIL_DOMAIN):$(DJANGO_DEV_PASSWORD)"
 	@echo
+
+django-make-messages:
+	docker-compose exec web python manage.py makemessages
 
 django-migrate:
 	./manage.py migrate

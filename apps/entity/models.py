@@ -46,6 +46,13 @@ class ActStats(models.Model):
     detection_time = models.DurationField(default=timedelta())
     anonymization_time = models.DurationField(default=timedelta())
     find_all_ocurrencies = models.DurationField(default=timedelta())
+    extraction_time = models.DurationField(default=timedelta())
+
+    def __str__(self):
+        return f"Estadisticas Acta Id {self.act.id}"
+
+    def act_id(self):
+        return str(self.act.id)
 
 
 class OcurrencyEntity(models.Model):

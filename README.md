@@ -142,30 +142,48 @@ docker-compose exec web pip install <package_name>
 Cada vez que instalamos un paquete, **debemos** obtener el *freeze* de las versiones.
 
 ```bash
-docker-compose exec web pip freeze
+docker-compose exec web pip freeze | grep <package_name>
 ```
 
-Busque la dependencia que se agregó e inclúyala en el archivo *requirements* que corresponda. Existen 4 tipos de archivos de *requirements*:
+Inclúya la dependencia en el archivo *requirements* que corresponda. Existen 4 tipos de archivos de *requirements*:
 
 + `base.txt`: dependencias utilizadas en todos los ambientes.
 + `local.txt`: dependencias utilizadas únicamente en el ambiente local de desarrollo.
 + `production.txt`: dependencias utilizadas únicamente en ambientes de producción.
 + `testing.txt`: dependencias utilizadas únicamente en ambientes de pruebas.
 
-```txt
-# docker-compose exec web pip freeze output
+```bash
+$ docker-compose exec web pip freeze | grep mysqlclient
 
-dj-database-url==0.5.0
-Django==2.2.5
-django-debug-toolbar==2.0
-django-extensions==2.2.1
-django-mysql==3.2.0
-djangorestframework==3.10.3
 mysqlclient==1.4.4
-pytz==2019.3
-six==1.12.0
-sqlparse==0.3.0
-Werkzeug==0.15.6
+```
+
+### Correr pruebas
+
+Los comandos para correr las pruebas soportan los decorators de `django.test` para realizar filtrados o excepciones cuando se corren las pruebas. Más información sobre tags [aquí](https://docs.djangoproject.com/en/3.1/topics/testing/tools/#tagging-tests).
+
+*Correr todas las pruebas, excepto aquellas con tag* ***skip***.
+
+```bash
+make test
+```
+
+*Correr unicamente las pruebas con tag* ***wip***.
+
+```bash
+make test.wip
+```
+
+### Agregar nuevas traducciones
+
+Para crear nuevas traducciones en una app primero debemos verificar si en esa app existe un directorio `locale`. Si no existe, lo creamos. Luego de actualizarlos, correr el comando `make messages`.
+
+Si simplemente estamos actualizando o agregando traducciones a una archivo existente, una vez finalizada la actualización, ejecutamos el siguiente comando.
+
+*El siguiente comando actualiza todos los archivos `.mo` de traducciones, incluso la fecha de actualización de archivos que no sufrieron cambios. Por éste motivo es necesario verificar que no se agreguen archivos que no sufrieron cambios de traducción en un nuevp commit.*
+
+```bash
+make messages
 ```
 
 ## API Rest
