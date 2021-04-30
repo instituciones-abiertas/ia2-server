@@ -125,8 +125,9 @@ class ActViewSet(viewsets.ModelViewSet):
         act_check = check_exist_act(pk)
         # Ocurrencias marcadas por humanx,se provee el nombre de todas las entidades
         new_ents = check_new_ocurrencies(
-            request_check.get("newOcurrencies"), list(entities.values_list("name", flat=True))
+            request_check.get("newOcurrencies"), list(entities.values_list("name", flat=True)), act_check
         )
+
         # Ocurrencias para marcar eliminadas
         delete_ents = check_delete_ocurrencies(request_check.get("deleteOcurrencies"))
         text = act_check.text

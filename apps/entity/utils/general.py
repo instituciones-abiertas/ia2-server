@@ -1,5 +1,6 @@
-from ..models import Act
-from ..exceptions import ActNotExist, StorageFileNotExist, BadRequestAPI
+from ..models import Act, OcurrencyEntity
+from ..exceptions import ActNotExist, StorageFileNotExist, BadRequestAPI, NoEntitiesDetected
+
 from apps.data.helpers import extraer_datos
 import logging
 import numbers
@@ -111,10 +112,10 @@ def check_type_params(data, expected_type, param_name):
 
 
 # TODO: Migrar a Json Schema o Serializer
-def check_new_ocurrencies(list_ocurrencies, list_ent):
+def check_new_ocurrencies(list_ocurrencies, list_ent, act):
     result = list(map(lambda ocurrency: check_new_ocurrency(ocurrency, list_ent), list_ocurrencies))
     if all(result):
-        return list_ocurrencies
+        return check_act_with_ocurrency(act, list_ocurrencies)
     else:
         logger.error("Lista de ocurrencias mal formada")
         logger.error(f"La lista de ocurrencias es {list_ocurrencies} ")
@@ -132,7 +133,7 @@ def check_new_ocurrency(ocurrency, list_ent_name):
             # and ocurrency.keys() == 3  # Validacion para agregar en un futuro cuando desde el front solo se envie lo minimo
         )
     except Exception as e:
-        logger.error(e)
+        logger.error(f"No encuentra el campo {e}")
         logger.error(f"Nueva ocurrencia erronea {ocurrency}")
         raise BadRequestAPI()
 
@@ -146,3 +147,12 @@ def check_tag(tag, list_ent_name):
 # Se valida que sean numeros, que sea valido el intervalo
 def check_start_end(start, end):
     return isinstance(start, numbers.Integral) and isinstance(end, numbers.Integral) and start < end and start > 0
+
+
+def check_act_with_ocurrency(act, new_ocurrency_list):
+    model_ocurrency = OcurrencyEntity.objects.filter(act=act)
+    if model_ocurrency.exists() or (not model_ocurrency.exists() and new_ocurrency_list):
+        return new_ocurrency_list
+    else:
+        logger.error(f"El texto de la siguiente acta {act.id} no contiene entidades detectadas ni cargo usuarix")
+        raise NoEntitiesDetected()
