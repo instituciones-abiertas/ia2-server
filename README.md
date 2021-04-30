@@ -174,6 +174,8 @@ make test
 make test.wip
 ```
 
+> Los comandos `make test` y `make test.wip` asumen que los servicios de docker están activos.
+
 ### Agregar nuevas traducciones
 
 Para crear nuevas traducciones en una app primero debemos verificar si en esa app existe un directorio `locale`. Si no existe, lo creamos. Luego de actualizarlos, correr el comando `make messages`.

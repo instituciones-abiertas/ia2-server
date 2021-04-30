@@ -154,5 +154,7 @@ def check_act_with_ocurrency(act, new_ocurrency_list):
     if model_ocurrency.exists() or (not model_ocurrency.exists() and new_ocurrency_list):
         return new_ocurrency_list
     else:
-        logger.error(f"El texto de la siguiente acta {act.id} no contiene entidades detectadas ni cargo usuarix")
+        logger.error(
+            f"El texto de la siguiente acta {act.id} no contiene entidades detectadas ni cargadas por usuarixs"
+        )
         raise NoEntitiesDetected()

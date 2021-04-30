@@ -22,6 +22,8 @@ uploads
 # Documents
 *.docx
 *.doc
+*.pdf
+*.odt
 
 # Logs
 logs/*.log

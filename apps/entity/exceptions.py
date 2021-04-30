@@ -8,15 +8,15 @@ class ServiceOddDocumentUnavailable(APIException):
     default_code = "service_odddocument_unavailable"
 
 
-class nameTooLong(APIException):
+class CreateActFileNameIsTooLongException(APIException):
     status_code = 400
     default_detail = settings.ERROR_NAME_TOO_LONG
     default_code = "service_document"
 
 
-class ActFileNotFound(APIException):
-    status_code = 404
-    default_detail = settings.ERROR_ACT_FILE_NOT_FOUND
+class CreateActFileIsMissingException(APIException):
+    status_code = 400
+    default_detail = settings.ERROR_CREATE_ACT_FILE_NOT_FOUND
     default_code = "act_file_not_found"
 
 

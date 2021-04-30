@@ -1,0 +1,884 @@
+[
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 1,
+    "fields": {
+      "act": 1,
+      "startIndex": 70,
+      "endIndex": 72,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "10",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": true
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 2,
+    "fields": {
+      "act": 1,
+      "startIndex": 142,
+      "endIndex": 168,
+      "entity": 28,
+      "should_anonymized": true,
+      "text": "IPP J-01-00006472-1/2021-0",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 3,
+    "fields": {
+      "act": 1,
+      "startIndex": 184,
+      "endIndex": 197,
+      "entity": 32,
+      "should_anonymized": true,
+      "text": "18236125/2021",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 4,
+    "fields": {
+      "act": 1,
+      "startIndex": 271,
+      "endIndex": 283,
+      "entity": 3,
+      "should_anonymized": true,
+      "text": "Buenos Aires",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 5,
+    "fields": {
+      "act": 1,
+      "startIndex": 285,
+      "endIndex": 306,
+      "entity": 43,
+      "should_anonymized": false,
+      "text": "18 de febrero de 2021",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 6,
+    "fields": {
+      "act": 1,
+      "startIndex": 330,
+      "endIndex": 349,
+      "entity": 8,
+      "should_anonymized": true,
+      "text": "25 de enero de 2021",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 7,
+    "fields": {
+      "act": 1,
+      "startIndex": 424,
+      "endIndex": 434,
+      "entity": 9,
+      "should_anonymized": true,
+      "text": "03/12/2020",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 8,
+    "fields": {
+      "act": 1,
+      "startIndex": 525,
+      "endIndex": 535,
+      "entity": 4,
+      "should_anonymized": true,
+      "text": "Juan Lopez",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 9,
+    "fields": {
+      "act": 1,
+      "startIndex": 549,
+      "endIndex": 562,
+      "entity": 4,
+      "should_anonymized": true,
+      "text": "Rosario Lopez",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 10,
+    "fields": {
+      "act": 1,
+      "startIndex": 565,
+      "endIndex": 577,
+      "entity": 4,
+      "should_anonymized": true,
+      "text": "Agusto Lopez",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 11,
+    "fields": {
+      "act": 1,
+      "startIndex": 608,
+      "endIndex": 619,
+      "entity": 4,
+      "should_anonymized": true,
+      "text": "Roberta Paz",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 12,
+    "fields": {
+      "act": 1,
+      "startIndex": 638,
+      "endIndex": 645,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "dos mil",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 13,
+    "fields": {
+      "act": 1,
+      "startIndex": 692,
+      "endIndex": 697,
+      "entity": 8,
+      "should_anonymized": true,
+      "text": "Marzo",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 14,
+    "fields": {
+      "act": 1,
+      "startIndex": 825,
+      "endIndex": 835,
+      "entity": 9,
+      "should_anonymized": true,
+      "text": "05/02/2021",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 15,
+    "fields": {
+      "act": 1,
+      "startIndex": 1009,
+      "endIndex": 1019,
+      "entity": 9,
+      "should_anonymized": true,
+      "text": "10/02/2021",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 16,
+    "fields": {
+      "act": 1,
+      "startIndex": 1229,
+      "endIndex": 1238,
+      "entity": 14,
+      "should_anonymized": true,
+      "text": "argentina",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 17,
+    "fields": {
+      "act": 1,
+      "startIndex": 1264,
+      "endIndex": 1274,
+      "entity": 11,
+      "should_anonymized": true,
+      "text": "11.111.111",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 18,
+    "fields": {
+      "act": 1,
+      "startIndex": 1308,
+      "endIndex": 1318,
+      "entity": 39,
+      "should_anonymized": false,
+      "text": "marca Ford",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": true
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 19,
+    "fields": {
+      "act": 1,
+      "startIndex": 1338,
+      "endIndex": 1345,
+      "entity": 17,
+      "should_anonymized": true,
+      "text": "AB123CD",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 20,
+    "fields": {
+      "act": 1,
+      "startIndex": 1373,
+      "endIndex": 1386,
+      "entity": 10,
+      "should_anonymized": true,
+      "text": "Chiclana 1429",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 21,
+    "fields": {
+      "act": 1,
+      "startIndex": 1389,
+      "endIndex": 1395,
+      "entity": 3,
+      "should_anonymized": true,
+      "text": "Bernal",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 22,
+    "fields": {
+      "act": 1,
+      "startIndex": 1434,
+      "endIndex": 1440,
+      "entity": 44,
+      "should_anonymized": false,
+      "text": "3 a\u00f1os",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 23,
+    "fields": {
+      "act": 1,
+      "startIndex": 1473,
+      "endIndex": 1488,
+      "entity": 34,
+      "should_anonymized": true,
+      "text": "imagenAuto1.jpg",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 24,
+    "fields": {
+      "act": 1,
+      "startIndex": 1492,
+      "endIndex": 1505,
+      "entity": 34,
+      "should_anonymized": true,
+      "text": "videoAuto.mp4",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 25,
+    "fields": {
+      "act": 1,
+      "startIndex": 3374,
+      "endIndex": 3382,
+      "entity": 29,
+      "should_anonymized": false,
+      "text": "art. 188",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 26,
+    "fields": {
+      "act": 1,
+      "startIndex": 3447,
+      "endIndex": 3455,
+      "entity": 29,
+      "should_anonymized": false,
+      "text": "art. 343",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 27,
+    "fields": {
+      "act": 1,
+      "startIndex": 4960,
+      "endIndex": 4970,
+      "entity": 22,
+      "should_anonymized": false,
+      "text": "Ley 26.332",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 28,
+    "fields": {
+      "act": 1,
+      "startIndex": 4982,
+      "endIndex": 4988,
+      "entity": 29,
+      "should_anonymized": false,
+      "text": "art. 9",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 29,
+    "fields": {
+      "act": 1,
+      "startIndex": 5663,
+      "endIndex": 5669,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "234521",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 30,
+    "fields": {
+      "act": 1,
+      "startIndex": 5674,
+      "endIndex": 5688,
+      "entity": 38,
+      "should_anonymized": true,
+      "text": "Banco Columbia",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 31,
+    "fields": {
+      "act": 1,
+      "startIndex": 5719,
+      "endIndex": 5721,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "22",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": true
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 32,
+    "fields": {
+      "act": 1,
+      "startIndex": 5741,
+      "endIndex": 5748,
+      "entity": 3,
+      "should_anonymized": true,
+      "text": "Quilmes",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 33,
+    "fields": {
+      "act": 1,
+      "startIndex": 5755,
+      "endIndex": 5780,
+      "entity": 3,
+      "should_anonymized": true,
+      "text": "Provincia de Buenos Aires",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 34,
+    "fields": {
+      "act": 1,
+      "startIndex": 5794,
+      "endIndex": 5806,
+      "entity": 4,
+      "should_anonymized": true,
+      "text": "Carlos Lopez",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 35,
+    "fields": {
+      "act": 1,
+      "startIndex": 5813,
+      "endIndex": 5823,
+      "entity": 11,
+      "should_anonymized": true,
+      "text": "62.122.522",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 36,
+    "fields": {
+      "act": 1,
+      "startIndex": 5855,
+      "endIndex": 5878,
+      "entity": 18,
+      "should_anonymized": true,
+      "text": "carloslopes@mail.com.ar",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 37,
+    "fields": {
+      "act": 1,
+      "startIndex": 6001,
+      "endIndex": 6015,
+      "entity": 38,
+      "should_anonymized": true,
+      "text": "Banco Columbia",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 38,
+    "fields": {
+      "act": 1,
+      "startIndex": 6262,
+      "endIndex": 6263,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "1",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": true
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 39,
+    "fields": {
+      "act": 1,
+      "startIndex": 6340,
+      "endIndex": 6346,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "234521",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 40,
+    "fields": {
+      "act": 1,
+      "startIndex": 6351,
+      "endIndex": 6365,
+      "entity": 38,
+      "should_anonymized": true,
+      "text": "Banco Columbia",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 41,
+    "fields": {
+      "act": 1,
+      "startIndex": 6395,
+      "endIndex": 6397,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "22",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": true
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 42,
+    "fields": {
+      "act": 1,
+      "startIndex": 6417,
+      "endIndex": 6424,
+      "entity": 3,
+      "should_anonymized": true,
+      "text": "Quilmes",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 43,
+    "fields": {
+      "act": 1,
+      "startIndex": 6431,
+      "endIndex": 6456,
+      "entity": 3,
+      "should_anonymized": true,
+      "text": "Provincia de Buenos Aires",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 44,
+    "fields": {
+      "act": 1,
+      "startIndex": 6470,
+      "endIndex": 6482,
+      "entity": 4,
+      "should_anonymized": true,
+      "text": "Carlos Lopez",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 45,
+    "fields": {
+      "act": 1,
+      "startIndex": 6489,
+      "endIndex": 6499,
+      "entity": 11,
+      "should_anonymized": true,
+      "text": "62.122.522",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 46,
+    "fields": {
+      "act": 1,
+      "startIndex": 6915,
+      "endIndex": 6922,
+      "entity": 29,
+      "should_anonymized": false,
+      "text": "arts. 9",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 47,
+    "fields": {
+      "act": 1,
+      "startIndex": 6960,
+      "endIndex": 6961,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "4",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": true
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 48,
+    "fields": {
+      "act": 1,
+      "startIndex": 6964,
+      "endIndex": 6965,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "5",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": true
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 49,
+    "fields": {
+      "act": 1,
+      "startIndex": 6972,
+      "endIndex": 6982,
+      "entity": 22,
+      "should_anonymized": false,
+      "text": "Ley 26.485",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 50,
+    "fields": {
+      "act": 1,
+      "startIndex": 6985,
+      "endIndex": 6996,
+      "entity": 29,
+      "should_anonymized": false,
+      "text": "art. 18 y 6",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 51,
+    "fields": {
+      "act": 1,
+      "startIndex": 7002,
+      "endIndex": 7016,
+      "entity": 29,
+      "should_anonymized": false,
+      "text": "art. 188 y 343",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 52,
+    "fields": {
+      "act": 1,
+      "startIndex": 7071,
+      "endIndex": 7072,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "2",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": true
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 53,
+    "fields": {
+      "act": 1,
+      "startIndex": 7238,
+      "endIndex": 7252,
+      "entity": 38,
+      "should_anonymized": true,
+      "text": "Banco Columbia",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 54,
+    "fields": {
+      "act": 1,
+      "startIndex": 7409,
+      "endIndex": 7416,
+      "entity": 29,
+      "should_anonymized": false,
+      "text": "art. 72",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 55,
+    "fields": {
+      "act": 1,
+      "startIndex": 7423,
+      "endIndex": 7424,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "3",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": true
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 56,
+    "fields": {
+      "act": 1,
+      "startIndex": 7493,
+      "endIndex": 7495,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "22",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": true
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 57,
+    "fields": {
+      "act": 1,
+      "startIndex": 7537,
+      "endIndex": 7546,
+      "entity": 33,
+      "should_anonymized": true,
+      "text": "9123/2020",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 58,
+    "fields": {
+      "act": 1,
+      "startIndex": 7548,
+      "endIndex": 7549,
+      "entity": 19,
+      "should_anonymized": false,
+      "text": "4",
+      "human_marked_ocurrency": false,
+      "human_deleted_ocurrency": true
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 59,
+    "fields": {
+      "act": 1,
+      "startIndex": 537,
+      "endIndex": 546,
+      "entity": 4,
+      "should_anonymized": true,
+      "text": "Ana Lopez",
+      "human_marked_ocurrency": true,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 60,
+    "fields": {
+      "act": 1,
+      "startIndex": 1314,
+      "endIndex": 1325,
+      "entity": 39,
+      "should_anonymized": false,
+      "text": "Ford Fiesta",
+      "human_marked_ocurrency": true,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 61,
+    "fields": {
+      "act": 1,
+      "startIndex": 5146,
+      "endIndex": 5155,
+      "entity": 21,
+      "should_anonymized": false,
+      "text": "violencia",
+      "human_marked_ocurrency": true,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 62,
+    "fields": {
+      "act": 1,
+      "startIndex": 6754,
+      "endIndex": 6757,
+      "entity": 4,
+      "should_anonymized": true,
+      "text": "Paz",
+      "human_marked_ocurrency": true,
+      "human_deleted_ocurrency": false
+    }
+  },
+  {
+    "model": "entity.ocurrencyentity",
+    "pk": 63,
+    "fields": {
+      "act": 1,
+      "startIndex": 6960,
+      "endIndex": 6965,
+      "entity": 29,
+      "should_anonymized": false,
+      "text": "4 y 5",
+      "human_marked_ocurrency": true,
+      "human_deleted_ocurrency": false
+    }
+  }
+]

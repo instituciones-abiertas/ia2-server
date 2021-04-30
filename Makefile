@@ -36,7 +36,7 @@ test.wip: django-test-only
 
 shell: ## Runs a python shell
 shell:
-	docker-compose exec web python manage.py shell
+	python manage.py shell
 
 # ---------------
 # Utility targets
@@ -66,10 +66,10 @@ pip-install: venv-check
 # Django commands
 
 django-test:
-	docker-compose exec web python manage.py test --settings=ia2.settings.test --noinput --exclude-tag="skip" --pattern=test*.py
+	python manage.py test --settings=ia2.settings.test --noinput --exclude-tag="skip" --pattern="test*.py" --verbosity 1
 
 django-test-only:
-	docker-compose exec web python manage.py test --settings=ia2.settings.test --noinput --tag="wip" --pattern=test*.py
+	python manage.py test --settings=ia2.settings.test --noinput --tag="wip" --pattern="test*.py" --verbosity 1
 
 django-createsuperuser: DJANGO_DEV_USERNAME ?= admin
 django-createsuperuser: DJANGO_DEV_MAIL_DOMAIN ?= @camba.coop
@@ -83,7 +83,7 @@ django-createsuperuser:
 	@echo
 
 django-make-messages:
-	docker-compose exec web python manage.py makemessages
+	python manage.py makemessages
 
 django-migrate:
 	./manage.py migrate

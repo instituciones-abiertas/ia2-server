@@ -31,6 +31,13 @@ CELERY_TIMEZONE = "America/Argentina/Buenos_Aires"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
+MEDIA_ROOT_TEMP_FILES = os.path.join(MEDIA_ROOT, "test_tmp/")
+MEDIA_ROOT_ANONYMOUS_FILES = os.path.join(MEDIA_ROOT, "test_anonymous/")
+
+# Test files
+
+ACT_FILES_DIR = os.path.join(PROJECT_PATH, "test_files/act")
+
 # OODocument Configuration
 
 LIBREOFFICE_HOST = "0.0.0.0"
@@ -42,4 +49,5 @@ PUBLICADOR_DROPBOX_TOKEN_APP = os.environ.get("PUBLICADOR_DROPBOX_TOKEN_APP")
 PUBLICADOR_CREDENTIALS_DRIVE_PATH = os.environ.get("PUBLICADOR_CREDENTIALS_DRIVE_PATH")
 
 ## ML Model
+
 IA2_MODEL_FILE = os.environ.get("IA2_TEST_MODEL_FILE")

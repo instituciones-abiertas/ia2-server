@@ -9,7 +9,7 @@ from time import time
 from datetime import timedelta
 from ..utils.oodocument import convert_document_to_format, extract_text_from_file, extract_header
 from ..validator import is_docx_file
-from ..exceptions import nameTooLong, ActFileNotFound
+from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsTooLongException
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import UnsupportedMediaType
 
@@ -71,12 +71,10 @@ def convert_to_txt(act):
 
 
 def create_act(request_file):
+    # Checks the file from the request is missing
     if request_file is False:
-        # Caso excepcional ya que no se lanza una excepcion de sistema primero
-        logger.error("No se adjunto el archivo")
-        raise ActFileNotFound()
+        raise CreateActFileIsMissingException()
 
-    # Creo el acta base
     act = Act(file=request_file)
 
     try:
@@ -84,9 +82,9 @@ def create_act(request_file):
     except ValidationError:
         logger.exception(settings.ERROR_TEXT_FILE_TYPE)
         raise UnsupportedMediaType(media_type=request_file.content_type, detail=settings.ERROR_TEXT_FILE_TYPE)
-    except (nameTooLong) as e:
+    except (CreateActFileNameIsTooLongException) as e:
         logger.exception(e)
-        raise nameTooLong()
+        raise CreateActFileNameIsTooLongException()
     else:
         act.save()
 
@@ -101,16 +99,13 @@ def create_act(request_file):
 def detect_entities(act):
     nlp = Nlp()
     ents = nlp.get_all_entities(act.text)
-    # Traigo todas las entidades para hacer busquedas mas rapida
+    # Gets all entities for performance
     entities = Entity.objects.all()
-    # Guardo las ocurrencias para no tener que hacer una llamada  a la base despues
     all_ocurrency = []
-
     for ent in ents:
         entity_name = ent.label_
         entity = entities.get(name=entity_name)
         should_be_anonymized = entity.should_anonimyzation
-        # Falta definir el nombre exacto del campo en el frontend
         ocurrency = OcurrencyEntity.objects.create(
             act=act,
             startIndex=ent.start_char,

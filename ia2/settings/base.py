@@ -10,13 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+import ast
 import os
 import dj_database_url
 from django.utils.translation import ugettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_PATH = os.path.abspath(os.path.dirname(__name__))
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -200,7 +202,7 @@ PRIVATE_STORAGE_ANONYMOUS_URL = "anonymous/"
 PRIVATE_STORAGE_AUTH_FUNCTION = "private_storage.permissions.allow_superuser"
 
 MODELS_PATH = f"{os.path.abspath(os.path.dirname(__name__))}/custom_models"
-IA2_DISABLED_ENTITIES = []
+DISABLED_ENTITIES = ast.literal_eval(os.environ.get("IA2_DISABLED_ENTITIES", "[]"))
 
 # Celery Configuration Options
 
@@ -265,15 +267,15 @@ PUBLICADOR_CREDENTIALS_DRIVE_PATH = os.environ.get("PUBLICADOR_CREDENTIALS_DRIVE
 
 ## Publicador Error types
 
-ERROR_TEXT_FILE_TYPE = "El tipo de archivo no es soportado por el sistema"
-ERROR_OODOCUMENT_NOT_WORKING = "El servicio de transcripcion no esta funcionando"
+ERROR_TEXT_FILE_TYPE = "Tipo de archivo no soportado"
+ERROR_OODOCUMENT_NOT_WORKING = "El servicio de transcripcion no esta disponible"
 ERROR_NAME_TOO_LONG = "El nombre del archivo excede los 150 caracteres"
-ERROR_ACT_FILE_NOT_FOUND = "No envio un archivo"
-ERROR_DROPBOX_CREDENTIALS = "Las credenciales de dropbox estan expiradaso o son incorrectas"
-ERROR_DRIVE_CREDENTIALS = "Las credenciales de Drive estan expiradas o son incorrectas"
+ERROR_CREATE_ACT_FILE_NOT_FOUND = "No se ha enviado ningún archivo"
+ERROR_DROPBOX_CREDENTIALS = "Las credenciales de Dropbox han expirado o son incorrectas"
+ERROR_DRIVE_CREDENTIALS = "Las credenciales de Google Drive han expirado o son incorrectas"
 ERROR_ACT_NOT_EXIST = "No existe el acta que se quiere acceder"
 ERROR_STORAGE_FILE_NOT_EXIST = "El archivo no se encuentra disponible"
-ERROR_DRIVE_CREDENTIALS_NOT_FOUND = "No se encuentran las credenciales en el servidor"
-ERROR_STORAGE_CLOUD_FOLDER_NOT_EXIST = "No existe la carpeta configurada en el servidor"
-ERROR_REQUEST_API = "Es incorrecta la información enviada"
-NO_ENTITIES_DETECTED = "No se detecto ninguna entidad conocida en el texto"
+ERROR_DRIVE_CREDENTIALS_NOT_FOUND = "No existen credenciales para Google Drive"
+ERROR_STORAGE_CLOUD_FOLDER_NOT_EXIST = "El directorio cloud al que intenta acceder no existe o es inválido"
+ERROR_REQUEST_API = "La información de petición es inválida"
+NO_ENTITIES_DETECTED = "No se han detectado entidades conocidas en el texto"
