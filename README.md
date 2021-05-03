@@ -7,6 +7,27 @@
 </p>
 <h4 align="center">Servidor del proyecto IA²</h4>
 
+---
+
+<p align="center" style="margin-top: 14px;">
+  <a
+    href="https://github.com/instituciones-abiertas/ia2-server/blob/main/LICENSE"
+  >
+    <img
+      src="https://img.shields.io/badge/License-GPL%20v3-blue.svg"
+      alt="License" height="20"
+    >
+  </a>
+  <a
+    href="https://github.com/instituciones-abiertas/ia2-server/blob/main/CODE_OF_CONDUCT.md"
+  >
+    <img
+      src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg"
+      alt="Contributor Covenant" height="20"
+    >
+  </a>
+</p>
+
 ## Stack Tecnológico
 
 + [Django 2.2.5](https://docs.djangoproject.com/en/3.1/releases/2.2/)
