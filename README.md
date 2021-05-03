@@ -7,6 +7,27 @@
 </p>
 <h4 align="center">Servidor del proyecto IA²</h4>
 
+---
+
+<p align="center" style="margin-top: 14px;">
+  <a
+    href="https://github.com/instituciones-abiertas/ia2-server/blob/main/LICENSE"
+  >
+    <img
+      src="https://img.shields.io/badge/License-GPL%20v3-blue.svg"
+      alt="License" height="20"
+    >
+  </a>
+  <a
+    href="https://github.com/instituciones-abiertas/ia2-server/blob/main/CODE_OF_CONDUCT.md"
+  >
+    <img
+      src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg"
+      alt="Contributor Covenant" height="20"
+    >
+  </a>
+</p>
+
 ## Stack Tecnológico
 
 + [Django 2.2.5](https://docs.djangoproject.com/en/3.1/releases/2.2/)
@@ -25,19 +46,19 @@ Realizar una copia del archivo `.env.example` y renombrarlo a `.env`. Luego, ser
 
 > MAIN es la base de datos principal, donde se registran los modelos de dominio.
 
-+ `IA2_MAIN_DB_USER`: un nombre de usuarix para acceder a la base de datos
-+ `IA2_MAIN_DB_PASS`: contrseña de acceso
++ `IA2_MAIN_DB_USER`: nombre de usuarix para acceder a la base de datos principal
++ `IA2_MAIN_DB_PASS`: contraseña de acceso a la base de datos principal
 + `IA2_MAIN_DB_ROOT_PASS`: nombre de usuarix para la cuenta root. Generalmente es `root`.
-+ `IA2_MAIN_DB_NAME`: nombre de la base de datos
-+ `IA2_MAIN_DB_PORT`: puerto de la base de datos 3306
++ `IA2_MAIN_DB_NAME`: nombre de la base de datos principal
++ `IA2_MAIN_DB_PORT`: puerto de la base de datos principal
 
 > DATA es la base de datos donde se registra la extracción de datos.
 
-+ `IA2_DB_DATA_USER`: "user"
-+ `IA2_DB_DATA_PASS`: "pass"
-+ `IA2_DB_DATA_ROOT_PASS`: "root"
-+ `IA2_DB_DATA_NAME`: "ia2_data_db"
-+ `IA2_DB_DATA_PORT`: 3307
++ `IA2_DB_DATA_USER`: nombre de usuarix para acceder a la base de extracción de datos
++ `IA2_DB_DATA_PASS`: contraseña de acceso a la base de extracción datos
++ `IA2_DB_DATA_ROOT_PASS`: nombre de usuarix para la cuenta root. Generalmente es `root`.
++ `IA2_DB_DATA_NAME`: nombre de la base de extracción de datos
++ `IA2_DB_DATA_PORT`: puerto de la base de extracción datos
 
 #### Publicador
 
@@ -77,17 +98,52 @@ pre-commit install
 
 ### Ambiente de desarrollo utilizando virtualenv
 
-+ python 3
-+ mysql-server
-+ mysql-client
-+ [virtualenv](https://virtualenv.pypa.io/en/latest/)
-+ [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)
-+ setup a virtualenv:
++ [`python 3.x`](https://www.python.org/downloads/)
++ [`mysql-server`](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04-es)
++ [`mysql-client`](https://www.configserverfirewall.com/ubuntu-linux/ubuntu-install-mysql-client/)
++ [`virtualenv`](https://virtualenv.pypa.io/en/latest/)
++ [`virtualenvwrapper`](https://virtualenvwrapper.readthedocs.io/en/latest/)
+
+#### Ambiente virtual
+
+Una vez instaladas las dependencias, crear un ambiente con `virtualenv`:
 
 ```bash
-mkvirtualenvwrapper a-name-for-your-virtual-env
+mkvirtualenvwrapper ia2-server
 ```
 
+El siguiente script actualiza las variables de ambiente de archivo `.env` cada vez que se inicie un workspace de trabajo de `virtualenv`.
+
+```bash
+echo 'source .env' >> $WORKON_HOME/postactivate
+```
+
+Asignar el ambiente de trabajo creado anteriormente:
+
+```bash
+workon ia2-server
+# Luego compruebe que las variables de ambiente están disponibles en su terminal
+echo $DJANGO_SETTINGS_MODULE
+# ia2.settings.local
+```
+
+#### Instalación
+
+Instalar requerimientos y dependencias:
+
+```bash
+cd requirements
+pip install -r local.txt
+```
+
+#### Configuración de base de datos
+
+Crear las bases de datos
+
+```bash
+mysqladmin -u $IA2_MAIN_DB_ROOT_PASS -p create $IA2_MAIN_DB_NAME
+mysqladmin -u $IA2_DB_DATA_ROOT_PASS -p create $IA2_DB_DATA_NAME
+```
 
 ### Ambiente de desarrollo utilizando Docker
 
