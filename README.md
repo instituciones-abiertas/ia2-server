@@ -21,6 +21,24 @@ Realizar una copia del archivo `.env.example` y renombrarlo a `.env`. Luego, ser
 
 ### Variables de ambiente
 
+#### Bases de datos
+
+> MAIN es la base de datos principal, donde se registran los modelos de dominio.
+
++ `IA2_MAIN_DB_USER`: un nombre de usuarix para acceder a la base de datos
++ `IA2_MAIN_DB_PASS`: contrseña de acceso
++ `IA2_MAIN_DB_ROOT_PASS`: nombre de usuarix para la cuenta root. Generalmente es `root`.
++ `IA2_MAIN_DB_NAME`: nombre de la base de datos
++ `IA2_MAIN_DB_PORT`: puerto de la base de datos 3306
+
+> DATA es la base de datos donde se registra la extracción de datos.
+
++ `IA2_DB_DATA_USER`: "user"
++ `IA2_DB_DATA_PASS`: "pass"
++ `IA2_DB_DATA_ROOT_PASS`: "root"
++ `IA2_DB_DATA_NAME`: "ia2_data_db"
++ `IA2_DB_DATA_PORT`: 3307
+
 #### Publicador
 
 > Utilizamos la librería [`publicador`](https://github.com/Cambalab/publicador) para subir archivos a diferentes servicios de cloud storage.
@@ -56,6 +74,20 @@ Utilizamos flake para mantener la consistencia de estilo de código. Para inicia
 ```bash
 pre-commit install
 ```
+
+### Ambiente de desarrollo utilizando virtualenv
+
++ python 3
++ mysql-server
++ mysql-client
++ [virtualenv](https://virtualenv.pypa.io/en/latest/)
++ [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)
++ setup a virtualenv:
+
+```bash
+mkvirtualenvwrapper a-name-for-your-virtual-env
+```
+
 
 ### Ambiente de desarrollo utilizando Docker
 
@@ -174,7 +206,19 @@ make test
 make test.wip
 ```
 
-> Los comandos `make test` y `make test.wip` asumen que los servicios de docker están activos.
+Si la configuración del ambiente utiliza Docker, entonces los comandos sufren un ligero cambio:
+
+```bash
+docker-compose exec web make test
+```
+
+```bash
+docker-compose exec web make test.wip
+```
+
+> Los comandos con Docker asumen que los servicios de docker-compose están activos.
+
+
 
 ### Agregar nuevas traducciones
 

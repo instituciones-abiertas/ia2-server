@@ -1,15 +1,28 @@
-**¿Tu solicitud de funcionalidad está relacionada a un problema? Añada una descripción, por favor.**
+---
+name: Pedido de Feature
+about: Nueva funcionalidad
+title: ''
+labels: 'enhancement'
+assignees: ''
+---
 
-*Insertar descipción clara y concisa del problema.*
+## ¿Tu solicitud de funcionalidad está relacionada a un problema?
 
-**Describa la solución que considere oportuna.**
+<!-- Añada una descripción, por favor. -->
 
-*Insertar descipción clara y concisa del comportamiento deseado.*
+_Insertar descripción clara y concisa del problema._
 
-**Describa alternativas consideras como solución**
+## Describa la solución que considere oportuna
 
-*Insertar descipción clara y concisa de cualquier otra alternativa de solución que haya considerado.*
+_Insertar descripción clara y concisa del comportamiento deseado._
 
-**Contexto adicional**
+## Describa alternativas que considere como solución
 
-*Agregue cualquier otro contexto o capturas de pantalla acerca de la funcionalidad solicitada.*
+_Insertar descripción clara y concisa de cualquier otra alternativa de solución que haya considerado._
+
+## Contexto adicional
+
+> ¿Cuáles son las limitaciones del software que motivan el pedido de una nuev feature? ¿Qué estaba intentado realizar?  
+> Proveer contexto nos ayuda a brindar una soluciones útiles.
+
+_Agregue cualquier otro contexto o capturas de pantalla acerca de la funcionalidad solicitada._
