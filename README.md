@@ -141,15 +141,98 @@ pip install -r local.txt
 Crear las bases de datos
 
 ```bash
-mysqladmin -u $IA2_MAIN_DB_ROOT_PASS -p create $IA2_MAIN_DB_NAME
-mysqladmin -u $IA2_DB_DATA_ROOT_PASS -p create $IA2_DB_DATA_NAME
+mysqladmin --user=root --password=$IA2_MAIN_DB_ROOT_PASS create $IA2_MAIN_DB_NAME
+mysqladmin --user=root --password=$IA2_DB_DATA_ROOT_PASS create $IA2_DB_DATA_NAME
 ```
 
-### Ambiente de desarrollo utilizando Docker
+Correr las migraciones
 
-Before running the system for the first time, and any time you make changes in the `tasks.py` file, you'll have to run:
+```bash
+make django-migrate
+```
+
+#### Comandos útiles
+
+Mostrar todos los comandos.
+
+```bash
+make help
+```
+
+Borrar la base de datos.
+
+```bash
+make nuke
+```
+
+Resetea el ambiente local. Re-instala las dependencias y corre las migraciones. Útil cuando se testea una nueva rama o se cambia de rama.
+
+```bash
+make reset
+```
+
+Resetea el ambiente completo. Corre `reset` y carga los fixtures iniciales.
+
+```bash
+make nuke-reset
+```
+
+Corre todos los tests.
+
+```bash
+make test
+```
+
+Corre los tests tagueados con `wip`. Útil cuando se trabaja en un test particular.
+
+```bash
+make test.wip
+```
+
+Inicia una console interactiva de Python.
+
+```bash
+make shell
+```
+
+Compilar mensajes de internacionalización. Cada vez que realicen cambios en las traducciones será necesario re-compilar los archivos `.po` con el siguiente comando.
+
+```bash
+make django-compile-messages
+```
+
+Si realiza cambios en cualquiera de los fixtures, puede re-inicializarlos con el siguiente comando.
+
+```bash
+make django-load-fixtures
+```
+
+Crear superuser de Django. El comando inicia los pasos que lo guiarán para crear un superusuario.
+
+```bash
+make django-createsuperuser
+```
+
+### Herramientas de debugging
+
+Es posible inciar el servidor de manera tal de poder utilizar herramientas de debugging como Wekzeug y/o PyInstrument.
+
++ [`Werkzeug:`](https://werkzeug.palletsprojects.com/en/0.15.x/tutorial/) Para desabilitar e PIN para debugging en ambientes locales, es necesario setear la siguiente variable de entorno en `.env`: `WERKZEUG_DEBUG_PIN=off`
++ [`PyInstrument:`](https://github.com/joerick/pyinstrument/) Es posible habilitar PyInstrument utilizando `ENABLE_PYINSTRUMENT=on` en `.env`. Los archivos html de PyInstrument se acceden desde `profiles/`.
+
+Ejemplo utilizando Docker:
+
+```bash
+WERKZEUG_DEBUG_PIN=off ENABLE_PYINSTRUMENT=on python manage.py runserver_plus
+```
+
+### Ambiente de desarrollo con Docker
+
+#### Comandos para administrar los servicios
 
 Utilizamos el siguiente comando para construír la imagen de Docker con todas las dependencias necesarias.
+
+> Nota: si se realizan cambios en `tasks.py`, será necesario volver a correr el comando de build.
 
 ```bash
 docker-compose build
@@ -173,48 +256,20 @@ Puede parar los servicios desde otro terminal, utilizando:
 docker-compose stop
 ```
 
-Es posible correr las migraciones utilizando el siguiente comando:
+#### Comandos útiles a través de Docker Compose
+
+> Los siguientes comandos asumen que los servicios de docker-compose están activos.
+
+Es posible correr cualquiera de los comandos de `Makefile` descriptos en [*Comandos útiles*](#Comandos-útiles) desde docker compose de la siguiente manera:
 
 ```bash
-docker-compose exec web make django-migrate
+docker-compose exec web <command>
 ```
 
-Cada vez que realice cambios de internacionalización, será necesario re-compilar los archivos `.po` con el siguiente comando.
+**Ejemplo:**
 
 ```bash
-docker-compose exec web make django-compile-messages
-```
-
-Si desea inicializar una shell interactiva de Python puede realizarlo utilizando el siguiente comando:
-
-```bash
-docker-compose exec web python manage.py shell
-```
-
-Si realiza cambios en cualquiera de los fixture, puede inicializarlos con el siguiente comando:
-
-```bash
-docker-compose exec web make django-load-fixtures
-```
-
-Si desea crear un superuser de Django, puede realizarlo de la siguiente manera:
-
-```bash
-# Inicia los pasos que lo guiarán para crear un superusuario
-docker-compose exec web python manage.py createsuperuser
-```
-
-### Herramientas de debugging
-
-Es posible inciar el servidor de manera tal de poder utilizar herramientas de debugging como Wekzeug y/o PyInstrument.
-
-+ [`Werkzeug:`](https://werkzeug.palletsprojects.com/en/0.15.x/tutorial/) Para desabilitar e PIN para debugging en ambientes locales, es necesario setear la siguiente variable de entorno en `.env`: `WERKZEUG_DEBUG_PIN=off`
-+ [`PyInstrument:`](https://github.com/joerick/pyinstrument/) Es posible habilitar PyInstrument utilizando `ENABLE_PYINSTRUMENT=on` en `.env`. Los archivos html de PyInstrument se acceden desde `profiles/`.
-
-Ejemplo utilizando Docker:
-
-```bash
-docker-compose exec web WERKZEUG_DEBUG_PIN=off ENABLE_PYINSTRUMENT=on python manage.py runserver_plus
+docker-compose exec make shell
 ```
 
 ## Flujo de desarrollo
@@ -224,13 +279,13 @@ docker-compose exec web WERKZEUG_DEBUG_PIN=off ENABLE_PYINSTRUMENT=on python man
 Se pueden agregar nuevos paquetes utilizando `pip` dentro del container
 
 ```bash
-docker-compose exec web pip install <package_name>
+pip install <package_name>
 ```
 
 Cada vez que instalamos un paquete, **debemos** obtener el *freeze* de las versiones.
 
 ```bash
-docker-compose exec web pip freeze | grep <package_name>
+pip freeze | grep <package_name>
 ```
 
 Inclúya la dependencia en el archivo *requirements* que corresponda. Existen 4 tipos de archivos de *requirements*:
@@ -241,7 +296,7 @@ Inclúya la dependencia en el archivo *requirements* que corresponda. Existen 4 
 + `testing.txt`: dependencias utilizadas únicamente en ambientes de pruebas.
 
 ```bash
-$ docker-compose exec web pip freeze | grep mysqlclient
+pip freeze | grep mysqlclient
 
 mysqlclient==1.4.4
 ```
@@ -261,20 +316,6 @@ make test
 ```bash
 make test.wip
 ```
-
-Si la configuración del ambiente utiliza Docker, entonces los comandos sufren un ligero cambio:
-
-```bash
-docker-compose exec web make test
-```
-
-```bash
-docker-compose exec web make test.wip
-```
-
-> Los comandos con Docker asumen que los servicios de docker-compose están activos.
-
-
 
 ### Agregar nuevas traducciones
 
