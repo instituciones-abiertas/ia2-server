@@ -142,8 +142,6 @@ class ActViewSet(viewsets.ModelViewSet):
         extension = os.path.splitext(output_format)[1][1:]
         # Todas las ocurrencias actualizadas para el texto
         all_query = list(OcurrencyEntity.objects.filter(act=act_check))
-        print(OcurrencyEntity.objects.filter(act=act_check))
-        print(EntSerializer(OcurrencyEntity.objects.filter(act=act_check), many=True))
         # Generar el archivo en formato de entrada anonimizado
         timeit_anonimyzation = timeit_save_stats(act_check, "anonymization_time")(anonimyzed_convert_document)
         timeit_anonimyzation(
@@ -177,38 +175,32 @@ class ActViewSet(viewsets.ModelViewSet):
         }
         return Response(dataReturn)
 
-    def create_occurency(self, ent, act_check, entities):
-        entity = entities.get(name=ent["tag"])
-        OcurrencyEntity.objects.create(
-            act=act_check,
-            startIndex=ent["start"],
-            endIndex=ent["end"],
-            entity=Entity.objects.get(name=ent["tag"]),
-            should_anonymized=entity.should_anonimyzation,
-            human_marked_ocurrency=True,
-            text=act_check.text[ent["start"] : ent["end"]],
-        )
+    def create_new_occurrencies(self, ocurrencies, act, entity_list=[]):
+        ocurrencies_to_create = []
+        for ocurrency in ocurrencies:
+            if ocurrency["start"] and ocurrency["end"]:
+                entity = entity_list.get(name=ocurrency["tag"])
+                ocurrencies_to_create.append(
+                    OcurrencyEntity(
+                        act=act,
+                        startIndex=ocurrency["start"],
+                        endIndex=ocurrency["end"],
+                        entity=entity,
+                        should_anonymized=entity.should_anonimyzation,
+                        human_marked_ocurrency=True,
+                        text=act.text[ocurrency["start"] : ocurrency["end"]],
+                    )
+                )
+        OcurrencyEntity.objects.bulk_create(ocurrencies_to_create)
 
-    def create_new_occurrencies(self, ocurrencies, act, entity_list):
-        if not ocurrencies == []:
-            for ocurrency in ocurrencies:
-                if ocurrency["start"] is not None and ocurrency["end"] is not None:
-                    self.create_occurency(ocurrency, act, entity_list)
-
-    def delete_and_save(self, ocurrency, act_check):
-        if ocurrency.act_id == act_check.id:
-            ocurrency.human_deleted_ocurrency = True
-            ocurrency.save()
-        else:
-            logger.error(
-                f"No se elimino esta ocurrencia {ocurrency.id} ya que  pertenece al acta {ocurrency.act_id}"
-            )
+    def delete_and_save(self, ocurrency):
+        ocurrency.human_deleted_ocurrency = True
+        ocurrency.save()
 
     def delete_ocurrencies(self, ocurrencies, act_check):
         ocurrencies_ids = [ocur["id"] for ocur in ocurrencies]
-        ocurrencies_to_delete = OcurrencyEntity.objects.filter(id__in=ocurrencies_ids)
-        for ocurrency in ocurrencies_to_delete:
-            self.delete_and_save(ocurrency, act_check)
+        ocurrencies_to_delete = OcurrencyEntity.objects.filter(id__in=ocurrencies_ids, act_id=act_check.id)
+        list(map(self.delete_and_save, ocurrencies_to_delete))
 
     @action(methods=["post"], detail=True)
     def addAllOccurrencies(self, request, pk=None):
@@ -231,15 +223,14 @@ class ActViewSet(viewsets.ModelViewSet):
         )
         # Creo nuevas ocurrencias a partir de las entidades encontradas
         for span in new_occurencies:
-            if span.start_char is not None and span.end_char is not None:
+            if span.start_char and span.end_char:
                 entity = entities.get(name=span.label_)
-                should_be_anonymized = entity.should_anonimyzation
                 OcurrencyEntity.objects.create(
                     act=act_check,
                     startIndex=span.start_char,
                     endIndex=span.end_char,
-                    entity=Entity.objects.get(name=span.label_),
-                    should_anonymized=should_be_anonymized,
+                    entity=entity,
+                    should_anonymized=entity.should_anonimyzation,
                     human_marked_ocurrency=True,
                     text=act_check.text[span.start_char : span.end_char],
                 )
