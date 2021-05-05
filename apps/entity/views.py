@@ -41,7 +41,7 @@ from .utils.general import (
     check_new_ocurrencies,
 )
 from .utils.data_visualization import generate_data_visualization
-from .utils.vistas import timeit_save_stats, create_act, detect_entities, find_all_ocurrencies
+from .utils.vistas import timeit_save_stats, create_act, detect_entities, find_all_ocurrencies, format_spans
 
 # Para usar Python Template de string
 ANON_REPLACE_TPL = "<$name>"
@@ -88,10 +88,13 @@ class ActViewSet(viewsets.ModelViewSet):
     def create(self, request):
         new_file = request.FILES.get("file", False)
         act = create_act(new_file)
-
+        # Traigo todas las entidades para hacer busquedas mas rapida
+        entities = Entity.objects.all()
         timeit_detect_ents = timeit_save_stats(act, "detection_time")(detect_entities)
         ocurrencies = timeit_detect_ents(act)
-        ents = EntSerializer(ocurrencies, many=True)
+        # Se crean las nuevas ocurrencias identificadas por el modelo
+        self.create_new_occurrencies(ocurrencies, act, False, entities)
+        ents = EntSerializer(OcurrencyEntity.objects.filter(act=act.id), many=True)
 
         dataReturn = {
             "text": act.text,
@@ -133,7 +136,7 @@ class ActViewSet(viewsets.ModelViewSet):
         # Traigo todas las entidades para hacer busquedas mas rapida
         entities = Entity.objects.all()
         # Se crean las nuevas entidades marcadas por usuarix
-        self.create_new_occurrencies(new_ents, act_check, entities)
+        self.create_new_occurrencies(new_ents, act_check, True, entities)
         # Actualización de ocurrencias eliminadas por usuarix
         self.delete_ocurrencies(delete_ents, act_check)
         # Definicion de rutas
@@ -175,22 +178,21 @@ class ActViewSet(viewsets.ModelViewSet):
         }
         return Response(dataReturn)
 
-    def create_new_occurrencies(self, ocurrencies, act, entity_list=[]):
+    def create_new_occurrencies(self, ocurrencies, act, human_mark, entity_list=[]):
         ocurrencies_to_create = []
         for ocurrency in ocurrencies:
-            if ocurrency["start"] and ocurrency["end"]:
-                entity = entity_list.get(name=ocurrency["tag"])
-                ocurrencies_to_create.append(
-                    OcurrencyEntity(
-                        act=act,
-                        startIndex=ocurrency["start"],
-                        endIndex=ocurrency["end"],
-                        entity=entity,
-                        should_anonymized=entity.should_anonimyzation,
-                        human_marked_ocurrency=True,
-                        text=act.text[ocurrency["start"] : ocurrency["end"]],
-                    )
+            entity = entity_list.get(name=ocurrency["tag"])
+            ocurrencies_to_create.append(
+                OcurrencyEntity(
+                    act=act,
+                    startIndex=ocurrency["start"],
+                    endIndex=ocurrency["end"],
+                    entity=entity,
+                    should_anonymized=entity.should_anonimyzation,
+                    human_marked_ocurrency=human_mark,
+                    text=act.text[ocurrency["start"] : ocurrency["end"]],
                 )
+            )
         OcurrencyEntity.objects.bulk_create(ocurrencies_to_create)
 
     def delete_and_save(self, ocurrency):
@@ -206,11 +208,14 @@ class ActViewSet(viewsets.ModelViewSet):
     def addAllOccurrencies(self, request, pk=None):
         entities = Entity.objects.all()
         act_check = check_exist_act(pk)
-        new_ents = request.data.get("newOcurrencies")
-        deleted_ents = request.data.get("deleteOcurrencies")
+        new_ents = check_new_ocurrencies(
+            request.data.get("newOcurrencies"), list(entities.values_list("name", flat=True))
+        )
+        # Ocurrencias para marcar eliminadas
+        deleted_ents = check_delete_ocurrencies(request.data.get("deleteOcurrencies"))
         entity_list_for_multiple_selection = request.data.get("entityList")
         # Se crean las nuevas entidades marcadas por usuarix
-        self.create_new_occurrencies(new_ents, act_check, entities)
+        self.create_new_occurrencies(new_ents, act_check, True, entities)
         # Actualización de ocurrencias eliminadas por usuarix
         self.delete_ocurrencies(deleted_ents, act_check)
         # Busco todas las ocurrencias en db
@@ -221,19 +226,8 @@ class ActViewSet(viewsets.ModelViewSet):
         new_occurencies = timeit_new_ocurrencies(
             act_check.text, all_ocurrencies_query, entity_list_for_multiple_selection
         )
-        # Creo nuevas ocurrencias a partir de las entidades encontradas
-        for span in new_occurencies:
-            if span.start_char and span.end_char:
-                entity = entities.get(name=span.label_)
-                OcurrencyEntity.objects.create(
-                    act=act_check,
-                    startIndex=span.start_char,
-                    endIndex=span.end_char,
-                    entity=entity,
-                    should_anonymized=entity.should_anonimyzation,
-                    human_marked_ocurrency=True,
-                    text=act_check.text[span.start_char : span.end_char],
-                )
+        # Creo las nuevas ocurrencias encontradas a través de la búsqueda
+        self.create_new_occurrencies(new_occurencies, act_check, True, entities)
         result = EntSerializer(OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check), many=True)
         dataReturn = {
             "text": act_check.text,

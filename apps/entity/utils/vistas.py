@@ -5,6 +5,7 @@ import uuid
 import ast
 import os
 import logging
+import collections
 from re import finditer
 from time import time
 from datetime import timedelta
@@ -99,30 +100,23 @@ def create_act(request_file):
     return act
 
 
+def format_span(span):
+    new_ordered_dict = collections.OrderedDict()
+    new_ordered_dict["start"] = span.start_char
+    new_ordered_dict["end"] = span.end_char
+    new_ordered_dict["tag"] = span.label_
+    return new_ordered_dict
+
+
+def format_spans(span_list):
+    # retorna una lista de OrderedDict
+    return list(map(format_span, span_list))
+
+
 def detect_entities(act):
     nlp = Nlp()
     ents = nlp.get_all_entities(act.text)
-    # Traigo todas las entidades para hacer busquedas mas rapida
-    entities = Entity.objects.all()
-    # Guardo las ocurrencias para no tener que hacer una llamada  a la base despues
-    all_ocurrency = []
-
-    for ent in ents:
-        entity_name = ent.label_
-        entity = entities.get(name=entity_name)
-        should_be_anonymized = entity.should_anonimyzation
-        # Falta definir el nombre exacto del campo en el frontend
-        ocurrency = OcurrencyEntity.objects.create(
-            act=act,
-            startIndex=ent.start_char,
-            endIndex=ent.end_char,
-            entity=entity,
-            should_anonymized=should_be_anonymized,
-            human_marked_ocurrency=False,
-            text=ent.text,
-        )
-        all_ocurrency.append(ocurrency)
-    return all_ocurrency
+    return format_spans(ents)
 
 
 def overlap_ocurrency(ent_start, ent_end, ocurrency):
@@ -159,4 +153,4 @@ def find_all_ocurrencies(text, original_ocurrencies, tag_list):
         map(lambda ocurrency: find_all_spans_of_ocurrency(text, ocurrency, original_ocurrencies), filtered_ocurrencies)
     )
     result = filter_spans([ent for ent_list in new_ocurrencies for ent in ent_list])
-    return result
+    return format_spans(result)
