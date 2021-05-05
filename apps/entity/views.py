@@ -93,7 +93,8 @@ class ActViewSet(viewsets.ModelViewSet):
         timeit_detect_ents = timeit_save_stats(act, "detection_time")(detect_entities)
         ocurrencies = timeit_detect_ents(act)
         # Se crean las nuevas ocurrencias identificadas por el modelo
-        ents = EntSerializer(self.create_new_occurrencies(ocurrencies, act, False, entities), many=True)
+        self.create_new_occurrencies(ocurrencies, act, False, entities)
+        ents = EntSerializer(OcurrencyEntity.objects.filter(act=act.id), many=True)
 
         dataReturn = {
             "text": act.text,
@@ -193,7 +194,6 @@ class ActViewSet(viewsets.ModelViewSet):
                 )
             )
         OcurrencyEntity.objects.bulk_create(ocurrencies_to_create)
-        return ocurrencies_to_create
 
     def delete_and_save(self, ocurrency):
         ocurrency.human_deleted_ocurrency = True
@@ -212,11 +212,7 @@ class ActViewSet(viewsets.ModelViewSet):
             request.data.get("newOcurrencies"), list(entities.values_list("name", flat=True))
         )
         # Ocurrencias para marcar eliminadas
-        print("que pasa con las deleteddd")
-        print(request.data.get("deleteOcurrencies"))
         deleted_ents = check_delete_ocurrencies(request.data.get("deleteOcurrencies"))
-        print("que pasa con las deleteddd")
-        print(deleted_ents)
         entity_list_for_multiple_selection = request.data.get("entityList")
         # Se crean las nuevas entidades marcadas por usuarix
         self.create_new_occurrencies(new_ents, act_check, True, entities)
