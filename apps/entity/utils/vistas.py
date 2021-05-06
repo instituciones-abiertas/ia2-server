@@ -11,7 +11,7 @@ from time import time
 from datetime import timedelta
 from ..utils.oodocument import convert_document_to_format, extract_text_from_file, extract_header
 from ..validator import is_docx_file
-from ..exceptions import nameTooLong, ActFileNotFound
+from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsTooLongException
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import UnsupportedMediaType
 
@@ -73,12 +73,10 @@ def convert_to_txt(act):
 
 
 def create_act(request_file):
+    # Checks the file from the request is missing
     if request_file is False:
-        # Caso excepcional ya que no se lanza una excepcion de sistema primero
-        logger.error("No se adjunto el archivo")
-        raise ActFileNotFound()
+        raise CreateActFileIsMissingException()
 
-    # Creo el acta base
     act = Act(file=request_file)
 
     try:
@@ -86,9 +84,9 @@ def create_act(request_file):
     except ValidationError:
         logger.exception(settings.ERROR_TEXT_FILE_TYPE)
         raise UnsupportedMediaType(media_type=request_file.content_type, detail=settings.ERROR_TEXT_FILE_TYPE)
-    except (nameTooLong) as e:
+    except (CreateActFileNameIsTooLongException) as e:
         logger.exception(e)
-        raise nameTooLong()
+        raise CreateActFileNameIsTooLongException()
     else:
         act.save()
 

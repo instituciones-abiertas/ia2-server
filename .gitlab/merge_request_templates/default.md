@@ -1,6 +1,6 @@
 ## Descripción
 
-**Incluya un resumen del cambio y una referencia al issue que se solucionó. Incluya también la motivación y el contexto ue considere relevantes. Enumere cualquier dependencia necesaria para este cambio.**
+> Incluya un resumen del cambio y una referencia al issue que se solucionó. Incluya también la motivación y el contexto que considere relevantes. Enumere cualquier dependencia necesaria para este cambio.
 
 <!-- Plantilla de ejemplo:
 
@@ -31,12 +31,13 @@ Closes: #420
 
 -   [ ] Fix de bug (non-breaking change que resuelve un issue)
 -   [ ] Nueva feature (non-breaking change que agrega funcionalidad)
+-   [ ] Documentación
 -   [ ] Breaking change (un fix o nueva feature que haría que funcionalidades existentes no funcionen como se espera)
 -   [ ] Este cambio requiere una actualización de la documentación.
 
 ## ¿Cómo se ha probado?
 
-**Describe las pruebas que realizaste para verificar tus cambios. Proporcionar instrucciones para que podamos reproducir los casos. Indique también cualquier detalle relevante para su configuración de prueba**
+> Describa las pruebas que realizaste para verificar tus cambios. Proporcionar instrucciones para que podamos reproducir los casos. Indique también cualquier detalle relevante para su configuración de prueba
 
 **Instrucciones:**
 
@@ -52,7 +53,7 @@ Closes: #420
 
 ## Lista de Verificación
 
-> Las siguientes opciones en ** negrita ** son necesarias para la aprobación del PR. Marque las casillas solo si es necesario, nos ayuda a minimizar el proceso de revisión.
+> Las siguientes opciones en **negrita** son necesarias para la aprobación del PR. Marque las casillas solo si es necesario, nos ayuda a minimizar el proceso de revisión.
 
 <!-- Editar a continuación -->
 

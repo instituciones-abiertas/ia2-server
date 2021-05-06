@@ -6,7 +6,7 @@ from django.conf import settings
 from django.http import FileResponse
 from django.db.models import Q
 
-from rest_framework import viewsets
+from rest_framework import mixins, parsers, status, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -48,7 +48,6 @@ ANON_REPLACE_TPL = "<$name>"
 # Color de fondo para texto anonimizado
 ANON_FONT_BACK_COLOR = [255, 255, 0]
 # Entidades a no mostrar
-DISABLE_ENTITIES = settings.IA2_DISABLED_ENTITIES
 
 
 # Uso de logger server de django, agrega
@@ -72,21 +71,19 @@ class EntityViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         queryset = Entity.objects.all()
-        if DISABLE_ENTITIES:
-            for ent in ast.literal_eval(DISABLE_ENTITIES):
-                queryset = queryset.exclude(name=ent)
+        for ent_name in settings.DISABLED_ENTITIES:
+            queryset = queryset.exclude(name=ent_name)
         queryset = queryset.order_by("name")
         serializer = EntitySerializer(queryset, many=True)
         return Response(serializer.data)
 
 
-class ActViewSet(viewsets.ModelViewSet):
-    queryset = Act.objects.all()
-    serializer_class = ActSerializer
+class CreateActMixin(mixins.CreateModelMixin):
     permission_classes = [IsAuthenticated]
 
     def create(self, request):
         new_file = request.FILES.get("file", False)
+        # Persists a document
         act = create_act(new_file)
         # Traigo todas las entidades para hacer busquedas mas rapida
         entities = Entity.objects.all()
@@ -96,30 +93,19 @@ class ActViewSet(viewsets.ModelViewSet):
         self.create_new_occurrencies(ocurrencies, act, False, entities)
         ents = EntSerializer(OcurrencyEntity.objects.filter(act=act.id), many=True)
 
-        dataReturn = {
+        data = {
             "text": act.text,
             "ents": ents.data,
             "id": act.id,
         }
 
-        return Response(dataReturn)
+        return Response(data, status=status.HTTP_201_CREATED)
 
-    def update(self, request, pk):
-        act_check = check_exist_act(pk)
-        ocurrency_query = OcurrencyEntity.objects.filter(act=act_check)
-        if ocurrency_query.exists():
-            ocurrency_query.delete()
-        new_ents = request.data.get("ents")
-        for ent in new_ents:
-            OcurrencyEntity.objects.create(
-                act=act_check,
-                startIndex=ent["start"],
-                endIndex=ent["end"],
-                entity=Entity.objects.get(name=ent["tag"]),
-                should_anonymized=ent["should_anonymized"],
-            )
 
-        return Response()
+class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Act.objects.all()
+    serializer_class = ActSerializer
+    permission_classes = [IsAuthenticated]
 
     @action(methods=["post"], detail=True)
     def addAnnotations(self, request, pk=None):
@@ -129,8 +115,9 @@ class ActViewSet(viewsets.ModelViewSet):
         act_check = check_exist_act(pk)
         # Ocurrencias marcadas por humanx,se provee el nombre de todas las entidades
         new_ents = check_new_ocurrencies(
-            request_check.get("newOcurrencies"), list(entities.values_list("name", flat=True))
+            request_check.get("newOcurrencies"), list(entities.values_list("name", flat=True)), act_check
         )
+
         # Ocurrencias para marcar eliminadas
         delete_ents = check_delete_ocurrencies(request_check.get("deleteOcurrencies"))
         # Traigo todas las entidades para hacer busquedas mas rapida
@@ -209,7 +196,7 @@ class ActViewSet(viewsets.ModelViewSet):
         entities = Entity.objects.all()
         act_check = check_exist_act(pk)
         new_ents = check_new_ocurrencies(
-            request.data.get("newOcurrencies"), list(entities.values_list("name", flat=True))
+            request.data.get("newOcurrencies"), list(entities.values_list("name", flat=True)), act_check
         )
         # Ocurrencias para marcar eliminadas
         deleted_ents = check_delete_ocurrencies(request.data.get("deleteOcurrencies"))

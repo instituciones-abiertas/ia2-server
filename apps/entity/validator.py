@@ -5,7 +5,7 @@ import uuid
 import os
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from .exceptions import nameTooLong
+from .exceptions import CreateActFileNameIsTooLongException
 import magic
 
 ALLOW_DOCX_MIMETYPES = {
@@ -33,7 +33,6 @@ def get_file_extension(fileField):
     if filetype in ALLOW_MIMETYPES:
         return fileField
     else:
-        traceback.print_exc(file=sys.stdout)
         raise ValidationError(settings.ERROR_TEXT_FILE_TYPE)
 
 
@@ -41,8 +40,7 @@ def name_length(fileField):
     if len(fileField.name) < 150:
         return fileField
     else:
-        traceback.print_exc(file=sys.stdout)
-        raise nameTooLong()
+        raise CreateActFileNameIsTooLongException()
 
 
 def is_docx_file(file):
