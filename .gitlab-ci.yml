@@ -45,6 +45,7 @@ staging_deploy:
     refs:
       - develop
       - demo
+      - /^demo-.*$/
 
 build_image_and_upload_to_registry:
   stage: build
