@@ -34,7 +34,7 @@ staging_deploy:
   image: cambalab/python3-uno
   stage: deploy
   script:
-    - export APP_NAME=$([[ $CI_COMMIT_REF_NAME == "develop" ]] && echo "" || echo $CI_COMMIT_REF_NAME | cut -d "-" -f 2)
+    - export APP_NAME=$([[ $CI_COMMIT_REF_NAME == "develop" ]] && echo "" || echo "-$(echo $CI_COMMIT_REF_NAME | cut -d "-" -f 2)")
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
