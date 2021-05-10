@@ -23,7 +23,7 @@ from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsToo
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import UnsupportedMediaType
 from .general import check_exist_act
-from ..tasks import train_model, extraer_datos_de_ocurrencias
+from ..tasks import train_model, extraer_datos_de_ocurrencias, reemplazo_asincronico_en_texto
 
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
@@ -255,4 +255,4 @@ def extraccion_de_datos(act_id):
 
 @timeit_save_stats
 def anonimizacion_de_documentos(*args):
-    return anonimyzed_convert_document(*args)
+    return reemplazo_asincronico_en_texto.apply_async([*args])

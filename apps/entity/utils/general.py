@@ -127,3 +127,12 @@ def check_act_with_ocurrency(act, new_ocurrency_list):
             f"El texto de la siguiente acta {act.id} no contiene entidades detectadas ni cargadas por usuarixs"
         )
         raise NoEntitiesDetected()
+
+
+def check_exist_and_type_field(data, field, type):
+    if type(data.get(field)) == type:
+
+        return data.get(field)
+    else:
+        logger.error(f"No es el tipo esperado en {data}")
+        raise BadRequestAPI()

@@ -23,6 +23,8 @@ from .serializers import (
 from .models import Entity, Act, OcurrencyEntity, LearningModel
 
 from .tasks import train_model, extraer_datos_de_ocurrencias
+from celery.result import AsyncResult
+
 
 from .utils.spacy import write_model_test_in_file, Nlp
 
@@ -39,10 +41,11 @@ from .utils.publicador import publish_document
 from .utils.general import (
     check_exist_act,
     open_file,
-    extraer_datos_de_ocurrencias,
+    # extraer_datos_de_ocurrencias,
     check_delete_ocurrencies,
     check_add_annotations_request,
     check_new_ocurrencies,
+    check_exist_and_type_field,
 )
 from .utils.data_visualization import generate_data_visualization
 from .utils.vistas import (
@@ -108,8 +111,7 @@ class CreateActMixin(mixins.CreateModelMixin):
         nlp = Nlp()
         ents = nlp.get_all_entities(act.text)
 
-        timeit_detect_ents = timeit_save_stats(act, "detection_time")(detect_entities)
-        ocurrencies = timeit_detect_ents(act, nlp.doc, ents)
+        ocurrencies = detect_entities(act,nlp.doc, ents act_id=act.id, key="detection_time")
         # Se crean las nuevas ocurrencias identificadas por el modelo
         create_new_occurrencies(ocurrencies, act, False, all_entities)
 
@@ -118,13 +120,6 @@ class CreateActMixin(mixins.CreateModelMixin):
             add_entities_by_multiple_selection(entity_list_to_search, act, nlp.doc, all_entities, False)
 
         ents = EntSerializer(OcurrencyEntity.objects.filter(act=act.id), many=True)
-
-        # Detects entities
-        timeit_detect_ents = timeit_save_stats(act, "detection_time")(detect_entities)
-        ocurrencies = timeit_detect_ents(act)
-
-        ocurrencies = detect_entities(act, act_id=act.id, key="detection_time")
-        ents = EntSerializer(ocurrencies, many=True)
 
         data = {
             "text": act.text,
@@ -170,7 +165,7 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         # Todas las ocurrencias actualizadas para el texto
         all_query = list(OcurrencyEntity.objects.filter(act=act_check))
         # Generar el archivo en formato de entrada anonimizado
-        anonimizacion_de_documentos(
+        task = anonimizacion_de_documentos(
             act_check.file.path,
             settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format,
             extension,
@@ -182,13 +177,14 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
             act_id=act_check.id,
             key="anonymization_time",
         )
+        print(f"task:{task}")
         # Generar el archivo para poder extraer el texto
         # convert_document_to_format(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format, output_text, "txt")
         # Leo el archivo anonimizado
         read_result = extract_text_from_file(output_text)
         # Borrado de archivo auxiliares
         os.remove(output_text)
-        os.remove(act_check.file.path)
+        # os.remove(act_check.file.path)
         # Guardado del archivo anonimizado
         act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
 
@@ -203,6 +199,7 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         dataReturn = {
             "anonymous_text": read_result,
             "data_visualization": generate_data_visualization(all_query, act_check),
+            "task_id": task.id,
         }
         return Response(dataReturn)
 
@@ -241,8 +238,15 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
     @action(methods=["get"], detail=True)
     def getAnonymousDocument(self, request, pk=None):
         act_check = check_exist_act(pk)
-        dataResponse = open_file(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + act_check.filename(), "rb")
-        return FileResponse(dataResponse, as_attachment=True)
+        # task_id = check_exist_and_type_field(request.query_params.dict(), "taskid", str)
+        task_id = request.query_params.get("taskid")
+        if AsyncResult(task_id).successful():
+            dataResponse = open_file(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + act_check.filename(), "rb")
+            return FileResponse(dataResponse, as_attachment=True)
+        else:
+            return Response(
+                data=f"Se esta procesando el archivo del acta {act_check.id}, espere unos segundos", status=409
+            )
 
     @action(methods=["post"], detail=True)
     def publishDocument(self, request, pk=None):
