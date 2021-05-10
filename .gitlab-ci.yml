@@ -5,13 +5,25 @@ stages:
   - build
   - deploy
 
-fetch_code:
+fetch_branch:
   image: python:3.7
   stage: fetch
   script:
     - git fetch --all
     - git checkout $CI_COMMIT_REF_NAME
     - git reset --hard origin/$CI_COMMIT_REF_NAME
+  only:
+    - branches
+
+fetch_tag:
+  image: python:3.7
+  stage: fetch
+  script:
+    - git fetch --all
+    - git checkout $CI_COMMIT_REF_NAME
+    - git reset --hard $CI_COMMIT_REF_NAME
+  only:
+    - tags
 
 linter_code:
   image: cambalab/python3-uno
