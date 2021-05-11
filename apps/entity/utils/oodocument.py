@@ -16,21 +16,6 @@ logger = logging.getLogger("django.server")
 HEADER_STYLE_NAME = "First Page"
 
 
-# Funcion deprecada,solo anonimiza,se reemplazo por anonimyzed_convert_document
-def anonimyzed_text(path_document, path_output, data_to_replace, format_output, color=None):
-    try:
-        oo = oodocument(path_document, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)
-        if color and isinstance(color, list) and len(color) == 3:
-            r, g, b = color
-            oo.set_font_back_color(r, g, b)
-        oo.replace_with(data_to_replace, path_output, format_output)
-    except Exception as e:
-        logger.exception(e)
-        raise ServiceOddDocumentUnavailable()
-    else:
-        oo.dispose()
-
-
 def get_context(text, start_index, end_index):
     return text[start_index:end_index]
 
@@ -50,14 +35,12 @@ def generate_data_for_anonymization(ocurrency_for_anonimyzation, text, replace_t
 
 
 def convert_document_to_format(path_document, output_path, output_format):
+    oo = init_oo(path_document)
     try:
-        oo = oodocument(path_document, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)
         oo.convert_to(output_path, output_format)
+        oo.dispose()
     except Exception as e:
         logger.exception(e)
-        raise ServiceOddDocumentUnavailable()
-    else:
-        oo.dispose()
 
 
 def extract_text_from_file(file_path):
@@ -76,24 +59,28 @@ def anonimyzed_convert_document(
     color=None,
     offset=0,
 ):
+
+    oo = init_oo(path_document)
+    # Cambio de color en caso que venga parametrizado
+    if color and isinstance(color, list) and len(color) == 3:
+        r, g, b = color
+        oo.set_font_back_color(r, g, b)
+    # Division entre entidades de header y body de texto
+    data_replace_header = data_to_replace[0]
+    data_replace_body = data_to_replace[1]
     try:
-        oo = oodocument(path_document, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)
-        if color and isinstance(color, list) and len(color) == 3:
-            r, g, b = color
-            oo.set_font_back_color(r, g, b)
-        data_replace_header = data_to_replace[0]
-        data_replace_body = data_to_replace[1]
+        # Reemplazo en body
         oo.replace_with_index(data_replace_body, path_output, format_output, offset, settings.NEIGHBOR_CHARS_SCAN)
-        if settings.HEADER_EXTRACT_ENABLE:
+        # Reemplazo en header si esta habilitado
+        if settings.IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION:
             oo.replace_with_index_in_header(
                 data_replace_header, path_output, format_output, 0, settings.NEIGHBOR_CHARS_SCAN, HEADER_STYLE_NAME
             )
+        # Conversion de formato
         oo.convert_to(path_convert_document, format_convert_document)
-    except Exception:
-        logger.exception(settings.ERROR_STORAGE_FILE_NOT_EXIST)
-        raise ServiceOddDocumentUnavailable()
-    finally:
-        oo.dispose()
+    except Exception as e:
+        logger.exception(e)
+    oo.dispose()
 
 
 # Utilizamos la libreria https://pypi.org/project/python-docx/
@@ -128,3 +115,13 @@ def convert_offset_header_to_cursor(original_offset):
         return -original_offset - 1
     else:
         return 0
+
+
+# Funcion de inicializacion de oo
+def init_oo(path_document):
+    try:
+        oo = oodocument(path_document, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)
+        return oo
+    except Exception as e:
+        logger.exception(e)
+        raise ServiceOddDocumentUnavailable()

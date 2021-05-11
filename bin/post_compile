@@ -1,14 +1,14 @@
 echo "=> Performing database migrations..."
-python manage.py migrate --settings=liberajus.settings.production
+python manage.py migrate --settings=ia2.settings.production
 
 echo "=> Collecting static files..."
-python manage.py collectstatic --noinput --settings=liberajus.settings.production
+python manage.py collectstatic --noinput --settings=ia2.settings.production
 
 echo "=> Applying fixtures..."
 for i in $(find . -wholename "*/fixtures/*.json"  -printf "%f\n" | sort -t '\0' -n); do \
     echo "Loading $i" ;\
-    find -name $i -exec python manage.py loaddata {} --settings=liberajus.settings.production  \; ;\
+    find -name $i -exec python manage.py loaddata {} --settings=ia2.settings.production  \; ;\
 done
 
 echo "=> Compiling translations..."
-python manage.py compilemessages --settings=liberajus.settings.production
+python manage.py compilemessages --settings=ia2.settings.production

@@ -3,4 +3,4 @@
 gunicorn==19.9.0
 whitenoise==3.3.0
 sentry-sdk==0.10.2
-${LIBERAJUS_MODEL_FILE}
+${IA2_MODEL_FILE}

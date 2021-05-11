@@ -1,6 +1,6 @@
 ## Descripción
 
-**Incluya un resumen del cambio y una referencia al issue que se solucionó. Incluya también la motivación y el contexto que considere relevantes. Enumere cualquier dependencia necesaria para este cambio.**
+> Incluya un resumen del cambio y una referencia al issue que se solucionó. Incluya también la motivación y el contexto que considere relevantes. Enumere cualquier dependencia necesaria para este cambio.
 
 <!-- Plantilla de ejemplo:
 
@@ -36,7 +36,7 @@ Closes: #420
 
 ## ¿Cómo se ha probado?
 
-**Describe las pruebas que realizaste para verificar tus cambios. Proporcionar instrucciones para que podamos reproducir los casos. Indique también cualquier detalle relevante para su configuración de prueba**
+> Describa las pruebas que realizaste para verificar tus cambios. Proporcionar instrucciones para que podamos reproducir los casos. Indique también cualquier detalle relevante para su configuración de prueba
 
 **Instrucciones:**
 

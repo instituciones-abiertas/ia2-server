@@ -9,9 +9,9 @@ TEMPLATES[0]["OPTIONS"]["debug"] = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("LIBERAJUS_DB_NAME"),
-        "USER": os.environ.get("LIBERAJUS_DB_USER"),
-        "PASSWORD": os.environ.get("LIBERAJUS_DB_PASS"),
+        "NAME": os.environ.get("IA2_MAIN_DB_NAME"),
+        "USER": os.environ.get("IA2_MAIN_DB_USER"),
+        "PASSWORD": os.environ.get("IA2_MAIN_DB_PASS"),
         "HOST": os.environ.get("LIBERAJUS_DB_HOST"),
         "PORT": 3306,
         "CONN_MAX_AGE": 3600,
@@ -21,9 +21,9 @@ DATABASES = {
     },
     "data_db": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("LIBERAJUS_DB_DATA_NAME"),
-        "USER": os.environ.get("LIBERAJUS_DB_DATA_USER"),
-        "PASSWORD": os.environ.get("LIBERAJUS_DB_DATA_PASS"),
+        "NAME": os.environ.get("IA2_DB_DATA_NAME"),
+        "USER": os.environ.get("IA2_DB_DATA_USER"),
+        "PASSWORD": os.environ.get("IA2_DB_DATA_PASS"),
         "HOST": os.environ.get("LIBERAJUS_DB_DATA_HOST"),
         "PORT": 3306,
         "CONN_MAX_AGE": 3600,
@@ -78,10 +78,10 @@ MEDIA_ROOT_ANONYMOUS_FILES = os.path.join(MEDIA_ROOT, "anonymous/")
 LIBREOFFICE_HOST = "0.0.0.0"
 LIBREOFFICE_PORT = 8001
 
-LIBERAJUS_CLOUDFOLDER_STORE = "liberajus-demo"
-LIBERAJUS_CLOUD_STORAGE_PROVIDER = "dropbox"
-LIBERAJUS_DROPBOX_TOKEN_APP = os.environ.get("LIBERAJUS_DROPBOX_TOKEN_APP")
-LIBERAJUS_CREDENTIALS_DRIVE_PATH = "./credentials.json"
+PUBLICADOR_CLOUDFOLDER_STORE = "ia2_test_directory"
+PUBLICADOR_CLOUD_STORAGE_PROVIDER = "dropbox"
+PUBLICADOR_DROPBOX_TOKEN_APP = os.environ.get("PUBLICADOR_DROPBOX_TOKEN_APP")
+PUBLICADOR_CREDENTIALS_DRIVE_PATH = "./credentials.json"
 
 
 SIMPLE_JWT = {
@@ -91,7 +91,5 @@ SIMPLE_JWT = {
 }
 
 
-LIBERAJUS_DISABLE_ENTITIES = os.environ.get("LIBERAJUS_DISABLE_ENTITIES")
-
 ## ML Model
-LIBERAJUS_MODEL_FILE = os.environ.get("LIBERAJUS_MODEL_FILE")
+IA2_MODEL_FILE = os.environ.get("IA2_MODEL_FILE")

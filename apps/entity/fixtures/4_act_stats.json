@@ -1,0 +1,12 @@
+[
+  {
+    "model": "entity.actstats",
+    "pk": 1,
+    "fields": {
+      "load_time": "00:00:00.466335",
+      "detection_time": "00:00:03.751610",
+      "anonymization_time": "00:00:02.023865",
+      "extraction_time": "00:00:00.033207"
+    }
+  }
+]

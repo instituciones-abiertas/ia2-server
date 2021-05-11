@@ -2,7 +2,7 @@
 
 ¡Hola! Estamos muy emocionadxs de que estes interesadx en contribuir a IA2-Api-Backend. Antes de enviar Pull Requests, asegurate de tomarte un momento y leer las siguientes pautas:
 
-+ [Código de conducta](https://github.com/facttic/ia-api-backend/blob/master/.github/CODE_OF_CONDUCT.md)
++ [Código de conducta](https://github.com/instituciones-abiertas/ia2-server/blob/master/.github/CODE_OF_CONDUCT.md)
 + [Pautas para la apertura de issues](#pautas-para-la-apertura-de-issues)
 + [Pautas para la apertura de Pull Requests](#pautas-para-la-apertura-de-pull-requests)
 + [Configuración de desarrollo](#configuración-de-desarrollo)
@@ -44,8 +44,8 @@ No esperamos ninguna convención estricta, pero agradeceríamos que resumieras d
 
 + **`apps`**: `<DIR>` contiene los contextos relacionados al dominio del proyecto, que incluyen las vistas de los endpoints, el modelo relacional, las vistas de administración, tests, etc. Por ejemplo: accounts (autorización), entity (entidades de un modelo).
 
-+ **`liberajus`**: `<DIR>` Configuración principal del proyecto. En este directorio se encuentran las dependencias, configuración del router, configuración de celery.
++ **`ia2`**: `<DIR>` Configuración principal del proyecto. En este directorio se encuentran las dependencias, configuración del router, configuración de celery.
 
-+ **`liberajus/settings`**: `<DIR>` Archivos de configuración de los ambientes: base, local, test y producción.
++ **`ia2/settings`**: `<DIR>` Archivos de configuración de los ambientes: base, local, test y producción.
 
 + **`docker`**: `<DIR>` directorio dedicado a las configuraciones de docker del ambiente local de desarrollo.

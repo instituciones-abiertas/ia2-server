@@ -6,8 +6,9 @@
 .vscode
 
 # Misc
-uploads
 profiles
+static
+uploads
 
 # Python
 *.py[co]
@@ -21,6 +22,11 @@ profiles
 # Documents
 *.docx
 *.doc
+*.pdf
+*.odt
+
+# Logs
+logs/*.log
 
 # Models
 custom_models/*

@@ -15,13 +15,10 @@ from spacy.tokens import Span
 from re import match
 
 logger = logging.getLogger("django.server")
-if settings.LIBERAJUS_MODEL_FILE is None or not settings.LIBERAJUS_MODEL_FILE:
-    logger.error("No hay un modelo valido para utilizar")
-    logger.error("Pone el nombre del paquete en la variable de ambiente LIBERAJUS_MODEL_FILE")
+if settings.IA2_MODEL_FILE is None or not settings.IA2_MODEL_FILE:
+    logger.error("[Spacy] No model available. Please check the IA2_MODEL_FILE variable in your environment.")
     quit()
-model_name = os.path.basename(settings.LIBERAJUS_MODEL_FILE).split("-")[0]
-
-DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
+model_name = os.path.basename(settings.IA2_MODEL_FILE).split("-")[0]
 
 
 class Nlp:
@@ -35,7 +32,7 @@ class Nlp:
     def get_all_entities(self, text):
         self.doc = self.generate_doc(text)
         list_ents = list(self.doc.ents)
-        return filter_entity(list_ents, DISABLE_ENTITIES)
+        return [ent for ent in list_ents if ent.label_ not in settings.DISABLED_ENTITIES]
 
 
 def write_model_test_in_file(filepath):
@@ -54,10 +51,3 @@ def write_model_test_in_file(filepath):
 
     with open(model_path, "w") as reader:
         model = reader.writelines(model)
-
-
-def filter_entity(ent_list, ents_filter):
-    res = []
-    if ents_filter:
-        res = [ent for ent in ent_list if ent.label_ not in ents_filter]
-    return res

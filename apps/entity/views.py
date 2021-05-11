@@ -5,9 +5,10 @@ import logging
 from django.conf import settings
 from django.http import FileResponse
 
-from rest_framework import viewsets
+from rest_framework import mixins, parsers, status, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 
 from .serializers import (
     EntitySerializer,
@@ -30,7 +31,14 @@ from .utils.oodocument import (
 )
 
 from .utils.publicador import publish_document
-from .utils.general import check_exist_act, open_file, extraer_datos_de_ocurrencias
+from .utils.general import (
+    check_exist_act,
+    open_file,
+    extraer_datos_de_ocurrencias,
+    check_delete_ocurrencies,
+    check_add_annotations_request,
+    check_new_ocurrencies,
+)
 from .utils.data_visualization import generate_data_visualization
 from .utils.vistas import timeit_save_stats, create_act, detect_entities
 
@@ -39,7 +47,6 @@ ANON_REPLACE_TPL = "<$name>"
 # Color de fondo para texto anonimizado
 ANON_FONT_BACK_COLOR = [255, 255, 0]
 # Entidades a no mostrar
-DISABLE_ENTITIES = settings.LIBERAJUS_DISABLE_ENTITIES
 
 
 # Uso de logger server de django, agrega
@@ -49,6 +56,7 @@ logger = logging.getLogger("django.server")
 class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
+    permission_classes = [IsAuthenticated]
 
     @action(methods=["get"], detail=False)
     def retrain(self, request):
@@ -62,61 +70,53 @@ class EntityViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         queryset = Entity.objects.all()
-        if DISABLE_ENTITIES:
-            for ent in ast.literal_eval(DISABLE_ENTITIES):
-                queryset = queryset.exclude(name=ent)
+        for ent_name in settings.DISABLED_ENTITIES:
+            queryset = queryset.exclude(name=ent_name)
         queryset = queryset.order_by("name")
         serializer = EntitySerializer(queryset, many=True)
         return Response(serializer.data)
 
 
-class ActViewSet(viewsets.ModelViewSet):
-    queryset = Act.objects.all()
-    serializer_class = ActSerializer
+class CreateActMixin(mixins.CreateModelMixin):
+    permission_classes = [IsAuthenticated]
 
     def create(self, request):
         new_file = request.FILES.get("file", False)
+        # Persists a document
         act = create_act(new_file)
-
+        # Detects entities
         timeit_detect_ents = timeit_save_stats(act, "detection_time")(detect_entities)
         ocurrencies = timeit_detect_ents(act)
         ents = EntSerializer(ocurrencies, many=True)
 
-        dataReturn = {
+        data = {
             "text": act.text,
             "ents": ents.data,
             "id": act.id,
         }
 
-        return Response(dataReturn)
+        return Response(data, status=status.HTTP_201_CREATED)
 
-    def update(self, request, pk):
-        act_check = check_exist_act(pk)
-        ocurrency_query = OcurrencyEntity.objects.filter(act=act_check)
-        if ocurrency_query.exists():
-            ocurrency_query.delete()
-        new_ents = request.data.get("ents")
-        for ent in new_ents:
-            OcurrencyEntity.objects.create(
-                act=act_check,
-                startIndex=ent["start"],
-                endIndex=ent["end"],
-                entity=Entity.objects.get(name=ent["tag"]),
-                should_anonymized=ent["should_anonymized"],
-            )
 
-        return Response()
+class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Act.objects.all()
+    serializer_class = ActSerializer
+    permission_classes = [IsAuthenticated]
 
     @action(methods=["post"], detail=True)
     def addAnnotations(self, request, pk=None):
-        act_check = check_exist_act(pk)
-        # Ocurrencias marcadas por humanx
-        new_ents = request.data.get("newOcurrencies")
-        # Ocurrencias para marcar eliminadas
-        delete_ents = request.data.get("deleteOcurrencies")
-        text = act_check.text
         # Traigo todas las entidades para hacer busquedas mas rapida
         entities = Entity.objects.all()
+        request_check = check_add_annotations_request(request.data)
+        act_check = check_exist_act(pk)
+        # Ocurrencias marcadas por humanx,se provee el nombre de todas las entidades
+        new_ents = check_new_ocurrencies(
+            request_check.get("newOcurrencies"), list(entities.values_list("name", flat=True)), act_check
+        )
+
+        # Ocurrencias para marcar eliminadas
+        delete_ents = check_delete_ocurrencies(request_check.get("deleteOcurrencies"))
+        text = act_check.text
 
         # Recorrido sobre las ents nuevas
         for ent in new_ents:
@@ -137,9 +137,13 @@ class ActViewSet(viewsets.ModelViewSet):
         for ent in delete_ents:
             # Caso que sea eliminada la ocurrencia por accion humana
             ocurrency = OcurrencyEntity.objects.get(id=ent["id"])
-            ocurrency.human_deleted_ocurrency = True  # cambio del campo
-            ocurrency.save()
-
+            if ocurrency.act_id == act_check.id:
+                ocurrency.human_deleted_ocurrency = True  # cambio del campo
+                ocurrency.save()
+            else:
+                logger.error(
+                    f"No se elimino esta ocurrencia {ocurrency.id} ya que  pertenece al acta {ocurrency.act_id}"
+                )
         # Definicion de rutas
         output_text = settings.MEDIA_ROOT_TEMP_FILES + "anonymous.txt" + str(uuid.uuid4())
         output_format = act_check.filename()
@@ -167,9 +171,10 @@ class ActViewSet(viewsets.ModelViewSet):
         os.remove(act_check.file.path)
         # Guardado del archivo anonimizado
         act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
-        act_check.save()
 
-        extraer_datos_de_ocurrencias(all_query)
+        timeit_extract = timeit_save_stats(act_check, "extraction_time")(extraer_datos_de_ocurrencias)
+        timeit_extract(all_query)
+        act_check.save()
 
         # Construyo el response
         dataReturn = {
@@ -189,12 +194,12 @@ class ActViewSet(viewsets.ModelViewSet):
         act_check = check_exist_act(pk)
         publish_document(
             act_check.file.path,
-            settings.LIBERAJUS_CLOUDFOLDER_STORE,
-            settings.LIBERAJUS_CLOUD_STORAGE_PROVIDER,
+            settings.PUBLICADOR_CLOUDFOLDER_STORE,
+            settings.PUBLICADOR_CLOUD_STORAGE_PROVIDER,
         )
         dataResponse = {
             "status": "Ok",
-            "text": "Se publico en  {}".format(settings.LIBERAJUS_CLOUD_STORAGE_PROVIDER),
+            "text": "Se publico en  {}".format(settings.PUBLICADOR_CLOUD_STORAGE_PROVIDER),
         }
         return Response(data=dataResponse)
 
@@ -203,7 +208,7 @@ class ActViewSet(viewsets.ModelViewSet):
         act_check = check_exist_act(pk)
         publish_document(
             act_check.file.path,
-            settings.LIBERAJUS_CLOUDFOLDER_STORE,
+            settings.PUBLICADOR_CLOUDFOLDER_STORE,
             "drive",
         )
         dataResponse = {
@@ -216,11 +221,13 @@ class ActViewSet(viewsets.ModelViewSet):
 class OcurrencyEntityViewSet(viewsets.ModelViewSet):
     queryset = OcurrencyEntity.objects.all()
     serializer_class = OcurrencyEntitySerializer
+    permission_classes = [IsAuthenticated]
 
 
 class LearningModelViewSet(viewsets.ModelViewSet):
     queryset = LearningModel.objects.all()
     serializer_class = LearningModelSerializer
+    permission_classes = [IsAuthenticated]
 
     @action(methods=["post"], detail=True)
     def useSubject(self, request, pk=None):

@@ -8,15 +8,15 @@ class ServiceOddDocumentUnavailable(APIException):
     default_code = "service_odddocument_unavailable"
 
 
-class nameTooLong(APIException):
+class CreateActFileNameIsTooLongException(APIException):
     status_code = 400
     default_detail = settings.ERROR_NAME_TOO_LONG
     default_code = "service_document"
 
 
-class ActFileNotFound(APIException):
-    status_code = 404
-    default_detail = settings.ERROR_ACT_FILE_NOT_FOUND
+class CreateActFileIsMissingException(APIException):
+    status_code = 400
+    default_detail = settings.ERROR_CREATE_ACT_FILE_NOT_FOUND
     default_code = "act_file_not_found"
 
 
@@ -54,3 +54,15 @@ class StorageCloudFolderNotExist(APIException):
     status_code = 404
     default_detail = settings.ERROR_STORAGE_CLOUD_FOLDER_NOT_EXIST
     default_code = "storage_cloud_folder_not_exist"
+
+
+class BadRequestAPI(APIException):
+    status_code = 400
+    default_detail = settings.ERROR_REQUEST_API
+    default_code = "bad_request_api"
+
+
+class NoEntitiesDetected(APIException):
+    status_code = 400
+    default_detail = settings.NO_ENTITIES_DETECTED
+    default_code = "no_entities_detected"

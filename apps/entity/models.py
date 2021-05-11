@@ -11,6 +11,7 @@ class Entity(models.Model):
     description = models.CharField(max_length=60)
     should_anonimyzation = models.BooleanField(default=True)
     should_trained = models.BooleanField(default=True)
+    enable_multiple_selection = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -44,6 +45,13 @@ class ActStats(models.Model):
     load_time = models.DurationField(default=timedelta())
     detection_time = models.DurationField(default=timedelta())
     anonymization_time = models.DurationField(default=timedelta())
+    extraction_time = models.DurationField(default=timedelta())
+
+    def __str__(self):
+        return f"Estadisticas Acta Id {self.act.id}"
+
+    def act_id(self):
+        return str(self.act.id)
 
 
 class OcurrencyEntity(models.Model):
