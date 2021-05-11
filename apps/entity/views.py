@@ -9,6 +9,7 @@ from rest_framework import mixins, parsers, status, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from django.utils import timezone
 
 from .serializers import (
     EntitySerializer,
@@ -40,7 +41,7 @@ from .utils.general import (
     check_new_ocurrencies,
 )
 from .utils.data_visualization import generate_data_visualization
-from .utils.vistas import timeit_save_stats, create_act, detect_entities
+from .utils.vistas import timeit_save_stats, create_act, detect_entities, save_initial_review_time, save_review_time
 
 # Para usar Python Template de string
 ANON_REPLACE_TPL = "<$name>"
@@ -88,13 +89,13 @@ class CreateActMixin(mixins.CreateModelMixin):
         timeit_detect_ents = timeit_save_stats(act, "detection_time")(detect_entities)
         ocurrencies = timeit_detect_ents(act)
         ents = EntSerializer(ocurrencies, many=True)
-
         data = {
             "text": act.text,
             "ents": ents.data,
             "id": act.id,
         }
-
+        # Se guardar en el momento que se comparte la información al front
+        save_initial_review_time(act)
         return Response(data, status=status.HTTP_201_CREATED)
 
 
@@ -109,6 +110,9 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         entities = Entity.objects.all()
         request_check = check_add_annotations_request(request.data)
         act_check = check_exist_act(pk)
+        # Se calculo el tiempo de revisión
+        save_review_time(act_check)
+
         # Ocurrencias marcadas por humanx,se provee el nombre de todas las entidades
         new_ents = check_new_ocurrencies(
             request_check.get("newOcurrencies"), list(entities.values_list("name", flat=True)), act_check

@@ -7,6 +7,8 @@ import os
 import logging
 from time import time
 from datetime import timedelta
+from django.utils import timezone
+
 from ..utils.oodocument import convert_document_to_format, extract_text_from_file, extract_header
 from ..validator import is_docx_file
 from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsTooLongException
@@ -117,3 +119,17 @@ def detect_entities(act):
         )
         all_ocurrency.append(ocurrency)
     return all_ocurrency
+
+
+def save_initial_review_time(act):
+    # Esta funcion se invoca para guardar en el momento que se comparte la información al front
+    s = act.actstats
+    s.begin_review_time = timezone.now()
+    s.save()
+
+
+def save_review_time(act):
+    # Esta funcion calcula el delta para saber el tiempo de revisión
+    s = act.actstats
+    s.review_time = timezone.now() - s.begin_review_time
+    s.save()
