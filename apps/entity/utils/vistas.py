@@ -122,14 +122,12 @@ def detect_entities(act):
 
 
 def save_initial_review_time(act):
-    # Esta funcion se invoca para guardar en el momento que se comparte la información al front
     s = act.actstats
     s.begin_review_time = timezone.now()
     s.save()
 
 
-def save_review_time(act):
-    # Esta funcion calcula el delta para saber el tiempo de revisión
+def calculate_and_set_elapsed_review_time(act):
     s = act.actstats
     s.review_time = timezone.now() - s.begin_review_time
     s.save()
