@@ -7,6 +7,8 @@ import os
 import logging
 from time import time
 from datetime import timedelta
+from django.utils import timezone
+
 from ..utils.oodocument import convert_document_to_format, extract_text_from_file, extract_header
 from ..validator import is_docx_file
 from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsTooLongException
@@ -117,3 +119,15 @@ def detect_entities(act):
         )
         all_ocurrency.append(ocurrency)
     return all_ocurrency
+
+
+def set_initial_review_time(act):
+    s = act.actstats
+    s.begin_review_time = timezone.now()
+    s.save()
+
+
+def calculate_and_set_elapsed_review_time(act):
+    s = act.actstats
+    s.review_time = timezone.now() - s.begin_review_time
+    s.save()
