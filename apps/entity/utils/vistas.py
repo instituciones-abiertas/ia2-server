@@ -121,7 +121,7 @@ def detect_entities(act):
     return all_ocurrency
 
 
-def save_initial_review_time(act):
+def set_initial_review_time(act):
     s = act.actstats
     s.begin_review_time = timezone.now()
     s.save()

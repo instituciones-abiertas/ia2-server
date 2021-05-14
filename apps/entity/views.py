@@ -45,7 +45,7 @@ from .utils.vistas import (
     timeit_save_stats,
     create_act,
     detect_entities,
-    save_initial_review_time,
+    set_initial_review_time,
     calculate_and_set_elapsed_review_time,
 )
 
@@ -101,7 +101,7 @@ class CreateActMixin(mixins.CreateModelMixin):
             "id": act.id,
         }
 
-        save_initial_review_time(act)
+        set_initial_review_time(act)
         return Response(data, status=status.HTTP_201_CREATED)
 
 
