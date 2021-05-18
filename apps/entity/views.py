@@ -32,7 +32,6 @@ from .utils.oodocument import (
     generate_data_for_anonymization,
     convert_document_to_format,
     extract_text_from_file,
-    anonimyzed_convert_document,
     extract_header,
     convert_offset_header_to_cursor,
 )
