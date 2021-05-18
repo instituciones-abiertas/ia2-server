@@ -46,6 +46,7 @@ from .utils.general import (
     check_add_annotations_request,
     check_new_ocurrencies,
     check_exist_and_type_field,
+    check_request_params,
 )
 from .utils.data_visualization import generate_data_visualization
 from .utils.vistas import (
@@ -177,27 +178,16 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
             act_id=act_check.id,
             key="anonymization_time",
         )
-        print(f"task:{task}")
-        # Generar el archivo para poder extraer el texto
-        # convert_document_to_format(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format, output_text, "txt")
-        # Leo el archivo anonimizado
-        read_result = extract_text_from_file(output_text)
-        # Borrado de archivo auxiliares
-        os.remove(output_text)
-        # os.remove(act_check.file.path)
-        # Guardado del archivo anonimizado
+        # TODO Pasar la logica de actualización de modelo a tarea asincronica
         act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
-
+        act_check.save()
         # timeit_extract = timeit_save_stats(act_check.id, "extraction_time")(extraer_datos_de_ocurrencias.apply_async)
         # timeit_extract([act_check.id])
 
         extraccion_de_datos([act_check.id], act_id=act_check.id, key="extraction_time")
 
-        act_check.save()
-
         # Construyo el response
         dataReturn = {
-            "anonymous_text": read_result,
             "data_visualization": generate_data_visualization(all_query, act_check),
             "task_id": task.id,
         }
@@ -236,10 +226,15 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         return Response(dataReturn)
 
     @action(methods=["get"], detail=True)
+    def getStatusDocument(self, request, pk=None):
+        task_id = check_exist_and_type_field(request.query_params.dict(), "taskid", str)
+        status_task = AsyncResult(task_id).successful()
+        return Response({"status": status_task})
+
+    @action(methods=["get"], detail=True)
     def getAnonymousDocument(self, request, pk=None):
         act_check = check_exist_act(pk)
-        # task_id = check_exist_and_type_field(request.query_params.dict(), "taskid", str)
-        task_id = request.query_params.get("taskid")
+        task_id = check_exist_and_type_field(request.query_params.dict(), "taskid", str)
         if AsyncResult(task_id).successful():
             dataResponse = open_file(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + act_check.filename(), "rb")
             return FileResponse(dataResponse, as_attachment=True)

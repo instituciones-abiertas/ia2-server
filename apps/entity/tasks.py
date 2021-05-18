@@ -2,6 +2,7 @@ import string
 import logging
 import os
 from oodocument import oodocument
+from .utils.oodocument import init_oo
 from .exceptions import ServiceOddDocumentUnavailable
 from .models import OcurrencyEntity
 
@@ -97,24 +98,25 @@ def reemplazo_asincronico_en_texto(
     color=None,
     offset=0,
 ):
-
-    time.sleep(60)
+    oo = init_oo(path_document)
+    # Cambio de color en caso que venga parametrizado
+    if color and isinstance(color, list) and len(color) == 3:
+        r, g, b = color
+        oo.set_font_back_color(r, g, b)
+    # Division entre entidades de header y body de texto
+    data_replace_header = data_to_replace[0]
+    data_replace_body = data_to_replace[1]
     try:
-        oo = oodocument(path_document, host=settings.LIBREOFFICE_HOST, port=settings.LIBREOFFICE_PORT)
-        if color and isinstance(color, list) and len(color) == 3:
-            r, g, b = color
-            oo.set_font_back_color(r, g, b)
-        data_replace_header = data_to_replace[0]
-        data_replace_body = data_to_replace[1]
+        # Reemplazo en body
         oo.replace_with_index(data_replace_body, path_output, format_output, offset, settings.NEIGHBOR_CHARS_SCAN)
+        # Reemplazo en header si esta habilitado
         if settings.IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION:
             oo.replace_with_index_in_header(
                 data_replace_header, path_output, format_output, 0, settings.NEIGHBOR_CHARS_SCAN, HEADER_STYLE_NAME
             )
         os.remove(path_document)
-        # Guardado del archivo anonimizado
-        # act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
+        oo.dispose()
+        return f"Esta reemplazando el texto del documento{path_document}"
     except Exception:
         logger.exception(settings.ERROR_STORAGE_FILE_NOT_EXIST)
         raise ServiceOddDocumentUnavailable()
-    return f"Esta reemplazando el texto del documento{path_document}"

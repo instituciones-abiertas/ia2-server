@@ -250,7 +250,7 @@ def calculate_and_set_elapsed_review_time(act):
 @timeit_save_stats
 def extraccion_de_datos(act_id):
     # En este metodo deberia implementar el calculo asincronico de tiempo para almacenar
-    extraer_datos_de_ocurrencias.apply_async([act_id])
+    return extraer_datos_de_ocurrencias.apply_async([act_id])
 
 
 @timeit_save_stats

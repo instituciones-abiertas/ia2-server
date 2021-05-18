@@ -129,9 +129,9 @@ def check_act_with_ocurrency(act, new_ocurrency_list):
         raise NoEntitiesDetected()
 
 
-def check_exist_and_type_field(data, field, type):
-    if type(data.get(field)) == type:
-
+# TODO: Migrar a Json Schema o Serializer
+def check_exist_and_type_field(data, field, type_expected):
+    if type(data.get(field)) == type_expected:
         return data.get(field)
     else:
         logger.error(f"No es el tipo esperado en {data}")
