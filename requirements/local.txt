@@ -1,6 +1,7 @@
 -r testing.txt
 
 django-debug-toolbar==2.0
+django-cors-headers==3.7.0
 pyinstrument==3.2.0
 pre-commit==2.8.2
 ${IA2_MODEL_FILE}

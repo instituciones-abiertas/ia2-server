@@ -37,6 +37,7 @@ INTERNAL_IPS = ["127.0.0.1"]
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS += [
+    "corsheaders",
     "django_extensions",
 ]
 
@@ -65,6 +66,10 @@ if os.environ.get("ENABLE_PYINSTRUMENT"):
     ] + MIDDLEWARE
     PYINSTRUMENT_PROFILE_DIR = "profiles"
 
+MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+] + MIDDLEWARE
 
 if os.environ.get("API_URL"):
     API_URL = os.environ.get("API_URL")
@@ -90,6 +95,7 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
+CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]
 
 ## ML Model
 IA2_MODEL_FILE = os.environ.get("IA2_MODEL_FILE")
