@@ -15,6 +15,7 @@ class ActStatsAdmin(admin.ModelAdmin):
         "detection_time_seconds",
         "anonymization_time_seconds",
         "extraction_time_seconds",
+        "review_time_seconds",
     )
 
     def act_id_show(self, obj):
@@ -41,6 +42,11 @@ class ActStatsAdmin(admin.ModelAdmin):
         return obj.extraction_time.total_seconds()
 
     extraction_time_seconds.short_description = _("extraction_time_seconds")
+
+    def review_time_seconds(self, obj):
+        return obj.review_time.total_seconds()
+
+    review_time_seconds.short_description = _("review_time_seconds")
 
 
 admin.site.register(ActStats, ActStatsAdmin)
