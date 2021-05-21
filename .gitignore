@@ -4,6 +4,7 @@
 # Editors
 .idea
 .vscode
+*.sw[a-p]
 
 # Misc
 profiles
