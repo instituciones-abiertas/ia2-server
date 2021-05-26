@@ -44,12 +44,13 @@ from .utils.general import (
 from .utils.data_visualization import generate_data_visualization
 
 from .utils.vistas import (
-    timeit_save_stats, 
-    create_act, detect_entities, 
-    find_all_ocurrencies, 
-    format_spans, 
-    set_initial_review_time, 
-    calculate_and_set_elapsed_review_time
+    timeit_save_stats,
+    create_act,
+    detect_entities,
+    find_all_ocurrencies,
+    format_spans,
+    set_initial_review_time,
+    calculate_and_set_elapsed_review_time,
 )
 
 # Para usar Python Template de string
