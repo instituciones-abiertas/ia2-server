@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entity', '0017_actstats'),
+        ("entity", "0017_actstats"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='entity',
-            name='enable_multiple_selection',
+            model_name="entity",
+            name="enable_multiple_selection",
             field=models.BooleanField(default=False),
         ),
     ]
