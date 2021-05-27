@@ -66,7 +66,9 @@ def filter_spans(a_list, b_list):
     # filtra spans de a_list que se overlapeen con algun span de b_list
     def overlap(span, span_list):
         for s in span_list:
-            if (span.start >= s.start and span.start < s.end) or (s.start >= span.start and s.end <= span.end):
+            if (span.start_char >= s.startIndex and span.end_char < s.endIndex) or (
+                s.startIndex >= span.start_char and s.endIndex <= span.end_char
+            ):
                 return True
         return False
 

@@ -45,6 +45,7 @@ class ActStats(models.Model):
     load_time = models.DurationField(default=timedelta())
     detection_time = models.DurationField(default=timedelta())
     anonymization_time = models.DurationField(default=timedelta())
+    find_all_ocurrencies = models.DurationField(default=timedelta())
     extraction_time = models.DurationField(default=timedelta())
     review_time = models.DurationField(default=timedelta())
     begin_review_time = models.DateTimeField(default=timezone.now)

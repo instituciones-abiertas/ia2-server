@@ -4,6 +4,7 @@ import ast
 import logging
 from django.conf import settings
 from django.http import FileResponse
+from django.db.models import Q
 
 from rest_framework import mixins, parsers, status, viewsets
 from rest_framework.response import Response
@@ -41,10 +42,13 @@ from .utils.general import (
     check_new_ocurrencies,
 )
 from .utils.data_visualization import generate_data_visualization
+
 from .utils.vistas import (
     timeit_save_stats,
     create_act,
     detect_entities,
+    find_all_ocurrencies,
+    format_spans,
     set_initial_review_time,
     calculate_and_set_elapsed_review_time,
 )
@@ -91,10 +95,14 @@ class CreateActMixin(mixins.CreateModelMixin):
         new_file = request.FILES.get("file", False)
         # Persists a document
         act = create_act(new_file)
-        # Detects entities
+        # Traigo todas las entidades para hacer busquedas mas rapida
+        entities = Entity.objects.all()
         timeit_detect_ents = timeit_save_stats(act, "detection_time")(detect_entities)
         ocurrencies = timeit_detect_ents(act)
-        ents = EntSerializer(ocurrencies, many=True)
+        # Se crean las nuevas ocurrencias identificadas por el modelo
+        self.create_new_occurrencies(ocurrencies, act, False, entities)
+        ents = EntSerializer(OcurrencyEntity.objects.filter(act=act.id), many=True)
+
         data = {
             "text": act.text,
             "ents": ents.data,
@@ -126,34 +134,12 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
 
         # Ocurrencias para marcar eliminadas
         delete_ents = check_delete_ocurrencies(request_check.get("deleteOcurrencies"))
-        text = act_check.text
-
-        # Recorrido sobre las ents nuevas
-        for ent in new_ents:
-            # Chequeo por un flujo que me puede llegar entitades del front sin datos
-            if ent["start"] is not None and ent["end"] is not None:
-                entity = entities.get(name=ent["tag"])
-                should_be_anonymized = entity.should_anonimyzation
-                ocurrency = OcurrencyEntity.objects.create(
-                    act=act_check,
-                    startIndex=ent["start"],
-                    endIndex=ent["end"],
-                    entity=Entity.objects.get(name=ent["tag"]),
-                    should_anonymized=should_be_anonymized,
-                    human_marked_ocurrency=True,
-                    text=text[ent["start"] : ent["end"]],
-                )
-        # Actualización de ocurrencias a borrar
-        for ent in delete_ents:
-            # Caso que sea eliminada la ocurrencia por accion humana
-            ocurrency = OcurrencyEntity.objects.get(id=ent["id"])
-            if ocurrency.act_id == act_check.id:
-                ocurrency.human_deleted_ocurrency = True  # cambio del campo
-                ocurrency.save()
-            else:
-                logger.error(
-                    f"No se elimino esta ocurrencia {ocurrency.id} ya que  pertenece al acta {ocurrency.act_id}"
-                )
+        # Traigo todas las entidades para hacer busquedas mas rapida
+        entities = Entity.objects.all()
+        # Se crean las nuevas entidades marcadas por usuarix
+        self.create_new_occurrencies(new_ents, act_check, True, entities)
+        # Actualización de ocurrencias eliminadas por usuarix
+        self.delete_ocurrencies(delete_ents, act_check)
         # Definicion de rutas
         output_text = settings.MEDIA_ROOT_TEMP_FILES + "anonymous.txt" + str(uuid.uuid4())
         output_format = act_check.filename()
@@ -190,6 +176,64 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         dataReturn = {
             "anonymous_text": read_result,
             "data_visualization": generate_data_visualization(all_query, act_check),
+        }
+        return Response(dataReturn)
+
+    def create_new_occurrencies(self, ocurrencies, act, human_mark, entity_list=[]):
+        ocurrencies_to_create = []
+        for ocurrency in ocurrencies:
+            entity = entity_list.get(name=ocurrency["tag"])
+            ocurrencies_to_create.append(
+                OcurrencyEntity(
+                    act=act,
+                    startIndex=ocurrency["start"],
+                    endIndex=ocurrency["end"],
+                    entity=entity,
+                    should_anonymized=entity.should_anonimyzation,
+                    human_marked_ocurrency=human_mark,
+                    text=act.text[ocurrency["start"] : ocurrency["end"]],
+                )
+            )
+        OcurrencyEntity.objects.bulk_create(ocurrencies_to_create)
+
+    def delete_and_save(self, ocurrency):
+        ocurrency.human_deleted_ocurrency = True
+        ocurrency.save()
+
+    def delete_ocurrencies(self, ocurrencies, act_check):
+        ocurrencies_ids = [ocur["id"] for ocur in ocurrencies]
+        ocurrencies_to_delete = OcurrencyEntity.objects.filter(id__in=ocurrencies_ids, act_id=act_check.id)
+        list(map(self.delete_and_save, ocurrencies_to_delete))
+
+    @action(methods=["post"], detail=True)
+    def addAllOccurrencies(self, request, pk=None):
+        entities = Entity.objects.all()
+        act_check = check_exist_act(pk)
+        new_ents = check_new_ocurrencies(
+            request.data.get("newOcurrencies"), list(entities.values_list("name", flat=True)), act_check
+        )
+        # Ocurrencias para marcar eliminadas
+        deleted_ents = check_delete_ocurrencies(request.data.get("deleteOcurrencies"))
+        entity_list_for_multiple_selection = request.data.get("entityList")
+        # Se crean las nuevas entidades marcadas por usuarix
+        self.create_new_occurrencies(new_ents, act_check, True, entities)
+        # Actualización de ocurrencias eliminadas por usuarix
+        self.delete_ocurrencies(deleted_ents, act_check)
+        # Busco todas las ocurrencias en db
+        all_ocurrencies_query = OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check)
+        # Busco todas las multiples apariciones de las ocurrencias filtradas por el listado de tags
+        # Logueo el tiempo de este proceso
+        timeit_new_ocurrencies = timeit_save_stats(act_check, "find_all_ocurrencies")(find_all_ocurrencies)
+        new_occurencies = timeit_new_ocurrencies(
+            act_check.text, all_ocurrencies_query, entity_list_for_multiple_selection
+        )
+        # Creo las nuevas ocurrencias encontradas a través de la búsqueda
+        self.create_new_occurrencies(new_occurencies, act_check, True, entities)
+        result = EntSerializer(OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check), many=True)
+        dataReturn = {
+            "text": act_check.text,
+            "ents": result.data,
+            "id": act_check.id,
         }
         return Response(dataReturn)
 

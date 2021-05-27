@@ -1,10 +1,12 @@
 from ..models import Entity, Act, OcurrencyEntity, ActStats
-from ..utils.spacy import Nlp
+from ..utils.spacy import Nlp, filter_spans
 from django.conf import settings
 import uuid
 import ast
 import os
 import logging
+import collections
+from re import finditer
 from time import time
 from datetime import timedelta
 from django.utils import timezone
@@ -98,27 +100,60 @@ def create_act(request_file):
     return act
 
 
+def format_span(span):
+    new_ordered_dict = collections.OrderedDict()
+    new_ordered_dict["start"] = span.start_char
+    new_ordered_dict["end"] = span.end_char
+    new_ordered_dict["tag"] = span.label_
+    return new_ordered_dict
+
+
+def format_spans(span_list):
+    # retorna una lista de OrderedDict
+    return list(map(format_span, span_list))
+
+
 def detect_entities(act):
     nlp = Nlp()
     ents = nlp.get_all_entities(act.text)
-    # Gets all entities for performance
-    entities = Entity.objects.all()
-    all_ocurrency = []
-    for ent in ents:
-        entity_name = ent.label_
-        entity = entities.get(name=entity_name)
-        should_be_anonymized = entity.should_anonimyzation
-        ocurrency = OcurrencyEntity.objects.create(
-            act=act,
-            startIndex=ent.start_char,
-            endIndex=ent.end_char,
-            entity=entity,
-            should_anonymized=should_be_anonymized,
-            human_marked_ocurrency=False,
-            text=ent.text,
-        )
-        all_ocurrency.append(ocurrency)
-    return all_ocurrency
+    return format_spans(ents)
+
+
+def overlap_ocurrency(ent_start, ent_end, ocurrency):
+    return (
+        (ent_start >= ocurrency.startIndex and ent_end <= ocurrency.endIndex)
+        or (ent_start <= ocurrency.endIndex and ent_end >= ocurrency.endIndex)
+        or (ent_start >= ocurrency.startIndex)
+        and (ent_end <= ocurrency.endIndex)
+    )
+
+
+def overlap_ocurrency_list(ent_start, ent_end, original_ocurrency_list):
+    return any(overlap_ocurrency(ent_start, ent_end, ocurrency) for ocurrency in original_ocurrency_list)
+
+
+def find_all_spans_of_ocurrency(text, ent, original_ent_list):
+    nlp = Nlp()
+    doc = nlp.generate_doc(text)
+    ent_text = doc.char_span(ent.startIndex, ent.endIndex).text
+    # en el doc busco las nuevas entidades que matcheen con el texto ent_text
+    # filtrando aquellas que overlapeen con las entidades originales
+    result = []
+    for match in finditer(ent_text, text):
+        if not overlap_ocurrency_list(match.span()[0], match.span()[1], original_ent_list):
+            new_span = doc.char_span(match.span()[0], match.span()[1], ent.entity.name)
+            result.append(new_span)
+    return result
+
+
+def find_all_ocurrencies(text, original_ocurrencies, tag_list):
+    # Filtro las ocurrencias cuyo nombre de tag coincide con los de las entidades sobre las que aplicar la funcionalidad de múltiple selección
+    filtered_ocurrencies = list(filter(lambda x: (x.entity.id in tag_list), original_ocurrencies))
+    new_ocurrencies = list(
+        map(lambda ocurrency: find_all_spans_of_ocurrency(text, ocurrency, original_ocurrencies), filtered_ocurrencies)
+    )
+    result = filter_spans([ent for ent_list in new_ocurrencies for ent in ent_list])
+    return format_spans(result)
 
 
 def set_initial_review_time(act):
