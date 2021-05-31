@@ -95,7 +95,7 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]
+CORS_ALLOW_ALL_ORIGINS = True
 
 ## ML Model
 IA2_MODEL_FILE = os.environ.get("IA2_MODEL_FILE")
