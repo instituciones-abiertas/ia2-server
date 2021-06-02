@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entity', '0021_actstats_begin_review_time'),
+        ("entity", "0021_actstats_begin_review_time"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='actstats',
-            name='find_all_ocurrencies',
+            model_name="actstats",
+            name="find_all_ocurrencies",
             field=models.DurationField(default=datetime.timedelta(0)),
         ),
     ]
