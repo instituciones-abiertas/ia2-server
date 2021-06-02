@@ -116,7 +116,7 @@ def format_spans(span_list):
 
 def find_ent_ocurrencies_in_upper_text(text, ents):
     found_texts = []
-    upper_pattern= ['[A-ZÀ-ÿ][A-ZÀ-ÿ]+']
+    upper_pattern = ['[A-ZÀ-ÿ][A-ZÀ-ÿ]+']
     for pattern in upper_pattern:
         match = re.findall(pattern, text)
         ex_cap_text = ' '.join(x.lower() for x in match)
