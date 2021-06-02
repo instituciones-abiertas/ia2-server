@@ -6,6 +6,7 @@ import ast
 import os
 import logging
 import collections
+import re
 from re import finditer
 from time import time
 from datetime import timedelta
@@ -112,24 +113,52 @@ def format_spans(span_list):
     # retorna una lista de OrderedDict
     return list(map(format_span, span_list))
 
+def find_ent_ocurrencies_in_upper_text(text, ents):
+    found_texts = []
+    upper_pattern= ['[A-ZÀ-ÿ][A-ZÀ-ÿ]+']
+    for pattern in upper_pattern:
+        match = re.findall(pattern, text)
+        ex_cap_text = ' '.join(x.lower() for x in match)
+        filtered_ents = list(filter(lambda ent: ent.text.lower() in ex_cap_text, ents))
+        for ent in filtered_ents:
+            found_texts.append({"text": ent.text, "entity_name": ent.label_})
+    return found_texts
+
+
+def get_entities_in_uppercase_text(doc, text, ents):
+    result = []
+    found_texts = find_ent_ocurrencies_in_upper_text(text, ents)
+    for element in found_texts:
+        found_text, entity_name = element.values()
+        for match in finditer(found_text, text):
+            new_span = doc.char_span(match.span()[0], match.span()[1], entity_name)
+            if new_span and not overlap_ocurrency_list(new_span.start, new_span.end, ents, False):
+                result.append(new_span)
+
+    return result
 
 def detect_entities(act):
     nlp = Nlp()
     ents = nlp.get_all_entities(act.text)
+    ents_in_upper = get_entities_in_uppercase_text(nlp.doc, act.text, ents)
+    if ents_in_upper:
+        ents.extend(filter_spans(ents_in_upper))
     return format_spans(ents)
 
 
-def overlap_ocurrency(ent_start, ent_end, ocurrency):
+def overlap_ocurrency(ent_start, ent_end, ocurrency, use_index):
+    ocurrency_start = ocurrency.startIndex if use_index else ocurrency.start
+    ocurrency_end = ocurrency.endIndex if use_index else ocurrency.end
     return (
-        (ent_start >= ocurrency.startIndex and ent_end <= ocurrency.endIndex)
-        or (ent_start <= ocurrency.endIndex and ent_end >= ocurrency.endIndex)
-        or (ent_start >= ocurrency.startIndex)
-        and (ent_end <= ocurrency.endIndex)
+        (ent_start >= ocurrency_start and ent_end <= ocurrency_end)
+        or (ent_start <= ocurrency_end and ent_end >= ocurrency_end)
+        or (ent_start >= ocurrency_start)
+        and (ent_end <= ocurrency_end)
     )
 
 
-def overlap_ocurrency_list(ent_start, ent_end, original_ocurrency_list):
-    return any(overlap_ocurrency(ent_start, ent_end, ocurrency) for ocurrency in original_ocurrency_list)
+def overlap_ocurrency_list(ent_start, ent_end, original_ocurrency_list, use_index=True):
+    return any(overlap_ocurrency(ent_start, ent_end, ocurrency, use_index) for ocurrency in original_ocurrency_list)
 
 
 def find_all_spans_of_ocurrency(text, ent, original_ent_list):
@@ -140,7 +169,7 @@ def find_all_spans_of_ocurrency(text, ent, original_ent_list):
     # filtrando aquellas que overlapeen con las entidades originales
     result = []
     for match in finditer(ent_text, text):
-        if not overlap_ocurrency_list(match.span()[0], match.span()[1], original_ent_list):
+        if not overlap_ocurrency_list(match.span()[0], match.span()[1], original_ent_list, True):
             new_span = doc.char_span(match.span()[0], match.span()[1], ent.entity.name)
             result.append(new_span)
     return result
