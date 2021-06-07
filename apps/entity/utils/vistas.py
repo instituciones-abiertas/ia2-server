@@ -133,7 +133,6 @@ def overlap_ocurrency_list(ent_start, ent_end, original_ocurrency_list):
 
 
 def find_all_spans_of_ocurrency(text, doc, ent, original_ent_list):
-    print("se llamó a find_all_spans_of_ocurrency")
     ent_text = doc.char_span(ent.startIndex, ent.endIndex).text
     # en el doc busco las nuevas entidades que matcheen con el texto ent_text
     # filtrando aquellas que overlapeen con las entidades originales
@@ -147,8 +146,6 @@ def find_all_spans_of_ocurrency(text, doc, ent, original_ent_list):
 
 
 def find_all_ocurrencies(text, doc, original_ocurrencies, tag_list):
-    # FIXME se puede usar asyncio? deberíamos extraer la función que obtiene ocurrencias de un tag
-
     # Filtro las ocurrencias cuyo nombre de tag coincide con los de las entidades sobre las que aplicar la funcionalidad de múltiple selección
     filtered_ocurrencies = list(filter(lambda x: (x.entity.id in tag_list), original_ocurrencies))
     new_ocurrencies = list(

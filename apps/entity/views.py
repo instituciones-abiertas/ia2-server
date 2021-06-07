@@ -53,8 +53,6 @@ from .utils.vistas import (
     calculate_and_set_elapsed_review_time,
 )
 
-import time  # FIXME remover una vez medido el tiempo
-
 # Para usar Python Template de string
 ANON_REPLACE_TPL = "<$name>"
 # Color de fondo para texto anonimizado
@@ -240,7 +238,6 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
 
     @action(methods=["post"], detail=True)
     def addAllOccurrencies(self, request, pk=None):
-        start = time.time()  # FIXME remover una vez medido el tiempo
         entities = Entity.objects.all()
         act_check = check_exist_act(pk)
 
@@ -257,10 +254,6 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
             "ents": result.data,
             "id": act_check.id,
         }
-        # FIXME remover una vez medido el tiempo
-        end = time.time()
-        logger.info(f"tiempo que tardó la búsqueda de entidades por selección múltiple: {end - start}")
-
         return Response(dataReturn)
 
     @action(methods=["get"], detail=True)
