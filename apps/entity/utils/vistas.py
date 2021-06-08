@@ -139,12 +139,18 @@ def get_entities_in_uppercase_text(doc, text, ents):
     return result
 
 
-def detect_entities(act):
+def detect_entities(act, all_entities):
     nlp = Nlp()
     ents = nlp.get_all_entities(act.text)
     ents_in_upper = get_entities_in_uppercase_text(nlp.doc, act.text, ents)
     if ents_in_upper:
         ents.extend(filter_spans(ents_in_upper))
+
+    if True:  # FIXME deberia ser un flag (config o settings)
+        print("fue a buscar por seleccion multiple")
+        # FIXME no está encontrando entidades extra, revisar por qué
+        entity_list_to_search = [4, 3]  # ["PER", "LOC"] FIXME extraer a settings?
+        add_entities_by_multiple_selection(entity_list_to_search, act, nlp.doc, all_entities, False)
     return format_spans(ents)
 
 
@@ -187,6 +193,47 @@ def find_all_ocurrencies(text, doc, original_ocurrencies, tag_list):
     )
     result = filter_spans([ent for ent_list in new_ocurrencies for ent in ent_list])
     return format_spans(result)
+
+
+def add_entities_by_multiple_selection(entity_list, act_check, doc, entities, human_mark):
+    print(f"entity_list: {entity_list}")
+    # Busco todas las multiples apariciones de las ocurrencias filtradas por el listado de tags
+    timeit_new_ocurrencies = timeit_save_stats(act_check, "find_all_ocurrencies")(find_all_ocurrencies)
+
+    all_ocurrencies_query = OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check)
+
+    new_occurencies = timeit_new_ocurrencies(act_check.text, doc, all_ocurrencies_query, entity_list)
+    print(f"len(new_occurencies): {len(new_occurencies)}")
+    create_new_occurrencies(new_occurencies, act_check, human_mark, entities)
+
+
+def create_new_occurrencies(ocurrencies, act, human_mark, entity_list=[]):
+    ocurrencies_to_create = []
+    for ocurrency in ocurrencies:
+        entity = entity_list.get(name=ocurrency["tag"])
+        ocurrencies_to_create.append(
+            OcurrencyEntity(
+                act=act,
+                startIndex=ocurrency["start"],
+                endIndex=ocurrency["end"],
+                entity=entity,
+                should_anonymized=entity.should_anonimyzation,
+                human_marked_ocurrency=human_mark,
+                text=act.text[ocurrency["start"] : ocurrency["end"]],
+            )
+        )
+    OcurrencyEntity.objects.bulk_create(ocurrencies_to_create)
+
+
+def delete_and_save(ocurrency):
+    ocurrency.human_deleted_ocurrency = True
+    ocurrency.save()
+
+
+def delete_ocurrencies(ocurrencies, act_check):
+    ocurrencies_ids = [ocur["id"] for ocur in ocurrencies]
+    ocurrencies_to_delete = OcurrencyEntity.objects.filter(id__in=ocurrencies_ids, act_id=act_check.id)
+    list(map(delete_and_save, ocurrencies_to_delete))
 
 
 def set_initial_review_time(act):
