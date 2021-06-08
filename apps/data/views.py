@@ -29,8 +29,8 @@ class LugarStatsView(mixins.ListModelMixin, viewsets.GenericViewSet):
     # Count Ocurrences of every "Lugar"
     def get_queryset(self):
         queryset = Hecho.objects
-        if self.request.data.get("start") is not None and self.request.data.get("end") is not None:
-            start, end = validate_range_dates(self.request.data)
+        if self.request.query_params.get("start") is not None and self.request.query_params.get("end") is not None:
+            start, end = validate_range_dates(self.request.query_params)
             queryset = queryset.filter(_fecha__range=(start, end))
         return queryset.values("lugares___nombre").annotate(
             nombre=F("lugares___nombre"), cantidad=Count("lugares___nombre")
@@ -43,8 +43,8 @@ class EdadStatsView(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         queryset = Hecho.objects
-        if self.request.data.get("start") is not None and self.request.data.get("end") is not None:
-            start, end = validate_range_dates(self.request.data)
+        if self.request.query_params.get("start") is not None and self.request.query_params.get("end") is not None:
+            start, end = validate_range_dates(self.request.query_params)
             queryset = queryset.filter(_fecha__range=(start, end))
         return queryset.aggregate(
             promedio_acusadx=Coalesce(Avg("_edad_acusadx"), 0), promedio_victima=Coalesce(Avg("_edad_victima"), 0)
@@ -63,8 +63,8 @@ class HechoStatsView(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     # Count violencia, violencia_genero, total, otros (ninguno de las violencias)
     def get_queryset(self):
         queryset = Hecho.objects
-        if self.request.data.get("start") is not None and self.request.data.get("end") is not None:
-            start, end = validate_range_dates(self.request.data)
+        if self.request.query_params.get("start") is not None and self.request.query_params.get("end") is not None:
+            start, end = validate_range_dates(self.request.query_params)
             queryset = Hecho.objects.filter(_fecha__range=(start, end))
         return queryset.aggregate(
             total=Count("historico_id"),
