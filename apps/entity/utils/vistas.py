@@ -12,12 +12,7 @@ from time import time
 from datetime import timedelta
 from django.utils import timezone
 
-from ..utils.oodocument import (
-    convert_document_to_format,
-    extract_text_from_file,
-    extract_header,
-    anonimyzed_convert_document,
-)
+from ..utils.oodocument import convert_document_to_format, extract_text_from_file, extract_header
 from ..validator import is_docx_file
 from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsTooLongException
 from django.core.exceptions import ValidationError

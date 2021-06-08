@@ -1,6 +1,8 @@
 import string
 import logging
 import os
+import time
+
 from oodocument import oodocument
 from .utils.oodocument import init_oo
 from .exceptions import ServiceOddDocumentUnavailable
@@ -9,11 +11,9 @@ from .models import OcurrencyEntity
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
-from celery_once import QueueOnce
 
 from celery import shared_task
 from ia2.celery import app
-import time
 from apps.data.helpers import extraer_datos
 
 
@@ -57,7 +57,8 @@ def train_model():
 
 @shared_task
 def extraer_datos_de_ocurrencias(act_id):
-    ocurrencias = list(OcurrencyEntity.objects.filter(act__id=act_id))
+    act_number = act_id[0]  # Llega un array con un solo elemento y se extrae el id
+    ocurrencias = list(OcurrencyEntity.objects.filter(act__id=act_number))
     # Consideracion: solo se queda con la 1er ocurrencia de estas entiedades
 
     def buscar(entidad):
