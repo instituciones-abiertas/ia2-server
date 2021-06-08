@@ -22,7 +22,7 @@ from .serializers import (
 from .models import Entity, Act, OcurrencyEntity, LearningModel
 
 from .tasks import train_model
-from .utils.spacy import write_model_test_in_file
+from .utils.spacy import write_model_test_in_file, Nlp
 from .utils.oodocument import (
     generate_data_for_anonymization,
     convert_document_to_format,
@@ -205,30 +205,49 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         ocurrencies_to_delete = OcurrencyEntity.objects.filter(id__in=ocurrencies_ids, act_id=act_check.id)
         list(map(self.delete_and_save, ocurrencies_to_delete))
 
+    def add_entities(self, request, act_check, entities):
+        # Ocurrencias para agregar
+        new_ents = check_new_ocurrencies(
+            request.data.get("newOcurrencies"), list(entities.values_list("name", flat=True)), act_check
+        )
+        # Se crean las nuevas entidades marcadas por usuarix
+        self.create_new_occurrencies(new_ents, act_check, True, entities)
+
+    def delete_entities(self, request, act_check):
+        # Ocurrencias para marcar eliminadas
+        deleted_ents = check_delete_ocurrencies(request.data.get("deleteOcurrencies"))
+        # Actualización de ocurrencias eliminadas por usuarix
+        self.delete_ocurrencies(deleted_ents, act_check)
+
+    def add_entities_by_multiple_selection(self, request, act_check, doc, entities):
+        # Busco todas las multiples apariciones de las ocurrencias filtradas por el listado de tags
+        # Logueo el tiempo de este proceso
+        timeit_new_ocurrencies = timeit_save_stats(act_check, "find_all_ocurrencies")(find_all_ocurrencies)
+
+        entity_list_for_multiple_selection = request.data.get("entityList")
+
+        # Busco todas las ocurrencias en db
+        all_ocurrencies_query = OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check)
+
+        # Ocurrencias encontradas mediante selección múltiple
+        new_occurencies = timeit_new_ocurrencies(
+            act_check.text, doc, all_ocurrencies_query, entity_list_for_multiple_selection
+        )
+        # Creo las nuevas ocurrencias encontradas a través de la búsqueda
+        self.create_new_occurrencies(new_occurencies, act_check, True, entities)
+
     @action(methods=["post"], detail=True)
     def addAllOccurrencies(self, request, pk=None):
         entities = Entity.objects.all()
         act_check = check_exist_act(pk)
-        new_ents = check_new_ocurrencies(
-            request.data.get("newOcurrencies"), list(entities.values_list("name", flat=True)), act_check
-        )
-        # Ocurrencias para marcar eliminadas
-        deleted_ents = check_delete_ocurrencies(request.data.get("deleteOcurrencies"))
-        entity_list_for_multiple_selection = request.data.get("entityList")
-        # Se crean las nuevas entidades marcadas por usuarix
-        self.create_new_occurrencies(new_ents, act_check, True, entities)
-        # Actualización de ocurrencias eliminadas por usuarix
-        self.delete_ocurrencies(deleted_ents, act_check)
-        # Busco todas las ocurrencias en db
-        all_ocurrencies_query = OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check)
-        # Busco todas las multiples apariciones de las ocurrencias filtradas por el listado de tags
-        # Logueo el tiempo de este proceso
-        timeit_new_ocurrencies = timeit_save_stats(act_check, "find_all_ocurrencies")(find_all_ocurrencies)
-        new_occurencies = timeit_new_ocurrencies(
-            act_check.text, all_ocurrencies_query, entity_list_for_multiple_selection
-        )
-        # Creo las nuevas ocurrencias encontradas a través de la búsqueda
-        self.create_new_occurrencies(new_occurencies, act_check, True, entities)
+
+        self.add_entities(request, act_check, entities)
+        self.delete_entities(request, act_check)
+
+        nlp = Nlp()
+        doc = nlp.generate_doc(act_check.text)
+        self.add_entities_by_multiple_selection(request, act_check, doc, entities)
+
         result = EntSerializer(OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check), many=True)
         dataReturn = {
             "text": act_check.text,

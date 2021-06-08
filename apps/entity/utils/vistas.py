@@ -163,9 +163,7 @@ def overlap_ocurrency_list(ent_start, ent_end, original_ocurrency_list, use_inde
     return any(overlap_ocurrency(ent_start, ent_end, ocurrency, use_index) for ocurrency in original_ocurrency_list)
 
 
-def find_all_spans_of_ocurrency(text, ent, original_ent_list):
-    nlp = Nlp()
-    doc = nlp.generate_doc(text)
+def find_all_spans_of_ocurrency(text, doc, ent, original_ent_list):
     ent_text = doc.char_span(ent.startIndex, ent.endIndex).text
     # en el doc busco las nuevas entidades que matcheen con el texto ent_text
     # filtrando aquellas que overlapeen con las entidades originales
@@ -173,15 +171,19 @@ def find_all_spans_of_ocurrency(text, ent, original_ent_list):
     for match in finditer(ent_text, text):
         if not overlap_ocurrency_list(match.span()[0], match.span()[1], original_ent_list, True):
             new_span = doc.char_span(match.span()[0], match.span()[1], ent.entity.name)
-            result.append(new_span)
+            if new_span:
+                result.append(new_span)
     return result
 
 
-def find_all_ocurrencies(text, original_ocurrencies, tag_list):
+def find_all_ocurrencies(text, doc, original_ocurrencies, tag_list):
     # Filtro las ocurrencias cuyo nombre de tag coincide con los de las entidades sobre las que aplicar la funcionalidad de múltiple selección
     filtered_ocurrencies = list(filter(lambda x: (x.entity.id in tag_list), original_ocurrencies))
     new_ocurrencies = list(
-        map(lambda ocurrency: find_all_spans_of_ocurrency(text, ocurrency, original_ocurrencies), filtered_ocurrencies)
+        map(
+            lambda ocurrency: find_all_spans_of_ocurrency(text, doc, ocurrency, original_ocurrencies),
+            filtered_ocurrencies,
+        )
     )
     result = filter_spans([ent for ent_list in new_ocurrencies for ent in ent_list])
     return format_spans(result)
