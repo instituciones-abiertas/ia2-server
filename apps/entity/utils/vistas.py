@@ -140,6 +140,7 @@ def get_entities_in_uppercase_text(doc, text, ents):
 
 
 def detect_entities(act, doc, ents):
+    # FIXME se podría dejar de usar get_entities_in_uppercase_text si se hace la búsqueda por selección múltiple. REVISAR!
     ents_in_upper = get_entities_in_uppercase_text(doc, act.text, ents)
     if ents_in_upper:
         ents.extend(filter_spans(ents_in_upper))
@@ -167,7 +168,7 @@ def find_all_spans_of_ocurrency(text, doc, ent, original_ent_list):
     # en el doc busco las nuevas entidades que matcheen con el texto ent_text
     # filtrando aquellas que overlapeen con las entidades originales
     result = []
-    for match in finditer(ent_text, text):
+    for match in finditer(ent_text, text, flags=re.IGNORECASE):
         if not overlap_ocurrency_list(match.span()[0], match.span()[1], original_ent_list, True):
             new_span = doc.char_span(match.span()[0], match.span()[1], ent.entity.name)
             if new_span:
@@ -194,7 +195,6 @@ def add_entities_by_multiple_selection(entity_list, act_check, doc, entities, hu
 
     all_ocurrencies_query = OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check)
     new_occurencies = timeit_new_ocurrencies(act_check.text, doc, all_ocurrencies_query, entity_list)
-    print(f"len(new_occurencies): {len(new_occurencies)}")
     create_new_occurrencies(new_occurencies, act_check, human_mark, entities)
 
 
