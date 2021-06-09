@@ -94,17 +94,24 @@ class EntityViewSet(viewsets.ModelViewSet):
 class CreateActMixin(mixins.CreateModelMixin):
     permission_classes = [IsAuthenticated]
 
-    # TODO revisar que sigue funcionando luego del refactor
     def create(self, request):
         new_file = request.FILES.get("file", False)
         # Persists a document
         act = create_act(new_file)
-        # Traigo todas las entidades para hacer busquedas mas rapida
-        entities = Entity.objects.all()
+        all_entities = Entity.objects.all()
+
+        nlp = Nlp()
+        ents = nlp.get_all_entities(act.text)
+
         timeit_detect_ents = timeit_save_stats(act, "detection_time")(detect_entities)
-        ocurrencies = timeit_detect_ents(act, entities)
+        ocurrencies = timeit_detect_ents(act, nlp.doc, ents)
         # Se crean las nuevas ocurrencias identificadas por el modelo
-        create_new_occurrencies(ocurrencies, act, False, entities)
+        create_new_occurrencies(ocurrencies, act, False, all_entities)
+
+        if settings.USE_MULTIPLE_SELECTION_FROM_BEGINNING:
+            entity_list_to_search = [ent.id for ent in all_entities if ent.enable_multiple_selection]
+            add_entities_by_multiple_selection(entity_list_to_search, act, nlp.doc, all_entities, False)
+
         ents = EntSerializer(OcurrencyEntity.objects.filter(act=act.id), many=True)
 
         data = {
@@ -193,7 +200,6 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         deleted_ents = check_delete_ocurrencies(request.data.get("deleteOcurrencies"))
         delete_ocurrencies(deleted_ents, act_check)
 
-    # TODO revisar que sigue funcionando luego del refactor
     @action(methods=["post"], detail=True)
     def addAllOccurrencies(self, request, pk=None):
         all_entities = Entity.objects.all()

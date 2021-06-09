@@ -139,18 +139,11 @@ def get_entities_in_uppercase_text(doc, text, ents):
     return result
 
 
-def detect_entities(act, all_entities):
-    nlp = Nlp()
-    ents = nlp.get_all_entities(act.text)
-    ents_in_upper = get_entities_in_uppercase_text(nlp.doc, act.text, ents)
+def detect_entities(act, doc, ents):
+    ents_in_upper = get_entities_in_uppercase_text(doc, act.text, ents)
     if ents_in_upper:
         ents.extend(filter_spans(ents_in_upper))
 
-    if True:  # FIXME deberia ser un flag (config o settings)
-        print("fue a buscar por seleccion multiple")
-        # FIXME no está encontrando entidades extra, revisar por qué
-        entity_list_to_search = [4, 3]  # ["PER", "LOC"] FIXME extraer a settings?
-        add_entities_by_multiple_selection(entity_list_to_search, act, nlp.doc, all_entities, False)
     return format_spans(ents)
 
 
@@ -196,12 +189,10 @@ def find_all_ocurrencies(text, doc, original_ocurrencies, tag_list):
 
 
 def add_entities_by_multiple_selection(entity_list, act_check, doc, entities, human_mark):
-    print(f"entity_list: {entity_list}")
     # Busco todas las multiples apariciones de las ocurrencias filtradas por el listado de tags
     timeit_new_ocurrencies = timeit_save_stats(act_check, "find_all_ocurrencies")(find_all_ocurrencies)
 
     all_ocurrencies_query = OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check)
-
     new_occurencies = timeit_new_ocurrencies(act_check.text, doc, all_ocurrencies_query, entity_list)
     print(f"len(new_occurencies): {len(new_occurencies)}")
     create_new_occurrencies(new_occurencies, act_check, human_mark, entities)
