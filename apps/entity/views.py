@@ -200,11 +200,32 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
 
     def delete_entities(self, request, act_check):
         deleted_ents = check_delete_ocurrencies(request.data.get("deleteOcurrencies"))
-        delete_ocurrencies(deleted_ents, act_check)
+        # Actualización de ocurrencias eliminadas por usuarix
+        self.delete_ocurrencies(deleted_ents, act_check)
+
+    @timeit_save_stats
+    def add_entities_by_multiple_selection(self, request, act_check, doc, entities):
+        # Busco todas las multiples apariciones de las ocurrencias filtradas por el listado de tags
+        # Logueo el tiempo de este proceso
+
+        entity_list_for_multiple_selection = request.data.get("entityList")
+
+        # Busco todas las ocurrencias en db
+        all_ocurrencies_query = OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check)
+
+        # Ocurrencias encontradas mediante selección múltiple
+        new_occurencies = find_all_ocurrencies(
+            act_check.text,
+            doc,
+            all_ocurrencies_query,
+            entity_list_for_multiple_selection,
+        )
+        # Creo las nuevas ocurrencias encontradas a través de la búsqueda
+        self.create_new_occurrencies(new_occurencies, act_check, True, entities)
 
     @action(methods=["post"], detail=True)
     def addAllOccurrencies(self, request, pk=None):
-        all_entities = Entity.objects.all()
+        entities = Entity.objects.all()
         act_check = check_exist_act(pk)
 
         self.add_entities(request, act_check, all_entities)
@@ -212,16 +233,21 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
 
         nlp = Nlp()
         doc = nlp.generate_doc(act_check.text)
-        entity_list_for_multiple_selection = request.data.get("entityList")
-
-        add_entities_by_multiple_selection(entity_list_for_multiple_selection, act_check, doc, all_entities, True)
-
+        self.add_entities_by_multiple_selection(
+            request,
+            act_check,
+            doc,
+            entities,
+            act_id=act_check.id,
+            key="find_all_ocurrencies",
+        )
         result = EntSerializer(OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check), many=True)
         dataReturn = {
             "text": act_check.text,
             "ents": result.data,
             "id": act_check.id,
         }
+
         return Response(dataReturn)
 
     @action(methods=["get"], detail=True)
