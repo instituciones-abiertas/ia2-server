@@ -88,11 +88,11 @@ Realizar una copia del archivo `.env.example` y renombrarlo a `.env`. Luego, ser
 
 + `IA2_MODEL_FILE`: ruta o url del modelo de Spacy a utilizar. Los modelos son archivos `.tar.gz` construídos con la [línea de comandos de IA²](link-aquí). Las rutas pueden declararse de forma relativa o absoluta hacia el archivo `.tar.gz`. Ejemplos: `../../models/my-model.tar.gz`, `https://my-model-repository.coop/model_1.0.tar.gz`. El directorio `custom_models` se puede utilizar para almacenar los modelos sin ser añadidos al tracking de `.git` *(recomendado si utiliza Docker para el ambiente de desarrollo, ver la siguiente sección)*.
 + `IA2_TEST_MODEL_FILE`: simil a `IA2_MODEL_FILE`, pero el modelo en ésta variable se utiliza únicamente durante las pruebas.
-
 #### Otras
 
 + `IA2_DISABLED_ENTITIES`: lista de entidades que serán ignoradas por el servidor
 + `IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION`: habilita extracción de headers de documentos
++ `USE_MULTIPLE_SELECTION_FROM_BEGINNING`: habilita la búsqueda de entidades luego de la predicción del modelo estadístico, de esta manera se utilizan las entidades detectadas para buscarlas en el resto del documento en caso de que no hayan sido detectadas aún. Las entidades que se buscarán son las que su tipo de entidad está habilitada para la búsqueda por selección múltiple.
 
 ### Precommit
 
