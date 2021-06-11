@@ -142,14 +142,12 @@ def get_entities_in_uppercase_text(doc, text, ents):
     return result
 
 
-@timeit_save_stats
 def detect_entities(act, doc, ents):
     # FIXME se podría dejar de usar get_entities_in_uppercase_text si se hace la búsqueda por selección múltiple. REVISAR!
     ents_in_upper = get_entities_in_uppercase_text(doc, act.text, ents)
     if ents_in_upper:
         ents.extend(filter_spans(ents_in_upper))
-
-    return format_spans(ents)
+        return format_spans(ents)
 
 
 def overlap_ocurrency(ent_start, ent_end, ocurrency, use_index):

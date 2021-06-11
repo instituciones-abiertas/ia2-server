@@ -21,7 +21,7 @@ def check_exist_act(pk):
 
 def open_file(path, type):
     try:
-        output = open(path, type)
+        output = open(path, type, encoding="utf-8-sig")
     except OSError:
         logger.exception(settings.ERROR_STORAGE_FILE_NOT_EXIST)
         raise StorageFileNotExist()
@@ -115,7 +115,7 @@ def check_tag(tag, list_ent_name):
 # TODO: Migrar a Json Schema o Serializer
 # Se valida que sean numeros, que sea valido el intervalo
 def check_start_end(start, end):
-    return isinstance(start, numbers.Integral) and isinstance(end, numbers.Integral) and start < end and start > 0
+    return isinstance(start, numbers.Integral) and isinstance(end, numbers.Integral) and start < end and start >= 0
 
 
 def check_act_with_ocurrency(act, new_ocurrency_list):
