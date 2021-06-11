@@ -141,11 +141,8 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         new_ents = check_new_ocurrencies(
             request_check.get("newOcurrencies"), list(entities.values_list("name", flat=True)), act_check
         )
-
         # Ocurrencias para marcar eliminadas
         delete_ents = check_delete_ocurrencies(request_check.get("deleteOcurrencies"))
-        # Traigo todas las entidades para hacer busquedas mas rapida
-        entities = Entity.objects.all()
         # Se crean las nuevas entidades marcadas por usuarix
         create_new_occurrencies(new_ents, act_check, True, entities)
         # Actualización de ocurrencias eliminadas por usuarix
@@ -193,7 +190,7 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
     def delete_entities(self, request, act_check):
         deleted_ents = check_delete_ocurrencies(request.data.get("deleteOcurrencies"))
         # Actualización de ocurrencias eliminadas por usuarix
-        self.delete_ocurrencies(deleted_ents, act_check)
+        delete_ocurrencies(deleted_ents, act_check)
 
     @action(methods=["post"], detail=True)
     def addAllOccurrencies(self, request, pk=None):
@@ -205,11 +202,14 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
 
         nlp = Nlp()
         doc = nlp.generate_doc(act_check.text)
+        entity_list_for_multiple_selection = request.data.get("entityList")
+
         add_entities_by_multiple_selection(
-            request,
+            entity_list_for_multiple_selection,
             act_check,
             doc,
             all_entities,
+            True,
             act_id=act_check.id,
             key="find_all_ocurrencies",
         )
@@ -233,7 +233,7 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         act_check = check_exist_act(pk)
         task_id = check_exist_and_type_field(request.query_params.dict(), "taskid", str)
         if AsyncResult(task_id).successful():
-            dataResponse = open_file(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + act_check.filename(), "rb")
+            dataResponse = open_file(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + act_check.filename(), "rb", None)
             return FileResponse(dataResponse, as_attachment=True)
         else:
             return Response(

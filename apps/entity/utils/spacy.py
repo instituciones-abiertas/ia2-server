@@ -30,6 +30,7 @@ class Nlp:
         return self.nlp(text)
 
     def get_all_entities(self, text):
+
         self.doc = self.generate_doc(text)
         list_ents = list(self.doc.ents)
         return [ent for ent in list_ents if ent.label_ not in settings.DISABLED_ENTITIES]

@@ -147,7 +147,8 @@ def detect_entities(act, doc, ents):
     ents_in_upper = get_entities_in_uppercase_text(doc, act.text, ents)
     if ents_in_upper:
         ents.extend(filter_spans(ents_in_upper))
-        return format_spans(ents)
+
+    return format_spans(ents)
 
 
 def overlap_ocurrency(ent_start, ent_end, ocurrency, use_index):
@@ -191,6 +192,7 @@ def find_all_ocurrencies(text, doc, original_ocurrencies, tag_list):
     return format_spans(result)
 
 
+@timeit_save_stats
 def add_entities_by_multiple_selection(entity_list, act_check, doc, entities, human_mark):
     # Busco todas las multiples apariciones de las ocurrencias filtradas por el listado de tags
 
@@ -228,7 +230,9 @@ def detect_and_create_ocurrencies(act, all_entities):
 
     if settings.USE_MULTIPLE_SELECTION_FROM_BEGINNING:
         entity_list_to_search = [ent.id for ent in all_entities if ent.enable_multiple_selection]
-        add_entities_by_multiple_selection(entity_list_to_search, act, nlp.doc, all_entities, False)
+        add_entities_by_multiple_selection(
+            entity_list_to_search, act, nlp.doc, all_entities, False, act_id=act.id, key="find_all_ocurrencies"
+        )
 
 
 def delete_and_save(ocurrency):

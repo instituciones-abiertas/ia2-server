@@ -19,9 +19,9 @@ def check_exist_act(pk):
         raise ActNotExist()
 
 
-def open_file(path, type):
+def open_file(path, type, encode):
     try:
-        output = open(path, type, encoding="utf-8-sig")
+        output = open(path, type, encoding=encode)
     except OSError:
         logger.exception(settings.ERROR_STORAGE_FILE_NOT_EXIST)
         raise StorageFileNotExist()

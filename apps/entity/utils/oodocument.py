@@ -45,7 +45,7 @@ def convert_document_to_format(path_document, output_path, output_format):
 
 
 def extract_text_from_file(file_path):
-    read_file = open_file(file_path, "r")
+    read_file = open_file(file_path, "r", "utf-8-sig")
     read_result = read_file.read()
     return read_result
 
