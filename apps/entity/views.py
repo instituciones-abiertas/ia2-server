@@ -2,6 +2,7 @@ import os
 import uuid
 import ast
 import logging
+from time import time
 from django.conf import settings
 from django.http import FileResponse
 from django.db.models import Q
@@ -21,13 +22,16 @@ from .serializers import (
 )
 from .models import Entity, Act, OcurrencyEntity, LearningModel
 
-from .tasks import train_model
+from .tasks import train_model, extraer_datos_de_ocurrencias
+from celery.result import AsyncResult
+
+
 from .utils.spacy import write_model_test_in_file, Nlp
+
 from .utils.oodocument import (
     generate_data_for_anonymization,
     convert_document_to_format,
     extract_text_from_file,
-    anonimyzed_convert_document,
     extract_header,
     convert_offset_header_to_cursor,
 )
@@ -36,13 +40,14 @@ from .utils.publicador import publish_document
 from .utils.general import (
     check_exist_act,
     open_file,
-    extraer_datos_de_ocurrencias,
+    # extraer_datos_de_ocurrencias,
     check_delete_ocurrencies,
     check_add_annotations_request,
     check_new_ocurrencies,
+    check_exist_and_type_field,
+    check_request_params,
 )
 from .utils.data_visualization import generate_data_visualization
-
 from .utils.vistas import (
     timeit_save_stats,
     create_act,
@@ -54,6 +59,10 @@ from .utils.vistas import (
     create_new_occurrencies,
     delete_ocurrencies,
     add_entities_by_multiple_selection,
+    save_act_stats,
+    extraccion_de_datos,
+    anonimizacion_de_documentos,
+    detect_and_create_ocurrencies,
 )
 
 # Para usar Python Template de string
@@ -100,17 +109,7 @@ class CreateActMixin(mixins.CreateModelMixin):
         act = create_act(new_file)
         all_entities = Entity.objects.all()
 
-        nlp = Nlp()
-        ents = nlp.get_all_entities(act.text)
-
-        timeit_detect_ents = timeit_save_stats(act, "detection_time")(detect_entities)
-        ocurrencies = timeit_detect_ents(act, nlp.doc, ents)
-        # Se crean las nuevas ocurrencias identificadas por el modelo
-        create_new_occurrencies(ocurrencies, act, False, all_entities)
-
-        if settings.USE_MULTIPLE_SELECTION_FROM_BEGINNING:
-            entity_list_to_search = [ent.id for ent in all_entities if ent.enable_multiple_selection]
-            add_entities_by_multiple_selection(entity_list_to_search, act, nlp.doc, all_entities, False)
+        detect_and_create_ocurrencies(act, all_entities, act_id=act.id, key="detection_time")
 
         ents = EntSerializer(OcurrencyEntity.objects.filter(act=act.id), many=True)
 
@@ -142,11 +141,8 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         new_ents = check_new_ocurrencies(
             request_check.get("newOcurrencies"), list(entities.values_list("name", flat=True)), act_check
         )
-
         # Ocurrencias para marcar eliminadas
         delete_ents = check_delete_ocurrencies(request_check.get("deleteOcurrencies"))
-        # Traigo todas las entidades para hacer busquedas mas rapida
-        entities = Entity.objects.all()
         # Se crean las nuevas entidades marcadas por usuarix
         create_new_occurrencies(new_ents, act_check, True, entities)
         # Actualización de ocurrencias eliminadas por usuarix
@@ -158,8 +154,7 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         # Todas las ocurrencias actualizadas para el texto
         all_query = list(OcurrencyEntity.objects.filter(act=act_check))
         # Generar el archivo en formato de entrada anonimizado
-        timeit_anonimyzation = timeit_save_stats(act_check, "anonymization_time")(anonimyzed_convert_document)
-        timeit_anonimyzation(
+        task = anonimizacion_de_documentos(
             act_check.file.path,
             settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format,
             extension,
@@ -168,25 +163,21 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
             "txt",
             ANON_FONT_BACK_COLOR,
             convert_offset_header_to_cursor(act_check.offset_header),
+            act_id=act_check.id,
+            key="anonymization_time",
         )
-        # Generar el archivo para poder extraer el texto
-        # convert_document_to_format(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format, output_text, "txt")
-        # Leo el archivo anonimizado
-        read_result = extract_text_from_file(output_text)
-        # Borrado de archivo auxiliares
-        os.remove(output_text)
-        os.remove(act_check.file.path)
-        # Guardado del archivo anonimizado
+        # TODO Pasar la logica de actualización de modelo a tarea asincronica
         act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
-
-        timeit_extract = timeit_save_stats(act_check, "extraction_time")(extraer_datos_de_ocurrencias)
-        timeit_extract(all_query)
         act_check.save()
+        # timeit_extract = timeit_save_stats(act_check.id, "extraction_time")(extraer_datos_de_ocurrencias.apply_async)
+        # timeit_extract([act_check.id])
+
+        extraccion_de_datos([act_check.id], act_id=act_check.id, key="extraction_time")
 
         # Construyo el response
         dataReturn = {
-            "anonymous_text": read_result,
             "data_visualization": generate_data_visualization(all_query, act_check),
+            "task_id": task.id,
         }
         return Response(dataReturn)
 
@@ -198,6 +189,7 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
 
     def delete_entities(self, request, act_check):
         deleted_ents = check_delete_ocurrencies(request.data.get("deleteOcurrencies"))
+        # Actualización de ocurrencias eliminadas por usuarix
         delete_ocurrencies(deleted_ents, act_check)
 
     @action(methods=["post"], detail=True)
@@ -212,21 +204,41 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         doc = nlp.generate_doc(act_check.text)
         entity_list_for_multiple_selection = request.data.get("entityList")
 
-        add_entities_by_multiple_selection(entity_list_for_multiple_selection, act_check, doc, all_entities, True)
-
+        add_entities_by_multiple_selection(
+            entity_list_for_multiple_selection,
+            act_check,
+            doc,
+            all_entities,
+            True,
+            act_id=act_check.id,
+            key="find_all_ocurrencies",
+        )
         result = EntSerializer(OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check), many=True)
         dataReturn = {
             "text": act_check.text,
             "ents": result.data,
             "id": act_check.id,
         }
+
         return Response(dataReturn)
+
+    @action(methods=["get"], detail=True)
+    def getStatusDocument(self, request, pk=None):
+        task_id = check_exist_and_type_field(request.query_params.dict(), "taskid", str)
+        status_task = AsyncResult(task_id).successful()
+        return Response({"status": status_task})
 
     @action(methods=["get"], detail=True)
     def getAnonymousDocument(self, request, pk=None):
         act_check = check_exist_act(pk)
-        dataResponse = open_file(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + act_check.filename(), "rb")
-        return FileResponse(dataResponse, as_attachment=True)
+        task_id = check_exist_and_type_field(request.query_params.dict(), "taskid", str)
+        if AsyncResult(task_id).successful():
+            dataResponse = open_file(settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + act_check.filename(), "rb", None)
+            return FileResponse(dataResponse, as_attachment=True)
+        else:
+            return Response(
+                data=f"Se esta procesando el archivo del acta {act_check.id}, espere unos segundos", status=409
+            )
 
     @action(methods=["post"], detail=True)
     def publishDocument(self, request, pk=None):

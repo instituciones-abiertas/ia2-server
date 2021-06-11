@@ -17,33 +17,36 @@ from ..validator import is_docx_file
 from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsTooLongException
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import UnsupportedMediaType
+from .general import check_exist_act
+from ..tasks import train_model, extraer_datos_de_ocurrencias, reemplazo_asincronico_en_texto
 
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
 
 
-def timeit_save_stats(act, key):
+def timeit_save_stats(func, *args, act_id=None, key=None):
     """
     :param func: Decorated function
     :return: Execution time for the decorated function
     """
 
-    def Inner(func):
-        def wrapper(*args, **kwargs):
-            start = time()
-            r = func(*args, **kwargs)
-            end = time()
-            stats = {key: end - start}
-            save_act_stats(act, stats)
-            return r
+    def wrapper(*args, **kwargs):
+        key = kwargs["key"]
+        act_id = kwargs["act_id"]
+        start = time()
+        re = func(*args)
+        end = time()
+        stats = {key: end - start}
+        print(stats)
+        save_act_stats(act_id, stats)
+        return re
 
-        return wrapper
-
-    return Inner
+    return wrapper
 
 
-def save_act_stats(act, stats):
-    if act:
+def save_act_stats(act_id, stats):
+    if act_id:
+        act = check_exist_act(act_id)
         if not hasattr(act, "actstats"):
             s = ActStats(act=act)
         else:
@@ -53,6 +56,7 @@ def save_act_stats(act, stats):
         s.save()
 
 
+@timeit_save_stats
 def convert_to_txt(act):
     output_path = settings.MEDIA_ROOT_TEMP_FILES + "output.txt" + str(uuid.uuid4())
     # Transformo el archivo de entrada a txt para procesarlo
@@ -93,8 +97,7 @@ def create_act(request_file):
     else:
         act.save()
 
-    timeit_convert_to_txt = timeit_save_stats(act, "load_time")(convert_to_txt)
-    act = timeit_convert_to_txt(act)
+    convert_to_txt(act, act_id=act.id, key="load_time")
 
     act.save()
 
@@ -189,12 +192,12 @@ def find_all_ocurrencies(text, doc, original_ocurrencies, tag_list):
     return format_spans(result)
 
 
+@timeit_save_stats
 def add_entities_by_multiple_selection(entity_list, act_check, doc, entities, human_mark):
     # Busco todas las multiples apariciones de las ocurrencias filtradas por el listado de tags
-    timeit_new_ocurrencies = timeit_save_stats(act_check, "find_all_ocurrencies")(find_all_ocurrencies)
 
     all_ocurrencies_query = OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check)
-    new_occurencies = timeit_new_ocurrencies(act_check.text, doc, all_ocurrencies_query, entity_list)
+    new_occurencies = find_all_ocurrencies(act_check.text, doc, all_ocurrencies_query, entity_list)
     create_new_occurrencies(new_occurencies, act_check, human_mark, entities)
 
 
@@ -214,6 +217,22 @@ def create_new_occurrencies(ocurrencies, act, human_mark, entity_list=[]):
             )
         )
     OcurrencyEntity.objects.bulk_create(ocurrencies_to_create)
+
+
+@timeit_save_stats
+def detect_and_create_ocurrencies(act, all_entities):
+    nlp = Nlp()
+    ents = nlp.get_all_entities(act.text)
+
+    ocurrencies = detect_entities(act, nlp.doc, ents)
+    # Se crean las nuevas ocurrencias identificadas por el modelo
+    create_new_occurrencies(ocurrencies, act, False, all_entities)
+
+    if settings.USE_MULTIPLE_SELECTION_FROM_BEGINNING:
+        entity_list_to_search = [ent.id for ent in all_entities if ent.enable_multiple_selection]
+        add_entities_by_multiple_selection(
+            entity_list_to_search, act, nlp.doc, all_entities, False, act_id=act.id, key="find_all_ocurrencies"
+        )
 
 
 def delete_and_save(ocurrency):
@@ -237,3 +256,14 @@ def calculate_and_set_elapsed_review_time(act):
     s = act.actstats
     s.review_time = timezone.now() - s.begin_review_time
     s.save()
+
+
+@timeit_save_stats
+def extraccion_de_datos(act_id):
+    # En este metodo deberia implementar el calculo asincronico de tiempo para almacenar
+    return extraer_datos_de_ocurrencias.apply_async([act_id])
+
+
+@timeit_save_stats
+def anonimizacion_de_documentos(*args):
+    return reemplazo_asincronico_en_texto.apply_async([*args])
