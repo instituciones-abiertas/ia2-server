@@ -167,7 +167,11 @@ def overlap_ocurrency_list(ent_start, ent_end, original_ocurrency_list, use_inde
 
 
 def find_all_spans_of_ocurrency(text, doc, ent, original_ent_list):
-    ent_text = doc.char_span(ent.startIndex, ent.endIndex).text
+    char_span = doc.char_span(ent.startIndex, ent.endIndex)
+    if not char_span:
+        return []
+
+    ent_text = char_span.text
     # en el doc busco las nuevas entidades que matcheen con el texto ent_text
     # filtrando aquellas que overlapeen con las entidades originales
     result = []
