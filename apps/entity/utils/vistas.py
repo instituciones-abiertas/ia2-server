@@ -142,6 +142,7 @@ def get_entities_in_uppercase_text(doc, text, ents):
     return result
 
 
+@timeit_save_stats
 def detect_entities(act, doc, ents):
     # FIXME se podría dejar de usar get_entities_in_uppercase_text si se hace la búsqueda por selección múltiple. REVISAR!
     ents_in_upper = get_entities_in_uppercase_text(doc, act.text, ents)
@@ -194,10 +195,9 @@ def find_all_ocurrencies(text, doc, original_ocurrencies, tag_list):
 
 def add_entities_by_multiple_selection(entity_list, act_check, doc, entities, human_mark):
     # Busco todas las multiples apariciones de las ocurrencias filtradas por el listado de tags
-    timeit_new_ocurrencies = timeit_save_stats(act_check, "find_all_ocurrencies")(find_all_ocurrencies)
 
     all_ocurrencies_query = OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check)
-    new_occurencies = timeit_new_ocurrencies(act_check.text, doc, all_ocurrencies_query, entity_list)
+    new_occurencies = find_all_ocurrencies(act_check.text, doc, all_ocurrencies_query, entity_list)
     create_new_occurrencies(new_occurencies, act_check, human_mark, entities)
 
 
@@ -217,6 +217,20 @@ def create_new_occurrencies(ocurrencies, act, human_mark, entity_list=[]):
             )
         )
     OcurrencyEntity.objects.bulk_create(ocurrencies_to_create)
+
+
+@timeit_save_stats
+def detect_and_create_ocurrencies(act, all_entities):
+    nlp = Nlp()
+    ents = nlp.get_all_entities(act.text)
+
+    ocurrencies = detect_entities(act, nlp.doc, ents)
+    # Se crean las nuevas ocurrencias identificadas por el modelo
+    create_new_occurrencies(ocurrencies, act, False, all_entities)
+
+    if settings.USE_MULTIPLE_SELECTION_FROM_BEGINNING:
+        entity_list_to_search = [ent.id for ent in all_entities if ent.enable_multiple_selection]
+        add_entities_by_multiple_selection(entity_list_to_search, act, nlp.doc, all_entities, False)
 
 
 def delete_and_save(ocurrency):

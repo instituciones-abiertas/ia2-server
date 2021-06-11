@@ -62,6 +62,7 @@ from .utils.vistas import (
     save_act_stats,
     extraccion_de_datos,
     anonimizacion_de_documentos,
+    detect_and_create_ocurrencies,
 )
 
 # Para usar Python Template de string
@@ -108,16 +109,7 @@ class CreateActMixin(mixins.CreateModelMixin):
         act = create_act(new_file)
         all_entities = Entity.objects.all()
 
-        nlp = Nlp()
-        ents = nlp.get_all_entities(act.text)
-
-        ocurrencies = detect_entities(act,nlp.doc, ents act_id=act.id, key="detection_time")
-        # Se crean las nuevas ocurrencias identificadas por el modelo
-        create_new_occurrencies(ocurrencies, act, False, all_entities)
-
-        if settings.USE_MULTIPLE_SELECTION_FROM_BEGINNING:
-            entity_list_to_search = [ent.id for ent in all_entities if ent.enable_multiple_selection]
-            add_entities_by_multiple_selection(entity_list_to_search, act, nlp.doc, all_entities, False)
+        detect_and_create_ocurrencies(act, all_entities, act_id=act.id, key="detection_time")
 
         ents = EntSerializer(OcurrencyEntity.objects.filter(act=act.id), many=True)
 
@@ -203,29 +195,9 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         # Actualización de ocurrencias eliminadas por usuarix
         self.delete_ocurrencies(deleted_ents, act_check)
 
-    @timeit_save_stats
-    def add_entities_by_multiple_selection(self, request, act_check, doc, entities):
-        # Busco todas las multiples apariciones de las ocurrencias filtradas por el listado de tags
-        # Logueo el tiempo de este proceso
-
-        entity_list_for_multiple_selection = request.data.get("entityList")
-
-        # Busco todas las ocurrencias en db
-        all_ocurrencies_query = OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check)
-
-        # Ocurrencias encontradas mediante selección múltiple
-        new_occurencies = find_all_ocurrencies(
-            act_check.text,
-            doc,
-            all_ocurrencies_query,
-            entity_list_for_multiple_selection,
-        )
-        # Creo las nuevas ocurrencias encontradas a través de la búsqueda
-        self.create_new_occurrencies(new_occurencies, act_check, True, entities)
-
     @action(methods=["post"], detail=True)
     def addAllOccurrencies(self, request, pk=None):
-        entities = Entity.objects.all()
+        all_entities = Entity.objects.all()
         act_check = check_exist_act(pk)
 
         self.add_entities(request, act_check, all_entities)
@@ -233,11 +205,11 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
 
         nlp = Nlp()
         doc = nlp.generate_doc(act_check.text)
-        self.add_entities_by_multiple_selection(
+        add_entities_by_multiple_selection(
             request,
             act_check,
             doc,
-            entities,
+            all_entities,
             act_id=act_check.id,
             key="find_all_ocurrencies",
         )
