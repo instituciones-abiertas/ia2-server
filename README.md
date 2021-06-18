@@ -219,6 +219,15 @@ Crear superuser de Django. El comando inicia los pasos que lo guiarán para crea
 make django-createsuperuser
 ```
 
+#### Comando estadisticas de las entidades
+
+> Permite generar un archivo CSV con estadísticas de las entidades procesadas por el sistema
+
+- Ayuda: `make entity-stats ARGS="--help"`
+- Completas `make entity-stats`
+- Por fecha `make entity-stats ARGS="--start_date 10-10-2001 --end_date 10-10-2021"`
+
+
 ### Herramientas de debugging
 
 Es posible inciar el servidor de manera tal de poder utilizar herramientas de debugging como Wekzeug y/o PyInstrument.
