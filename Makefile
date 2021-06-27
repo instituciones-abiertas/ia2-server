@@ -38,6 +38,10 @@ shell: ## Runs a python shell
 shell:
 	python manage.py shell
 
+entity-stats: ## Run Entity Stats command
+entity-stats:
+	python manage.py stats ${ARGS}
+
 # ---------------
 # Utility targets
 # ---------------
