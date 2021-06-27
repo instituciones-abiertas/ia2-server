@@ -227,6 +227,9 @@ make django-createsuperuser
 - Completas `make entity-stats`
 - Por fecha `make entity-stats ARGS="--start_date 10-10-2001 --end_date 10-10-2021"`
 
+El documento generado tendrá este formato de nombre: `entity_stats_[start_date]-to-[end_date].csv`
+
+> Ej: `entity_stats_20-05-2021-to-10-09-2021.csv`
 
 ### Herramientas de debugging
 
