@@ -25,6 +25,8 @@ class Act(models.Model):
     file = PrivateFileField(max_length=200, validators=[get_file_extension, name_length])
     created_date = models.DateTimeField(default=timezone.now)
     offset_header = models.IntegerField(default=0)
+    hash_text = models.CharField(max_length=2000, null=True, editable=True, blank=True)
+    anonymous_file = PrivateFileField(max_length=2000, null=True, blank=True)
 
     def __str__(self):
         return str(self.id)

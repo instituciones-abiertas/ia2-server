@@ -11,7 +11,8 @@ from re import finditer
 from time import time
 from datetime import timedelta
 from django.utils import timezone
-
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from ..utils.oodocument import convert_document_to_format, extract_text_from_file, extract_header
 from ..validator import is_docx_file
 from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsTooLongException
@@ -56,11 +57,27 @@ def save_act_stats(act_id, stats):
         s.save()
 
 
-@timeit_save_stats
-def convert_to_txt(act):
+def create_proto_act(request_file):
+
+    if request_file is False:
+        raise CreateActFileIsMissingException()
+
+    act = Act(file=request_file)
+
+    try:
+        act.full_clean()
+    except ValidationError:
+        logger.exception(settings.ERROR_TEXT_FILE_TYPE)
+        raise UnsupportedMediaType(media_type=request_file.content_type, detail=settings.ERROR_TEXT_FILE_TYPE)
+    except (CreateActFileNameIsTooLongException) as e:
+        logger.exception(e)
+        raise CreateActFileNameIsTooLongException()
+
+    path = default_storage.save("tmp" + act.file.name, ContentFile(request_file.read()))
+    tmp_file = os.path.join(settings.MEDIA_ROOT, path)
     output_path = settings.MEDIA_ROOT_TEMP_FILES + "output.txt" + str(uuid.uuid4())
     # Transformo el archivo de entrada a txt para procesarlo
-    convert_document_to_format(act.file.path, output_path, "txt")
+    convert_document_to_format(tmp_file, output_path, "txt")
     # Variable de entorno para activar
     act.text = extract_text_from_file(output_path)
 
@@ -68,9 +85,34 @@ def convert_to_txt(act):
     if (
         settings.IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION
         and ast.literal_eval(settings.IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION)
-        and is_docx_file(act.file.path)
+        and is_docx_file(tmp_file)
     ):
-        header_text = extract_header(act.file.path)
+        header_text = extract_header(tmp_file)
+        # Agregado encabezado al texto y calculo de tamaño
+        act.offset_header = len(header_text)
+        act.text = header_text + "\n" + act.text
+    # Borra archivos
+    os.remove(tmp_file)
+    os.remove(output_path)
+    return act
+
+
+@timeit_save_stats
+def convert_to_txt(act):
+    path_file = act.file.path.replace(" ", "_")  # TODO Mejorar la forma de obtner la url
+    output_path = settings.MEDIA_ROOT_TEMP_FILES + "output.txt" + str(uuid.uuid4())
+    # Transformo el archivo de entrada a txt para procesarlo
+    convert_document_to_format(path_file, output_path, "txt")
+    # Variable de entorno para activar
+    act.text = extract_text_from_file(output_path)
+
+    # Chequeo la variable definida, si es True y si ademas es una extension valida de docx
+    if (
+        settings.IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION
+        and ast.literal_eval(settings.IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION)
+        and is_docx_file(path_file)
+    ):
+        header_text = extract_header(path_file)
         # Agregado encabezado al texto y calculo de tamaño
         act.offset_header = len(header_text)
         act.text = header_text + "\n" + act.text
@@ -79,7 +121,7 @@ def convert_to_txt(act):
     return act
 
 
-def create_act(request_file):
+def create_act(request_file, generate_hash, text):
     # Checks the file from the request is missing
     if request_file is False:
         raise CreateActFileIsMissingException()
@@ -95,11 +137,9 @@ def create_act(request_file):
         logger.exception(e)
         raise CreateActFileNameIsTooLongException()
     else:
+        act.text = text
+        act.hashText = generate_hash
         act.save()
-
-    convert_to_txt(act, act_id=act.id, key="load_time")
-
-    act.save()
 
     return act
 
@@ -278,3 +318,11 @@ def extraccion_de_datos(act_id):
 @timeit_save_stats
 def anonimizacion_de_documentos(*args):
     return reemplazo_asincronico_en_texto.apply_async([*args])
+
+
+def remove_anonymus_previous_file(act, url):
+    if act.anonymous_file:
+        os.remove(act.anonymous_file.path)
+    act.anonymous_file = url
+    act.save()
+    return

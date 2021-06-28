@@ -46,11 +46,11 @@ from .utils.general import (
     check_new_ocurrencies,
     check_exist_and_type_field,
     check_request_params,
+    calculate_hash,
 )
 from .utils.data_visualization import generate_data_visualization
 from .utils.vistas import (
     timeit_save_stats,
-    create_act,
     detect_entities,
     find_all_ocurrencies,
     format_spans,
@@ -63,6 +63,8 @@ from .utils.vistas import (
     extraccion_de_datos,
     anonimizacion_de_documentos,
     detect_and_create_ocurrencies,
+    create_proto_act,
+    remove_anonymus_previous_file,
 )
 
 # Para usar Python Template de string
@@ -104,20 +106,24 @@ class CreateActMixin(mixins.CreateModelMixin):
     permission_classes = [IsAuthenticated]
 
     def create(self, request):
+        new_act = False
         new_file = request.FILES.get("file", False)
-        # Persists a document
-        act = create_act(new_file)
-        all_entities = Entity.objects.all()
+        act = create_proto_act(new_file)
+        generate_hash = calculate_hash(act.text)
+        exist_act = Act.objects.filter(hash_text=generate_hash)
+        if exist_act.exists():
+            act = exist_act[0]  # Access a unique option
+            ents = EntSerializer(OcurrencyEntity.objects.filter(act=act.id, human_deleted_ocurrency=False), many=True)
 
-        detect_and_create_ocurrencies(act, all_entities, act_id=act.id, key="detection_time")
+        else:
+            act.hash_text = generate_hash
+            act.save()
+            all_entities = Entity.objects.all()
+            detect_and_create_ocurrencies(act, all_entities, act_id=act.id, key="detection_time")
+            ents = EntSerializer(OcurrencyEntity.objects.filter(act=act.id), many=True)
+            new_act = True
 
-        ents = EntSerializer(OcurrencyEntity.objects.filter(act=act.id), many=True)
-
-        data = {
-            "text": act.text,
-            "ents": ents.data,
-            "id": act.id,
-        }
+        data = {"text": act.text, "ents": ents.data, "id": act.id, "new_act": new_act}
 
         set_initial_review_time(act)
         return Response(data, status=status.HTTP_201_CREATED)
@@ -148,7 +154,6 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         # Actualización de ocurrencias eliminadas por usuarix
         delete_ocurrencies(delete_ents, act_check)
         # Definicion de rutas
-        output_text = settings.MEDIA_ROOT_TEMP_FILES + "anonymous.txt" + str(uuid.uuid4())
         output_format = act_check.filename()
         extension = os.path.splitext(output_format)[1][1:]
         # Todas las ocurrencias actualizadas para el texto
@@ -159,18 +164,13 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
             settings.PRIVATE_STORAGE_ANONYMOUS_FOLDER + output_format,
             extension,
             generate_data_for_anonymization(all_query, act_check.text, ANON_REPLACE_TPL, act_check.offset_header),
-            output_text,
-            "txt",
             ANON_FONT_BACK_COLOR,
             convert_offset_header_to_cursor(act_check.offset_header),
             act_id=act_check.id,
             key="anonymization_time",
         )
         # TODO Pasar la logica de actualización de modelo a tarea asincronica
-        act_check.file = settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format
-        act_check.save()
-        # timeit_extract = timeit_save_stats(act_check.id, "extraction_time")(extraer_datos_de_ocurrencias.apply_async)
-        # timeit_extract([act_check.id])
+        remove_anonymus_previous_file(act_check, settings.PRIVATE_STORAGE_ANONYMOUS_URL + output_format)
 
         extraccion_de_datos([act_check.id], act_id=act_check.id, key="extraction_time")
 
@@ -218,6 +218,7 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
             "text": act_check.text,
             "ents": result.data,
             "id": act_check.id,
+            "new_act": True,  # TODO HOTFIX
         }
 
         return Response(dataReturn)
@@ -244,7 +245,7 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
     def publishDocument(self, request, pk=None):
         act_check = check_exist_act(pk)
         publish_document(
-            act_check.file.path,
+            act_check.anonymous_file.path,
             settings.PUBLICADOR_CLOUDFOLDER_STORE,
             settings.PUBLICADOR_CLOUD_STORAGE_PROVIDER,
         )
@@ -258,7 +259,7 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
     def publishDocumentInDrive(self, request, pk=None):
         act_check = check_exist_act(pk)
         publish_document(
-            act_check.file.path,
+            act_check.anonymous_file.path,
             settings.PUBLICADOR_CLOUDFOLDER_STORE,
             "drive",
         )

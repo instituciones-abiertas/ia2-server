@@ -94,8 +94,6 @@ def reemplazo_asincronico_en_texto(
     path_output,
     format_output,
     data_to_replace,
-    path_convert_document,
-    format_convert_document,
     color=None,
     offset=0,
 ):
@@ -115,7 +113,6 @@ def reemplazo_asincronico_en_texto(
             oo.replace_with_index_in_header(
                 data_replace_header, path_output, format_output, 0, settings.NEIGHBOR_CHARS_SCAN, HEADER_STYLE_NAME
             )
-        os.remove(path_document)
         oo.dispose()
         return f"Esta reemplazando el texto del documento{path_document}"
     except Exception:
