@@ -207,19 +207,26 @@ def add_entities_by_multiple_selection(entity_list, act_check, doc, entities, hu
 
 def create_new_occurrencies(ocurrencies, act, human_mark, entity_list=[]):
     ocurrencies_to_create = []
+    act_ocurrencies = OcurrencyEntity.objects.filter(act=act)
+
     for ocurrency in ocurrencies:
-        entity = entity_list.get(name=ocurrency["tag"])
-        ocurrencies_to_create.append(
-            OcurrencyEntity(
-                act=act,
-                startIndex=ocurrency["start"],
-                endIndex=ocurrency["end"],
-                entity=entity,
-                should_anonymized=entity.should_anonimyzation,
-                human_marked_ocurrency=human_mark,
-                text=act.text[ocurrency["start"] : ocurrency["end"]],
+        # Si existe una ocurrencia que coinciden los indices se modifica y no se crea nueva.
+        find_ocurrency = act_ocurrencies.filter(startIndex=ocurrency["start"], endIndex=ocurrency["end"])
+        if find_ocurrency.exists():
+            find_ocurrency.update(entity=entity_list.get(name=ocurrency["tag"]), human_marked_ocurrency=False)
+        else:
+            entity = entity_list.get(name=ocurrency["tag"])
+            ocurrencies_to_create.append(
+                OcurrencyEntity(
+                    act=act,
+                    startIndex=ocurrency["start"],
+                    endIndex=ocurrency["end"],
+                    entity=entity,
+                    should_anonymized=entity.should_anonimyzation,
+                    human_marked_ocurrency=human_mark,
+                    text=act.text[ocurrency["start"] : ocurrency["end"]],
+                )
             )
-        )
     OcurrencyEntity.objects.bulk_create(ocurrencies_to_create)
 
 
