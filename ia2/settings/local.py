@@ -90,7 +90,7 @@ PUBLICADOR_CREDENTIALS_DRIVE_PATH = "./credentials.json"
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=1),
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=100),
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }

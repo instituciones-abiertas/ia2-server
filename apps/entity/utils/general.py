@@ -4,6 +4,7 @@ from ..exceptions import ActNotExist, StorageFileNotExist, BadRequestAPI, NoEnti
 from apps.data.helpers import extraer_datos
 import logging
 import numbers
+import hashlib
 from django.conf import settings
 
 
@@ -136,3 +137,10 @@ def check_exist_and_type_field(data, field, type_expected):
     else:
         logger.error(f"No es el tipo esperado en {data}")
         raise BadRequestAPI()
+
+
+def calculate_hash(text):
+    def hash(string):
+        return hashlib.sha256(str(string).encode("utf-8")).digest()
+
+    return hash(text)
