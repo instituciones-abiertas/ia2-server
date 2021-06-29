@@ -15,7 +15,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from ..utils.oodocument import convert_document_to_format, extract_text_from_file, extract_header
 from ..validator import is_docx_file
-from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsTooLongException
+from ..exceptions import CreateActFileIsMissingException, CreateActFileNameIsTooLongException, ServiceRedisUnavailable
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import UnsupportedMediaType
 from .general import check_exist_act
@@ -311,12 +311,23 @@ def calculate_and_set_elapsed_review_time(act):
 @timeit_save_stats
 def extraccion_de_datos(act_id):
     # En este metodo deberia implementar el calculo asincronico de tiempo para almacenar
-    return extraer_datos_de_ocurrencias.apply_async([act_id])
+    try:
+        return extraer_datos_de_ocurrencias.apply_async([act_id])
+    except Exception as e:
+        logger.exception("No esta funcionando el servidor de redis")
+        logger.exception(e)
+        raise ServiceRedisUnavailable()
 
 
 @timeit_save_stats
 def anonimizacion_de_documentos(*args):
-    return reemplazo_asincronico_en_texto.apply_async([*args])
+    try:
+        return reemplazo_asincronico_en_texto.apply_async([*args])
+
+    except Exception as e:
+        logger.exception("No esta funcionando el servidor de redis")
+        logger.exception(e)
+        raise ServiceRedisUnavailable()
 
 
 def remove_anonymus_previous_file(act, url):

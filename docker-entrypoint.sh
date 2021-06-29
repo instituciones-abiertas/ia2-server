@@ -20,5 +20,8 @@ python manage.py loaddata apps/accounts/fixtures/2_superuser_accounts.json --set
 echo "=> Starting Libreoffice headless"
 /usr/bin/libreoffice --headless --nologo --nofirststartwizard --accept="socket,host=0.0.0.0,port=8001;urp" &
 
+echo "=> Starting Celery worker..." && \
+celery --app=ia2 worker -D --concurrency=1 --loglevel=INFO
+
 echo "=> Starting webserver..."
 gunicorn --bind 0.0.0.0:8000 --timeout 600  ia2.wsgi:application
