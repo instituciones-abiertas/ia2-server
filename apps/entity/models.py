@@ -22,7 +22,12 @@ class Entity(models.Model):
 
 class Act(models.Model):
     text = models.TextField(default="En Proceso")
-    file = PrivateFileField(max_length=200, validators=[get_file_extension, name_length])
+    file = PrivateFileField(
+        max_length=200,
+        validators=[get_file_extension, name_length],
+        blank=True,
+        null=True,
+    )
     created_date = models.DateTimeField(default=timezone.now)
     offset_header = models.IntegerField(default=0)
     hash_text = models.CharField(max_length=2000, null=True, editable=True, blank=True)

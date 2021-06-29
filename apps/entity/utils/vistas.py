@@ -120,29 +120,6 @@ def convert_to_txt(act):
     return act
 
 
-def create_act(request_file, generate_hash, text):
-    # Checks the file from the request is missing
-    if request_file is False:
-        raise CreateActFileIsMissingException()
-
-    act = Act(file=request_file)
-
-    try:
-        act.full_clean()
-    except ValidationError:
-        logger.exception(settings.ERROR_TEXT_FILE_TYPE)
-        raise UnsupportedMediaType(media_type=request_file.content_type, detail=settings.ERROR_TEXT_FILE_TYPE)
-    except (CreateActFileNameIsTooLongException) as e:
-        logger.exception(e)
-        raise CreateActFileNameIsTooLongException()
-    else:
-        act.text = text
-        act.hashText = generate_hash
-        act.save()
-
-    return act
-
-
 def format_span(span):
     new_ordered_dict = collections.OrderedDict()
     new_ordered_dict["start"] = span.start_char
