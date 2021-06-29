@@ -38,7 +38,6 @@ def timeit_save_stats(func, *args, act_id=None, key=None):
         re = func(*args)
         end = time()
         stats = {key: end - start}
-        print(stats)
         save_act_stats(act_id, stats)
         return re
 
