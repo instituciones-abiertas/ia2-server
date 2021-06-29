@@ -279,3 +279,8 @@ ERROR_DRIVE_CREDENTIALS_NOT_FOUND = "No existen credenciales para Google Drive"
 ERROR_STORAGE_CLOUD_FOLDER_NOT_EXIST = "El directorio cloud al que intenta acceder no existe o es inválido"
 ERROR_REQUEST_API = "La información de petición es inválida"
 NO_ENTITIES_DETECTED = "No se han detectado entidades conocidas en el texto"
+ERROR_REDIS_NOT_WORKING = "El servicio de tareas asincrónicas no esta disponible"
+
+
+## Multiple Selection
+USE_MULTIPLE_SELECTION_FROM_BEGINNING = False
