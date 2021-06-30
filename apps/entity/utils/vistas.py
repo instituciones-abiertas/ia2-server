@@ -47,10 +47,7 @@ def timeit_save_stats(func, *args, act_id=None, key=None):
 def save_act_stats(act_id, stats):
     if act_id:
         act = check_exist_act(act_id)
-        if not hasattr(act, "actstats"):
-            s = ActStats(act=act)
-        else:
-            s = act.actstats
+        s = act.get_actstats()
         for key, value in stats.items():
             setattr(s, key, timedelta(seconds=value))
         s.save()
@@ -274,13 +271,13 @@ def delete_ocurrencies(ocurrencies, act_check):
 
 
 def set_initial_review_time(act):
-    s = act.actstats
+    s = act.get_actstats()
     s.begin_review_time = timezone.now()
     s.save()
 
 
 def calculate_and_set_elapsed_review_time(act):
-    s = act.actstats
+    s = act.get_actstats()
     s.review_time = timezone.now() - s.begin_review_time
     s.save()
 
