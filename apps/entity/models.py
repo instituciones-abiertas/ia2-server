@@ -42,6 +42,13 @@ class Act(models.Model):
     def filename(self):
         return os.path.basename(self.file.name)
 
+    def get_actstats(self):
+        try:
+            return self.actstats
+        except ActStats.DoesNotExist:
+            # TODO Pensar que loguear
+            return ActStats.objects.create(act=self)
+
 
 class ActStats(models.Model):
     act = models.OneToOneField(
