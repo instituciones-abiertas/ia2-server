@@ -226,7 +226,7 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
     @action(methods=["get"], detail=True)
     def getStatusDocument(self, request, pk=None):
         task_id = check_exist_and_type_field(request.query_params.dict(), "taskid", str)
-        status_task = AsyncResult(task_id).successful()
+        status_task = AsyncResult(task_id).status
         return Response({"status": status_task})
 
     @action(methods=["get"], detail=True)
