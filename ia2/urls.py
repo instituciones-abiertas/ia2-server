@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from django.apps import apps
 from django.conf import settings
 from django.conf.urls import include, url
@@ -22,28 +22,11 @@ from django.conf.urls.static import static
 from django.views.generic import RedirectView
 from django.conf.urls.i18n import i18n_patterns
 
-from rest_framework import routers
 from rest_framework_simplejwt import views as jwt_views
 import private_storage.urls
 
-from apps.entity.views import EntityViewSet
-from apps.entity.views import ActViewSet
-from apps.entity.views import OcurrencyEntityViewSet
-from apps.entity.views import LearningModelViewSet
-
-# from apps.entity.views import FakeViewSet
-# from apps.myModel2 import views as myModel2Views
-# from apps.myModel3 import views as myModel3Views
-
-# Routers provide an easy way of automatically determining the URL conf.
-ROUTER = routers.DefaultRouter()
-ROUTER.register(r"entity", EntityViewSet)
-ROUTER.register(r"act", ActViewSet)
-ROUTER.register(r"ocurrency", OcurrencyEntityViewSet)
-ROUTER.register(r"subject", LearningModelViewSet)
-# ROUTER.register(r'fake', FakeViewSet,base_name='fakedata')
-# ROUTER.register('myModel2', myModel2.MyModel2ViewSet)
-# ROUTER.register('myModel3', myModel3.MyModel3ViewSet)
+from apps.data.routers import get_data_urls
+from apps.entity.routers import get_entity_urls
 
 urlpatterns = i18n_patterns(url(r"^$", RedirectView.as_view(url="/admin/")), path("admin/", admin.site.urls)) + static(
     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
@@ -56,7 +39,8 @@ urlpatterns += [
 
 # Router patterns
 urlpatterns = urlpatterns + [
-    url(r"^api/", include(ROUTER.urls)),
+    url(r"^api/", include(get_entity_urls())),
+    url(r"^api/stats/", include(get_data_urls())),
 ]
 
 # Auth patterns

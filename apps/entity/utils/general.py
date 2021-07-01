@@ -4,19 +4,12 @@ from ..exceptions import ActNotExist, StorageFileNotExist, BadRequestAPI, NoEnti
 from apps.data.helpers import extraer_datos
 import logging
 import numbers
+import hashlib
 from django.conf import settings
 
 
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
-
-# Esta dependencia esta solamente en produccion
-try:
-    from sentry_sdk import capture_exception
-except ImportError:
-
-    def capture_exception(err):
-        print(err)
 
 
 def check_exist_act(pk):
@@ -27,9 +20,9 @@ def check_exist_act(pk):
         raise ActNotExist()
 
 
-def open_file(path, type):
+def open_file(path, type, encode):
     try:
-        output = open(path, type)
+        output = open(path, type, encoding=encode)
     except OSError:
         logger.exception(settings.ERROR_STORAGE_FILE_NOT_EXIST)
         raise StorageFileNotExist()
@@ -37,36 +30,13 @@ def open_file(path, type):
         return output
 
 
-def extraer_datos_de_ocurrencias(ocurrencias):
-    # Consideracion: solo se queda con la 1er ocurrencia de estas entiedades
-
-    def buscar(entidad):
-        return next((o.text for o in ocurrencias if o.entity.name == entidad), None)
-
-    entidades = [
-        "CONTEXTO_VIOLENCIA",
-        "CONTEXTO_VIOLENCIA_DE_GÉNERO",
-        "LUGAR_HECHO",
-        "FECHA_HECHO",
-        "EDAD_ACUSADX",
-        "EDAD_VICTIMA",
-    ]
-    contexto_violencia, contexto_violencia_de_genero, lugar, fecha, edad_acusadx, edad_victima = list(
-        map(buscar, entidades)
-    )
-
-    if contexto_violencia or contexto_violencia_de_genero or lugar or fecha or edad_acusadx or edad_victima:
-        try:
-            extraer_datos(contexto_violencia, contexto_violencia_de_genero, lugar, fecha, edad_acusadx, edad_victima)
-        except Exception as error:
-            capture_exception(error)
-
-
 def filter_spans(a_list, b_list):
     # filtra spans de a_list que se overlapeen con algun span de b_list
     def overlap(span, span_list):
         for s in span_list:
-            if (span.start >= s.start and span.start < s.end) or (s.start >= span.start and s.end <= span.end):
+            if (span.start_char >= s.startIndex and span.end_char < s.endIndex) or (
+                s.startIndex >= span.start_char and s.endIndex <= span.end_char
+            ):
                 return True
         return False
 
@@ -146,7 +116,7 @@ def check_tag(tag, list_ent_name):
 # TODO: Migrar a Json Schema o Serializer
 # Se valida que sean numeros, que sea valido el intervalo
 def check_start_end(start, end):
-    return isinstance(start, numbers.Integral) and isinstance(end, numbers.Integral) and start < end and start > 0
+    return isinstance(start, numbers.Integral) and isinstance(end, numbers.Integral) and start < end and start >= 0
 
 
 def check_act_with_ocurrency(act, new_ocurrency_list):
@@ -158,3 +128,19 @@ def check_act_with_ocurrency(act, new_ocurrency_list):
             f"El texto de la siguiente acta {act.id} no contiene entidades detectadas ni cargadas por usuarixs"
         )
         raise NoEntitiesDetected()
+
+
+# TODO: Migrar a Json Schema o Serializer
+def check_exist_and_type_field(data, field, type_expected):
+    if type(data.get(field)) == type_expected:
+        return data.get(field)
+    else:
+        logger.error(f"No es el tipo esperado en {data}")
+        raise BadRequestAPI()
+
+
+def calculate_hash(text):
+    def hash(string):
+        return hashlib.sha256(str(string).encode("utf-8")).digest()
+
+    return hash(text)

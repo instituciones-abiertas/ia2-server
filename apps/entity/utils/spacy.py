@@ -8,11 +8,11 @@ import logging
 
 from django.conf import settings
 from pathlib import Path
-from spacy.util import minibatch, compounding
+from spacy.util import minibatch, compounding, filter_spans
 from spacy.matcher import Matcher
 from spacy.pipeline import EntityRuler
 from spacy.tokens import Span
-from re import match
+from re import match, finditer
 
 logger = logging.getLogger("django.server")
 if settings.IA2_MODEL_FILE is None or not settings.IA2_MODEL_FILE:
@@ -30,6 +30,7 @@ class Nlp:
         return self.nlp(text)
 
     def get_all_entities(self, text):
+
         self.doc = self.generate_doc(text)
         list_ents = list(self.doc.ents)
         return [ent for ent in list_ents if ent.label_ not in settings.DISABLED_ENTITIES]

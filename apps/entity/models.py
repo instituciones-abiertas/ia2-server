@@ -22,9 +22,16 @@ class Entity(models.Model):
 
 class Act(models.Model):
     text = models.TextField(default="En Proceso")
-    file = PrivateFileField(max_length=200, validators=[get_file_extension, name_length])
+    file = PrivateFileField(
+        max_length=200,
+        validators=[get_file_extension, name_length],
+        blank=True,
+        null=True,
+    )
     created_date = models.DateTimeField(default=timezone.now)
     offset_header = models.IntegerField(default=0)
+    hash_text = models.CharField(max_length=2000, null=True, editable=True, blank=True)
+    anonymous_file = PrivateFileField(max_length=2000, null=True, blank=True)
 
     def __str__(self):
         return str(self.id)
@@ -34,6 +41,13 @@ class Act(models.Model):
 
     def filename(self):
         return os.path.basename(self.file.name)
+
+    def get_actstats(self):
+        try:
+            return self.actstats
+        except ActStats.DoesNotExist:
+            # TODO Pensar que loguear
+            return ActStats.objects.create(act=self)
 
 
 class ActStats(models.Model):
@@ -45,7 +59,10 @@ class ActStats(models.Model):
     load_time = models.DurationField(default=timedelta())
     detection_time = models.DurationField(default=timedelta())
     anonymization_time = models.DurationField(default=timedelta())
+    find_all_ocurrencies = models.DurationField(default=timedelta())
     extraction_time = models.DurationField(default=timedelta())
+    review_time = models.DurationField(default=timedelta())
+    begin_review_time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"Estadisticas Acta Id {self.act.id}"

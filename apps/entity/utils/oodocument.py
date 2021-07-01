@@ -9,6 +9,7 @@ from string import Template
 from .general import open_file
 from docx import Document
 
+# from .vistas import timeit_save_stats
 
 # Uso de logger server de django, agrega
 logger = logging.getLogger("django.server")
@@ -44,43 +45,9 @@ def convert_document_to_format(path_document, output_path, output_format):
 
 
 def extract_text_from_file(file_path):
-    read_file = open_file(file_path, "r")
+    read_file = open_file(file_path, "r", "utf-8-sig")
     read_result = read_file.read()
     return read_result
-
-
-def anonimyzed_convert_document(
-    path_document,
-    path_output,
-    format_output,
-    data_to_replace,
-    path_convert_document,
-    format_convert_document,
-    color=None,
-    offset=0,
-):
-
-    oo = init_oo(path_document)
-    # Cambio de color en caso que venga parametrizado
-    if color and isinstance(color, list) and len(color) == 3:
-        r, g, b = color
-        oo.set_font_back_color(r, g, b)
-    # Division entre entidades de header y body de texto
-    data_replace_header = data_to_replace[0]
-    data_replace_body = data_to_replace[1]
-    try:
-        # Reemplazo en body
-        oo.replace_with_index(data_replace_body, path_output, format_output, offset, settings.NEIGHBOR_CHARS_SCAN)
-        # Reemplazo en header si esta habilitado
-        if settings.IA2_ENABLE_OODOCUMENT_HEADER_EXTRACTION:
-            oo.replace_with_index_in_header(
-                data_replace_header, path_output, format_output, 0, settings.NEIGHBOR_CHARS_SCAN, HEADER_STYLE_NAME
-            )
-        # Conversion de formato
-        oo.convert_to(path_convert_document, format_convert_document)
-    except Exception as e:
-        logger.exception(e)
-    oo.dispose()
 
 
 # Utilizamos la libreria https://pypi.org/project/python-docx/

@@ -37,6 +37,7 @@ INTERNAL_IPS = ["127.0.0.1"]
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS += [
+    "corsheaders",
     "django_extensions",
 ]
 
@@ -65,6 +66,10 @@ if os.environ.get("ENABLE_PYINSTRUMENT"):
     ] + MIDDLEWARE
     PYINSTRUMENT_PROFILE_DIR = "profiles"
 
+MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+] + MIDDLEWARE
 
 if os.environ.get("API_URL"):
     API_URL = os.environ.get("API_URL")
@@ -85,11 +90,13 @@ PUBLICADOR_CREDENTIALS_DRIVE_PATH = "./credentials.json"
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=1),
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=100),
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
+CORS_ALLOW_ALL_ORIGINS = True
 
 ## ML Model
 IA2_MODEL_FILE = os.environ.get("IA2_MODEL_FILE")
+USE_MULTIPLE_SELECTION_FROM_BEGINNING = True

@@ -66,3 +66,9 @@ class NoEntitiesDetected(APIException):
     status_code = 400
     default_detail = settings.NO_ENTITIES_DETECTED
     default_code = "no_entities_detected"
+
+
+class ServiceRedisUnavailable(APIException):
+    status_code = 503
+    default_detail = settings.ERROR_REDIS_NOT_WORKING
+    default_code = "service_redis_unavailable"
