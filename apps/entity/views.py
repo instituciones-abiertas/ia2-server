@@ -65,10 +65,11 @@ from .utils.vistas import (
     detect_and_create_ocurrencies,
     create_proto_act,
     remove_anonymus_previous_file,
+    assign_ner_indexes,
 )
 
 # Para usar Python Template de string
-ANON_REPLACE_TPL = "<$name>"
+ANON_REPLACE_TPL = "<${name}_${index}>"
 # Color de fondo para texto anonimizado
 ANON_FONT_BACK_COLOR = [255, 255, 0]
 # Entidades a no mostrar
@@ -153,6 +154,8 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
         create_new_occurrencies(new_ents, act_check, True, entities)
         # Actualización de ocurrencias eliminadas por usuarix
         delete_ocurrencies(delete_ents, act_check)
+        # Recalcular índices NER después de modificar ocurrencias
+        assign_ner_indexes(act_check)
         # Definicion de rutas
         output_format = act_check.filename()
         extension = os.path.splitext(output_format)[1][1:]
@@ -213,6 +216,8 @@ class ActViewSet(CreateActMixin, mixins.ListModelMixin, mixins.RetrieveModelMixi
             act_id=act_check.id,
             key="find_all_ocurrencies",
         )
+        # Recalcular índices NER después de modificar ocurrencias
+        assign_ner_indexes(act_check)
         result = EntSerializer(OcurrencyEntity.objects.filter(human_deleted_ocurrency=False, act=act_check), many=True)
         dataReturn = {
             "text": act_check.text,
