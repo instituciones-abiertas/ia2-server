@@ -110,6 +110,23 @@ django-load-fixtures:
 django-compile-messages:
 	./manage.py compilemessages
 
+# Docker commands
+docker-build:
+	@docker compose build --no-cache
+
+docker-start:
+	@docker compose up --remove-orphans -d
+	@docker compose logs -f
+
+docker-stop:
+	@docker compose down --remove-orphans
+
+docker-exec:
+	@docker compose exec web ${ARGS}
+
+docker-test:
+	@${MAKE} docker-exec ARGS="make test"
+
 # Help
 help-display:
 	@awk '/^[[:alnum:]-]*: ##/ { split($$0, x, "##"); printf "%20s%s\n", x[1], x[2]; }' $(MAKEFILE_LIST)

@@ -253,41 +253,46 @@ Utilizamos el siguiente comando para construír la imagen de Docker con todas la
 > Nota: si se realizan cambios en `tasks.py`, será necesario volver a correr el comando de build.
 
 ```bash
-docker-compose build
+docker compose build --no-cache
 ```
 
 Utilice cualquiera de los siguientes comando para inicializar los servicios:
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 Modo detached:
 
 ```bash
-docker-compose up -d
+docker compose up --remove-orphans -d
 ```
 
 Puede parar los servicios desde otro terminal, utilizando:
 
 ```bash
-docker-compose stop
+docker compose down --remove-orphans
 ```
 
 #### Comandos útiles a través de Docker Compose
 
-> Los siguientes comandos asumen que los servicios de docker-compose están activos.
+> Los siguientes comandos asumen que los servicios de `docker compose` están activos.
 
 Es posible correr cualquiera de los comandos de `Makefile` descriptos en [*Comandos útiles*](#Comandos-útiles) desde docker compose de la siguiente manera:
 
 ```bash
-docker-compose exec web <command>
+docker compose exec web <command>
 ```
 
 **Ejemplo:**
 
 ```bash
-docker-compose exec make shell
+docker compose exec web make shell
+```
+
+Utilizando `make docker-exec`:
+```bash
+make docker-exec ARGS="make django-createsuperuser"
 ```
 
 ## Flujo de desarrollo

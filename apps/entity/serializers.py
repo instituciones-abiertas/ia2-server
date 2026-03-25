@@ -33,6 +33,7 @@ class EntSerializer(serializers.Serializer):
     tag = serializers.SerializerMethodField("get_tag_label")
     should_anonymized = serializers.BooleanField(default=True)
     human_marked_ocurrency = serializers.BooleanField(default=False)
+    ner_index = serializers.IntegerField(default=None)
 
     def get_start_label(self, obj):
         return obj.startIndex

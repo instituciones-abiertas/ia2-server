@@ -26,12 +26,13 @@ def generate_data_for_anonymization(ocurrency_for_anonimyzation, text, replace_t
     header_data = []
     s = Template(replace_tpl)
     for ent in ocurrency_for_anonimyzation:
+        ner_index = ent.ner_index if ent.ner_index is not None else 0
         # Se agrega que exceda al offset,en caso de corresponder
         if ent.should_anonymized and ent.startIndex > offset and (not ent.human_deleted_ocurrency):
             # Se resta un caracter ya que en el reemplazo se usa la posición del cursor
-            data.append((ent.startIndex - 1, ent.endIndex, s.substitute(name=ent.entity.name), ent.text))
+            data.append((ent.startIndex - 1, ent.endIndex, s.substitute(name=ent.entity.name, index=ner_index), ent.text))
         elif ent.should_anonymized and ent.startIndex < offset and (not ent.human_deleted_ocurrency):
-            header_data.append((ent.startIndex - 1, ent.endIndex, s.substitute(name=ent.entity.name), ent.text))
+            header_data.append((ent.startIndex - 1, ent.endIndex, s.substitute(name=ent.entity.name, index=ner_index), ent.text))
     return [header_data, data]
 
 

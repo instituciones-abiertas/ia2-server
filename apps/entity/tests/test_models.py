@@ -250,3 +250,138 @@ class LearningModelTest(TestCase):
         learning_model = LearningModelFactory.create()
         deleted_objects, _ = learning_model.delete()
         self.assertEquals(deleted_objects, 1)
+
+
+class AssignNerIndexesTest(TestCase):
+    """Tests for the assign_ner_indexes utility function."""
+
+    def setUp(self):
+        from apps.entity.utils.vistas import assign_ner_indexes
+        self.assign_ner_indexes = assign_ner_indexes
+        self.act = ActFactory(text="John Doe went to Buenos Aires. Jane Smith met John Doe in Buenos Aires.")
+        self.entity_per = EntityFactory(name="PER", description="Person")
+        self.entity_loc = EntityFactory(name="LOC", description="Location")
+
+    def _create_occurrence(self, entity, text, start, end, deleted=False):
+        return OcurrencyEntity.objects.create(
+            act=self.act,
+            entity=entity,
+            text=text,
+            startIndex=start,
+            endIndex=end,
+            should_anonymized=True,
+            human_marked_ocurrency=False,
+            human_deleted_ocurrency=deleted,
+        )
+
+    def test_same_text_same_entity_gets_same_index(self):
+        """Two occurrences of 'John Doe' (PER) should get the same ner_index."""
+        occ1 = self._create_occurrence(self.entity_per, "John Doe", 0, 8)
+        occ2 = self._create_occurrence(self.entity_per, "John Doe", 47, 55)
+
+        self.assign_ner_indexes(self.act)
+
+        occ1.refresh_from_db()
+        occ2.refresh_from_db()
+        self.assertEqual(occ1.ner_index, occ2.ner_index)
+        self.assertEqual(occ1.ner_index, 1)
+
+    def test_different_text_same_entity_gets_different_index(self):
+        """'John Doe' and 'Jane Smith' (both PER) should get different indexes."""
+        occ1 = self._create_occurrence(self.entity_per, "John Doe", 0, 8)
+        occ2 = self._create_occurrence(self.entity_per, "Jane Smith", 31, 41)
+
+        self.assign_ner_indexes(self.act)
+
+        occ1.refresh_from_db()
+        occ2.refresh_from_db()
+        self.assertNotEqual(occ1.ner_index, occ2.ner_index)
+        self.assertEqual(occ1.ner_index, 1)
+        self.assertEqual(occ2.ner_index, 2)
+
+    def test_same_text_different_entity_gets_independent_index(self):
+        """Same text under different entity types gets index 1 for each type."""
+        occ_per = self._create_occurrence(self.entity_per, "Buenos Aires", 22, 34)
+        occ_loc = self._create_occurrence(self.entity_loc, "Buenos Aires", 59, 71)
+
+        self.assign_ner_indexes(self.act)
+
+        occ_per.refresh_from_db()
+        occ_loc.refresh_from_db()
+        self.assertEqual(occ_per.ner_index, 1)
+        self.assertEqual(occ_loc.ner_index, 1)
+
+    def test_case_insensitive_grouping(self):
+        """'John Doe' and 'john doe' should get the same ner_index."""
+        occ1 = self._create_occurrence(self.entity_per, "John Doe", 0, 8)
+        occ2 = self._create_occurrence(self.entity_per, "john doe", 47, 55)
+
+        self.assign_ner_indexes(self.act)
+
+        occ1.refresh_from_db()
+        occ2.refresh_from_db()
+        self.assertEqual(occ1.ner_index, occ2.ner_index)
+
+    def test_deleted_occurrences_are_excluded(self):
+        """Deleted occurrences should not receive a ner_index."""
+        occ1 = self._create_occurrence(self.entity_per, "John Doe", 0, 8)
+        occ_deleted = self._create_occurrence(self.entity_per, "Jane Smith", 31, 41, deleted=True)
+
+        self.assign_ner_indexes(self.act)
+
+        occ1.refresh_from_db()
+        occ_deleted.refresh_from_db()
+        self.assertEqual(occ1.ner_index, 1)
+        self.assertIsNone(occ_deleted.ner_index)
+
+    def test_indexes_are_sequential_by_position(self):
+        """Indexes should be assigned in order of first appearance (startIndex)."""
+        # Jane appears first positionally
+        occ_jane = self._create_occurrence(self.entity_per, "Jane Smith", 0, 10)
+        occ_john = self._create_occurrence(self.entity_per, "John Doe", 20, 28)
+
+        self.assign_ner_indexes(self.act)
+
+        occ_jane.refresh_from_db()
+        occ_john.refresh_from_db()
+        self.assertEqual(occ_jane.ner_index, 1)
+        self.assertEqual(occ_john.ner_index, 2)
+
+    def test_no_occurrences(self):
+        """Calling assign_ner_indexes on an act with no occurrences should not error."""
+        empty_act = ActFactory(text="No entities here.")
+        self.assign_ner_indexes(empty_act)  # Should not raise
+
+    def test_multiple_entity_types_indexed_independently(self):
+        """Each entity type maintains its own index counter."""
+        occ_per1 = self._create_occurrence(self.entity_per, "John Doe", 0, 8)
+        occ_loc1 = self._create_occurrence(self.entity_loc, "Buenos Aires", 22, 34)
+        occ_per2 = self._create_occurrence(self.entity_per, "Jane Smith", 31, 41)
+        occ_loc2 = self._create_occurrence(self.entity_loc, "Córdoba", 42, 49)
+
+        self.assign_ner_indexes(self.act)
+
+        occ_per1.refresh_from_db()
+        occ_per2.refresh_from_db()
+        occ_loc1.refresh_from_db()
+        occ_loc2.refresh_from_db()
+
+        # PER: John Doe=1, Jane Smith=2
+        self.assertEqual(occ_per1.ner_index, 1)
+        self.assertEqual(occ_per2.ner_index, 2)
+        # LOC: Buenos Aires=1, Córdoba=2
+        self.assertEqual(occ_loc1.ner_index, 1)
+        self.assertEqual(occ_loc2.ner_index, 2)
+
+    def test_recalculation_updates_existing_indexes(self):
+        """Running assign_ner_indexes twice should produce the same result."""
+        occ1 = self._create_occurrence(self.entity_per, "John Doe", 0, 8)
+        occ2 = self._create_occurrence(self.entity_per, "Jane Smith", 31, 41)
+
+        self.assign_ner_indexes(self.act)
+        self.assign_ner_indexes(self.act)
+
+        occ1.refresh_from_db()
+        occ2.refresh_from_db()
+        self.assertEqual(occ1.ner_index, 1)
+        self.assertEqual(occ2.ner_index, 2)

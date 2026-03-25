@@ -1,7 +1,7 @@
 FROM cambalab/python3-uno
 
 RUN apt-get update && \
-   apt-get install -y python-dev python-mysqldb gettext
+   apt-get install -y python3-dev python3-mysqldb gettext
 
 ARG IA2_MODEL_FILE
 

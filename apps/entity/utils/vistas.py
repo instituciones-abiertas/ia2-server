@@ -243,6 +243,41 @@ def create_new_occurrencies(ocurrencies, act, human_mark, entity_list=[]):
     OcurrencyEntity.objects.bulk_create(ocurrencies_to_create)
 
 
+def assign_ner_indexes(act):
+    """Assign sequential NER indexes per entity type for an Act.
+
+    Groups all non-deleted occurrences by (entity_name, normalized_text) and
+    assigns a sequential index (1, 2, 3...) per entity type. All occurrences
+    with the same original text (case-insensitive) share the same index.
+    """
+    ocurrencies = OcurrencyEntity.objects.filter(
+        act=act, human_deleted_ocurrency=False
+    ).select_related("entity").order_by("startIndex")
+
+    # Track index assignment per entity type: entity_name -> {normalized_text: index}
+    entity_text_indexes = collections.defaultdict(dict)
+    # Track next available index per entity type
+    entity_next_index = collections.defaultdict(lambda: 1)
+
+    updates = []
+    for occ in ocurrencies:
+        entity_name = occ.entity.name
+        normalized_text = (occ.text or "").strip().lower()
+        text_map = entity_text_indexes[entity_name]
+
+        if normalized_text not in text_map:
+            text_map[normalized_text] = entity_next_index[entity_name]
+            entity_next_index[entity_name] += 1
+
+        new_index = text_map[normalized_text]
+        if occ.ner_index != new_index:
+            occ.ner_index = new_index
+            updates.append(occ)
+
+    if updates:
+        OcurrencyEntity.objects.bulk_update(updates, ["ner_index"])
+
+
 @timeit_save_stats
 def detect_and_create_ocurrencies(act, all_entities):
     nlp = Nlp()
@@ -257,6 +292,9 @@ def detect_and_create_ocurrencies(act, all_entities):
         add_entities_by_multiple_selection(
             entity_list_to_search, act, nlp.doc, all_entities, False, act_id=act.id, key="find_all_ocurrencies"
         )
+
+    # Assign NER indexes after all occurrences are created
+    assign_ner_indexes(act)
 
 
 def delete_and_save(ocurrency):

@@ -80,6 +80,7 @@ class OcurrencyEntity(models.Model):
     text = models.TextField(null=True, blank=True)
     human_marked_ocurrency = models.BooleanField(default=False)
     human_deleted_ocurrency = models.BooleanField(default=False)
+    ner_index = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.entity.name
